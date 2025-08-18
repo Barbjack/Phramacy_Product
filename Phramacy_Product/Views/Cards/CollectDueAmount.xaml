@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="Phramacy_Product.Views.Cards.CollectDueAmount"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Phramacy_Product.Views.Cards"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+
+    <Border Margin="10" Padding="10" Background="White" CornerRadius="8"
+        BorderBrush="#DDD" BorderThickness="1"
+        materialDesign:ShadowAssist.ShadowDepth="Depth1">
+    <StackPanel>
+        <!-- Title and Total Due -->
+        <DockPanel Margin="0,0,0,10">
+            <TextBlock Text="Need to Collect" FontWeight="Bold" FontSize="16" DockPanel.Dock="Left"/>
+            <TextBlock Text="{Binding CollectDueAmountsTotal, StringFormat=- ₹{0:N0}}" 
+                       FontWeight="Bold" Foreground="Red" FontSize="16" HorizontalAlignment="Right"/>
+        </DockPanel>
+        <Grid Grid.Row="1" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Customer" FontWeight="SemiBold" FontSize="14" Grid.Column="0"/>
+            <TextBlock Text="Amount Due" FontWeight="SemiBold" FontSize="14" Grid.Column="1"/>
+        </Grid>
+
+        <!-- Item List -->
+        <ItemsControl ItemsSource="{Binding FilleteredDueAmounts}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <Grid Margin="0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Circle with Initial -->
+                            <Border Width="35" Height="35" CornerRadius="100" 
+                                Background="{Binding AvatarColor}" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Initial}" 
+                                       Foreground="White" FontWeight="Bold"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <!-- Name and Mobile -->
+                            <StackPanel Grid.Column="1" Margin="10,0" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding CustomerName}" FontWeight="SemiBold" FontSize="14"/>
+                                <TextBlock Text="{Binding MobileNumber}" FontSize="12" Foreground="Gray"/>
+                            </StackPanel>
+
+                            <!-- Due Amount -->
+                            <TextBlock Grid.Column="2" Text="{Binding DueAmount}" 
+                                   Foreground="Red" FontWeight="SemiBold" FontSize="14"
+                                   VerticalAlignment="Center"/>
+
+                        </Grid>
+                        <Border Height="1" Background="#EEE" Margin="0,4"/>
+
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Toggle Button -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                <Button Background="DarkBlue" Content="&lt;&lt;" Click="FirstPageClick" Margin="0,0,5,0"/>
+                <Button Background="DarkBlue" Content="&lt;" Click="PreviousPageClick" Margin="0,0,5,0"/>
+                <TextBlock Text="{Binding CurrentPage}" VerticalAlignment="Center" Margin="5,0"/>
+                <TextBlock Text="/" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding TotalPages}" VerticalAlignment="Center" Margin="5,0"/>
+                <Button Background="DarkBlue" Content=">" Click="NextPageClick" Margin="5,0,5,0"/>
+                <Button Background="DarkBlue" Content=">>" Click="LastPageClick"/>
+            </StackPanel>
+        </StackPanel>
+</Border>
+</UserControl>

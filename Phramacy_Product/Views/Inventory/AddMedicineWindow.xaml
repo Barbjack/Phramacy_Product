@@ -1,0 +1,99 @@
+﻿<Window x:Class="Phramacy_Product.Views.Inventory.AddMedicineWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="{Binding WindowTitle}"
+        Height="450" Width="600"
+        WindowStartupLocation="CenterScreen"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStyle="None"
+        BorderBrush="#3B4252" BorderThickness="1"
+        ResizeMode="NoResize">
+    <Border Background="White" CornerRadius="10" Padding="20">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="{Binding WindowTitle}" FontWeight="Bold" FontSize="18" Margin="0,0,0,15"/>
+
+            <Grid Grid.Row="1" VerticalAlignment="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,10">
+                    <TextBlock Text="Name" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding EditedMedicine.Name}" Padding="5"/>
+                </StackPanel>
+                <StackPanel Grid.Row="0" Grid.Column="1" Margin="10,0,0,10">
+                    <TextBlock Text="Manufacturer" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding EditedMedicine.ManufacturerName}" Padding="5"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,10">
+                    <TextBlock Text="Batch" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding EditedMedicine.Batch}" Padding="5"/>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="1" Margin="10,0,0,10">
+                    <TextBlock Text="Pack Size" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding EditedMedicine.PackSizeLabel}" Padding="5"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,10,10">
+                    <TextBlock Text="Price" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding EditedMedicine.Price}" Padding="5"/>
+                </StackPanel>
+                <StackPanel Grid.Row="2" Grid.Column="1" Margin="10,0,0,10">
+                    <TextBlock Text="Expiry" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <DatePicker SelectedDate="{Binding EditedMedicine.Expiry}" Padding="5"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,10,10">
+                    <TextBlock Text="Quantity (Full)" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding EditedMedicine.Quantity}" Padding="5"/>
+                </StackPanel>
+                <StackPanel Grid.Row="3" Grid.Column="1" Margin="10,0,0,10">
+                    <TextBlock Text="Quantity (Loose)" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding EditedMedicine.QtyInLoose}" Padding="5"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="4" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,10">
+                    <CheckBox IsChecked="{Binding EditedMedicine.IsDiscontinued}" VerticalAlignment="Center"/>
+                    <TextBlock Text="Discontinued" FontWeight="Bold" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="4" Grid.Column="1" Margin="10,0,0,10">
+                    <TextBlock Text="Type" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding EditedMedicine.Type}" Padding="5"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="5" Grid.Column="0" Margin="0,0,10,10">
+                    <TextBlock Text="Composition 1" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding EditedMedicine.ShortComposition1}" Padding="5"/>
+                </StackPanel>
+                <StackPanel Grid.Row="5" Grid.Column="1" Margin="10,0,0,10">
+                    <TextBlock Text="Composition 2" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding EditedMedicine.ShortComposition2}" Padding="5"/>
+                </StackPanel>
+            </Grid>
+
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                <Button Content="Cancel" Click="CancelButton_Click" Background="#F0F2F5" Foreground="Black" Margin="0,0,10,0"/>
+                <Button Content="Save" Click="SaveButton_Click" Background="#3A5389" Foreground="White" BorderBrush="#3A5389"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

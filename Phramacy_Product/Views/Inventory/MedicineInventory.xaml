@@ -1,0 +1,99 @@
+﻿<Page x:Class="Phramacy_Product.Views.Inventory.MedicineInventory"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Phramacy_Product.Views.Inventory"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      Title="MedicineInventory">
+    <Grid Background="#F0F2F5" Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="White" Padding="15" Margin="0,0,0,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <materialDesign:PackIcon Kind="Store" Width="50" Height="30" Foreground="DarkBlue"/>
+                    <TextBlock Text="Inventory" FontSize="20" Foreground="DarkBlue" FontWeight="Bold" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,15,0">
+                    <Border BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="15" Background="#F8F2F8" Width="200" Height="30">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Text="Search" VerticalContentAlignment="Center" BorderThickness="0" Background="Transparent" Margin="10,0,0,0"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <ComboBox SelectedIndex="0" Width="120" Height="30" Margin="0,0,10,0">
+                        <ComboBoxItem Content="My (In Stock)"/>
+                        <ComboBoxItem Content="All Stock"/>
+                    </ComboBox>
+                    <Button Content="+ Add Medicine" Click="AddMedicineClick" Padding="10,5" Background="#007ACC" Foreground="White" BorderBrush="#007ACC" BorderThickness="1" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <DataGrid Grid.Row="1" x:Name="InventoryDataGrid" ItemsSource="{Binding Medicines}" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False"
+                  Background="White" BorderBrush="#E0E0E0" BorderThickness="1"
+                  GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#E0E0E0"
+                  RowHeaderWidth="0" IsReadOnly="True">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Batch" Binding="{Binding Batch}" Width="*"/>
+                <DataGridTextColumn Header="Price" Binding="{Binding Price}" Width="*"/>
+                <DataGridTextColumn Header="Expiry" Binding="{Binding Expiry, StringFormat='dd/MM/yyyy'}" Width="*"/>
+                <DataGridTextColumn Header="Qty(Full)" Binding="{Binding Quantity}" Width="*"/>
+                <DataGridTextColumn Header="Qty(Loose)" Binding="{Binding QtyInLoose}" Width="*"/>
+                <DataGridCheckBoxColumn Header="Discontinued" Binding="{Binding IsDiscontinued}" Width="*"/>
+                <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="*"/>
+                <DataGridTextColumn Header="Composition" Binding="{Binding ShortComposition1}" Width="*"/>
+                <DataGridTemplateColumn Header="Action" Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button
+                                  Click="EditButton_Click"
+                                  Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                  CommandParameter="{Binding}"
+                                  Margin="0,0,5,0">
+                                    <materialDesign:PackIcon Kind="Edit" />
+                                </Button>
+                                <Button  Click="DeleteButton_Click" 
+                                         Command="{Binding  RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                         CommandParameter="{Binding}">
+                                    <materialDesign:PackIcon Kind="Delete" />
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+            <Button Content="&lt;&lt;" Click="FirstPageClick" Margin="0,0,5,0"/>
+            <Button Content="&lt;" Click="PreviousPageClick" Margin="0,0,5,0"/>
+            <TextBlock Text="{Binding CurrentPage}" VerticalAlignment="Center" Margin="5,0"/>
+            <TextBlock Text="/" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding TotalPages}" VerticalAlignment="Center" Margin="5,0"/>
+            <Button Content=">" Click="NextPageClick" Margin="5,0,5,0"/>
+            <Button Content=">>" Click="LastPageClick"/>
+        </StackPanel>
+    </Grid>
+</Page>

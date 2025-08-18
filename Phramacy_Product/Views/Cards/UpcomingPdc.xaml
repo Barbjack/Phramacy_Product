@@ -1,0 +1,15 @@
+﻿<UserControl x:Class="Phramacy_Product.Views.Cards.UpcomingPdc"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Phramacy_Product.Views.Cards"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <Border Margin="10" Padding="10" Background="White" CornerRadius="8" materialDesign:ShadowAssist.ShadowDepth="Depth2">
+    <StackPanel>
+        <TextBlock Text="Upcoming PDC" FontWeight="Bold" FontSize="16" Margin="0,0,0,5" />
+        <TextBlock Text="PDC #4587 - ₹5,000 on 24 Jul 2025" FontSize="14" />
+        <TextBlock Text="PDC #4590 - ₹3,200 on 26 Jul 2025" FontSize="14" />
+    </StackPanel>
+    </Border>
+</UserControl>

@@ -1,0 +1,78 @@
+﻿<UserControl x:Class="Phramacy_Product.Views.Cards.PayDueAmount"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Phramacy_Product.Views.Cards"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <Border Margin="10" Padding="10" Background="White" CornerRadius="8"
+        BorderBrush="#DDD" BorderThickness="1"
+        materialDesign:ShadowAssist.ShadowDepth="Depth1">
+    <StackPanel>
+        <StackPanel.Resources>
+            <Style TargetType="Grid">
+                <Setter Property="Grid.IsSharedSizeScope" Value="True"/>
+            </Style>
+        </StackPanel.Resources>
+
+        <!-- Header: Need to Pay + Amount -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Need to Pay" FontWeight="Bold" FontSize="16" Grid.Column="0"/>
+            <TextBlock Text="{Binding TotalPendingPayAmount}" FontWeight="Bold" FontSize="16" Grid.Column="1"
+                       Foreground="Green" HorizontalAlignment="Right"/>
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="0,10,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Supplier" FontWeight="SemiBold" FontSize="14" Grid.Column="0"/>
+            <TextBlock Text="Amount" FontWeight="SemiBold" FontSize="14" Grid.Column="1"/>
+        </Grid>
+        <!-- List Rows -->
+        <ItemsControl ItemsSource="{Binding FilteredNeedToPayItems}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="0,0">
+                        <Grid Margin="0,3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition SharedSizeGroup="DistributorCol"/>
+                                <ColumnDefinition SharedSizeGroup="AmountCol"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="{Binding DistributorName}" FontSize="14" Padding="0,2,0,0"
+                                           Foreground="Blue" />
+                                <TextBlock Text="{Binding BillNumber}" FontSize="12" Foreground="Gray"/>
+                            </StackPanel>
+
+                            <TextBlock Grid.Column="1" Text="{Binding PendingAmount}" FontSize="14"
+                                       Foreground="Black" HorizontalAlignment="Right" Padding="5,0"/>
+                        </Grid>
+
+                        <!-- Separator -->
+                        <Border Height="1" Background="#EEE" Margin="0,4"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Toggle Button -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                <Button Background="DarkBlue" Content="&lt;&lt;" Click="FirstPageClick" Margin="0,0,5,0"/>
+                <Button Background="DarkBlue" Content="&lt;" Click="PreviousPageClick" Margin="0,0,5,0"/>
+                <TextBlock Text="{Binding CurrentPage}" VerticalAlignment="Center" Margin="5,0"/>
+                <TextBlock Text="/" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding TotalPages}" VerticalAlignment="Center" Margin="5,0"/>
+                <Button Background="DarkBlue" Content=">" Click="NextPageClick" Margin="5,0,5,0"/>
+                <Button Background="DarkBlue" Content=">>" Click="LastPageClick"/>
+            </StackPanel>
+        </StackPanel>
+</Border>
+</UserControl>

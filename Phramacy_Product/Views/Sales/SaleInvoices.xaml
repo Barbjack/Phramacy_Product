@@ -1,0 +1,181 @@
+﻿<Page x:Class="Phramacy_Product.Views.Sales.SaleInvoices"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:local="clr-namespace:Phramacy_Product.Views.Sales"
+      Title="SaleInvoices">
+    <Page.Resources>
+        <Style x:Key="NoHoverFlatButtonStyle" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+            <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource Self}}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderBrush" Value="{Binding Background, RelativeSource={RelativeSource Self}}" />
+            <Setter Property="materialDesign:ColorZoneAssist.Mode" Value="PrimaryLight" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="BlueHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#2563EB"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="5,0"/>
+        </Style>
+        <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+    </Page.Resources>
+    <Grid Background="#F5F6F8">
+        <Border Background="White"
+                CornerRadius="8"
+                Padding="20"
+                Margin="10"
+                Effect="{DynamicResource MaterialDesignElevation2}">
+
+            <DockPanel LastChildFill="True">
+
+                <!-- Header Section -->
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Sales" FontSize="28" FontWeight="SemiBold" Foreground="#1F2937" VerticalAlignment="Center" Margin="10,0"/>
+                    <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" x:Name="ActionPanel">
+                        <StackPanel Orientation="Horizontal"  VerticalAlignment="Center">
+                            <Button x:Name="SearchButton" Width="40" Height="36" Margin="20,0,25,0" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Search" Click="SearchButton_Click">
+                                <materialDesign:PackIcon Kind="Magnify" Width="20" Height="20" />
+                            </Button>
+                            <TextBox x:Name="SearchBox" Width="200" Height="36" VerticalAlignment="Center" Visibility="Collapsed" Background="White" Foreground="Black" materialDesign:HintAssist.Hint="Search..." LostFocus="SearchBox_LostFocus" Margin="0,0,25,0" />
+                        </StackPanel>
+                        <Button Content="+ New Sale" Click="NewSaleButton_Click" Height="36" Padding="20,0" Background="#2563EB" Foreground="White" FontWeight="SemiBold" BorderThickness="1" Cursor="Hand" Margin="0,0,25,0" Style="{StaticResource NoHoverFlatButtonStyle}" />
+                        <Button Content="Sale Return" Click="SaleReturn_Click" Height="36" Padding="20,0" Background="#16A34A" Foreground="White" FontWeight="SemiBold" BorderThickness="1" Cursor="Hand" Margin="0,0,25,0" Style="{StaticResource NoHoverFlatButtonStyle}" />
+                    </StackPanel>
+                </Grid>
+                <!-- Body Content Wrapped in a Card -->
+                <Border Background="White" CornerRadius="6" Padding="10" Margin="0" Effect="{DynamicResource MaterialDesignElevation1}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Main DataGrid -->
+                        <DataGrid x:Name="SalesDataGrid" Grid.Row="0" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" HeadersVisibility="Column" 
+                             GridLinesVisibility="None"  Margin="10"  RowHeight="40"  FontSize="14"  ColumnHeaderHeight="40" ColumnHeaderStyle="{StaticResource BlueHeaderStyle}">
+                            <DataGrid.RowStyle>
+                                <Style TargetType="DataGridRow">
+                                    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                    <Setter Property="BorderBrush" Value="#D1D5DB"/>
+                                    <Setter Property="SnapsToDevicePixels" Value="True"/>
+                                </Style>
+                            </DataGrid.RowStyle>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Sr No." Binding="{Binding SrNo}" Width="60"/>
+                                <DataGridTextColumn Header="Bill No." Binding="{Binding BillNumber}" Width="*"/>
+                                <DataGridTextColumn Header="Entry Date" Binding="{Binding CreatedAt, StringFormat=d}" Width="*"/>
+                                <DataGridTextColumn Header="Bill Date" Binding="{Binding BillDate, StringFormat=d}" Width="*"/>
+                                <DataGridTextColumn Header="Entry By" Binding="{Binding CreatedBy}" Width="*"/>
+                                <DataGridTextColumn Header="Customer" Binding="{Binding CustomerName}" Width="*"/>
+                                <DataGridTextColumn Header="Bill Amount" Binding="{Binding CombinedBillPayment}" Width="*"/>
+                                <DataGridTemplateColumn Header="Bill PDF" Width="60">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Click="ViewPDF_Click" Tag="{Binding BillPath}" ToolTip="View PDF" Visibility="{Binding BillPath, 
+                                                Converter={StaticResource NullToVisibilityConverter}}" Style="{StaticResource MaterialDesignToolButton}">
+                                                <materialDesign:PackIcon Kind="Eye" Width="20" Height="20" Foreground="#1E3A8A"/>
+                                            </Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Action" Width="100">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <Button Click="Edit_Click" ToolTip="Edit" Style="{StaticResource MaterialDesignToolButton}">
+                                                    <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20" Foreground="DodgerBlue"/>
+                                                </Button>
+                                                <Button Click="Delete_Click" ToolTip="Delete" Style="{StaticResource MaterialDesignToolButton}">
+                                                    <materialDesign:PackIcon Kind="Delete" Width="20" Height="20" Foreground="Red"/>
+                                                </Button>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <Grid Margin="0,8,0,0" VerticalAlignment="Bottom">
+                            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                                <Button Background="DarkBlue" Content="&lt;&lt;" Click="FirstPageClick" Margin="0,0,5,0"/>
+                                <Button Background="DarkBlue" Content="&lt;" Click="PreviousPageClick" Margin="0,0,5,0"/>
+                                <TextBlock Text="{Binding CurrentPage}" VerticalAlignment="Center" Margin="5,0"/>
+                                <TextBlock Text="/" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding TotalPages}" VerticalAlignment="Center" Margin="5,0"/>
+                                <Button Background="DarkBlue" Content=">" Click="NextPageClick" Margin="5,0,5,0"/>
+                                <Button Background="DarkBlue" Content=">>" Click="LastPageClick"/>
+                            </StackPanel>
+                        </Grid>
+                        <Rectangle Fill="#80000000" Visibility="{Binding Visibility, ElementName=EditPanel}" Panel.ZIndex="99"/>
+                        <!-- Edit Overlay Panel (layered above everything else) -->
+                        <Border x:Name="EditPanel" Background="White" CornerRadius="8" Padding="20" Margin="40" Visibility="Collapsed" VerticalAlignment="Center" 
+                                    HorizontalAlignment="Center" Width="400" Panel.ZIndex="100" Effect="{DynamicResource MaterialDesignElevation3}">
+                            <StackPanel>
+                                <TextBlock Text="SaleDetails" FontSize="20" HorizontalAlignment="Center" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                                <StackPanel Orientation="Horizontal" Margin="0,5">
+                                    <TextBlock Text="Bill No." Width="120"/>
+                                    <TextBlock x:Name="editBillNumber" Width="200"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,5">
+                                    <TextBlock Text="Entry Date" Width="120"/>
+                                    <DatePicker x:Name="editCreatedAt" Width="200"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,5">
+                                    <TextBlock Text="Bill Date" Width="120"/>
+                                    <DatePicker x:Name="editBillDate" Width="200"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,5">
+                                    <TextBlock Text="Customer" Width="120"/>
+                                    <TextBox x:Name="editCustomerName" Width="200"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,5">
+                                    <TextBlock Text="Entry By" Width="120"/>
+                                    <TextBox x:Name="editEntryBy" Width="200"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,5">
+                                    <TextBlock Text="Bill Amount" Width="120"/>
+                                    <TextBox x:Name="editBillAmount" Width="200"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,5">
+                                    <TextBlock Text="Payment Mode" Width="120"/>
+                                    <TextBox x:Name="editPayMode" Width="200"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,5">
+                                    <TextBlock Text="Bill PDF" Width="120"/>
+                                    <TextBox x:Name="editBillPdf" Width="200"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" Margin="0,15">
+                                    <Button Content="Update" Width="100" Click="SaveEdit_Click" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,10,0"/>
+                                    <Button Content="Cancel" Width="100" Click="CancelEdit_Click" Style="{StaticResource MaterialDesignFlatButton}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Page>
