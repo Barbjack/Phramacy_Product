@@ -8,9 +8,11 @@ namespace Phramacy_Product.DataModel
         private int returnQty;
 
         public int SaleItemID { get; set; }
+        public int ItemId { get; set; }
         public int SaleID { get; set; }
         public string ItemName { get; set; }
         public string BillNumber { get; set; }
+        public string Pack { get; set; }
         public string Batch { get; set; }
         public string Expiry { get; set; }
         public int FullQty { get; set; }

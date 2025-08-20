@@ -15,7 +15,6 @@
             <Setter Property="Height" Value="38"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
         </Style>
-
         <Style x:Key="UserDefinedButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="DarkBlue"/>
             <Setter Property="Foreground" Value="White"/>
@@ -26,7 +25,6 @@
             <Setter Property="Width" Value="120"/>
             <Setter Property="Margin" Value="4,0,0,0"/>
         </Style>
-
         <Style x:Key="UniformGridBorderStyle" TargetType="Border">
             <Setter Property="Background" Value="#E3F2FD"/>
             <Setter Property="CornerRadius" Value="6"/>
@@ -44,27 +42,38 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="8,0,20,8">
-                    <TextBlock FontWeight="Bold" Foreground="DarkBlue" FontSize="24" Text="Sale Return" VerticalAlignment="Center"/>
-                    <Grid HorizontalAlignment="Right" Margin="870,0,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,20,0">
+                        <TextBlock FontWeight="Bold" Foreground="DarkBlue" FontSize="24" Text="Sale Return"/>
+                    </StackPanel>
+
+                    <Grid Grid.Column="2" HorizontalAlignment="Right">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Style="{StaticResource UniformGridBorderStyle}" Width="100" Height="47">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock x:Name="Owner" Text="Owner" Foreground="DimGray" FontSize="12" Margin="0,0,20,0"/>
-                            </StackPanel>
-                        </Border>
+                        <ComboBox Grid.Column="0"  x:Name="ownerComboBox" Width="150" Margin="0,5,8,0" VerticalAlignment="Center"
+                         materialDesign:HintAssist.Hint="Select Owner"
+                         Style="{StaticResource MaterialDesignOutlinedComboBox}">
+                            <ComboBoxItem>Owner</ComboBoxItem>
+                            <ComboBoxItem>Doctor</ComboBoxItem>
+                        </ComboBox>
                         <TextBox Grid.Column="1" x:Name="SearchBox" Width="200" materialDesign:HintAssist.Hint="Search by Bill Number"
-                                 Margin="8,0,12,0" VerticalAlignment="Center"
+                                 Margin="8,5,12,0" VerticalAlignment="Center"
                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                  Text="{Binding TxtBillNumber, UpdateSourceTrigger=PropertyChanged}"/>
-                        <Button Grid.Column="2" Height="48" Content="Search" Margin="0,0,0,0" Style="{StaticResource UserDefinedButtonStyle}"
+
+                        <Button Grid.Column="2" Height="48" Content="Search" Margin="0,5,0,0" Style="{StaticResource UserDefinedButtonStyle}"
                                 Click="SearchButton_Click"/>
                     </Grid>
-                </StackPanel>
+                </Grid>
 
                 <UniformGrid Grid.Row="1" Columns="4" Margin="0,8,13,8">
                     <Border Style="{StaticResource UniformGridBorderStyle}">
@@ -96,7 +105,6 @@
                 <DataGrid x:Name="SaleItemsGrid"
                           Grid.Row="2"
                           ItemsSource="{Binding PagedSaleItems}"
-                          SelectedItem="{Binding SelectedSaleItem, Mode=TwoWay}"
                           AutoGenerateColumns="False"
                           CanUserAddRows="False"
                           IsReadOnly="False"
@@ -128,14 +136,14 @@
                     <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="Total Return Amount:" FontWeight="Bold" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding ReturnTotal, StringFormat=₹{0:F2}}" FontSize="16" FontWeight="Bold"
-                       Foreground="#1976D2" VerticalAlignment="Center"/>
+                                   Foreground="#1976D2" VerticalAlignment="Center"/>
                     </StackPanel>
                     <Button Grid.Column="1"
-                Content="Submit Return"
-                Background="DarkBlue"
-                Margin="0,0,8,0"
-                HorizontalAlignment="Right"
-                Click="SubmitReturnButton_Click"/>
+                            Content="Submit Return"
+                            Background="DarkBlue"
+                            Margin="0,0,8,0"
+                            HorizontalAlignment="Right"
+                            Click="SubmitReturnButton_Click"/>
                 </Grid>
             </Grid>
         </materialDesign:Card>

@@ -48,3 +48,4 @@
 #*.RTF   diff=astextplain
 *.sql filter=lfs diff=lfs merge=lfs -text
 FinalEpharma.sql filter=lfs diff=lfs merge=lfs -text
+SQLQuery_Pharmacy_Product.sql filter=lfs diff=lfs merge=lfs -text

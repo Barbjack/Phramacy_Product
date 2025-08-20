@@ -12,22 +12,10 @@ namespace Phramacy_Product.Views.Sales
     public class SaleReturnViewModel : INotifyPropertyChanged
     {
         public readonly DatabaseService DbService = new DatabaseService();
-        public List<SaleItemReturn> AllSaleItems;
         private SaleDetail currentSale;
         private string txtBillNumber;
         private decimal returnTotal;
-        private SaleItemReturn selectedSaleItem;
-        private ObservableCollection<SaleItemReturn> pagedSaleItems = new ObservableCollection<SaleItemReturn>();
-
-        public ObservableCollection<SaleItemReturn> PagedSaleItems
-        {
-            get => pagedSaleItems;
-            set
-            {
-                pagedSaleItems = value;
-                OnPropertyChanged();
-            }
-        }
+        public ObservableCollection<SaleItemReturn> PagedSaleItems { get; private set; } = new ObservableCollection<SaleItemReturn>();
 
         public string TxtBillNumber
         {
@@ -40,9 +28,9 @@ namespace Phramacy_Product.Views.Sales
                     OnPropertyChanged();
                     if (string.IsNullOrEmpty(value))
                     {
-                        // Clear the grid when search box is cleared.
                         PagedSaleItems.Clear();
                         CurrentSale = null;
+                        ReturnTotal = 0;
                     }
                 }
             }
@@ -58,17 +46,6 @@ namespace Phramacy_Product.Views.Sales
             }
         }
 
-        public SaleItemReturn SelectedSaleItem
-        {
-            get => selectedSaleItem;
-            set
-            {
-                selectedSaleItem = value;
-                OnPropertyChanged();
-                UpdateDetailsFromSelectedItem();
-            }
-        }
-
         public decimal ReturnTotal
         {
             get => returnTotal;
@@ -81,26 +58,21 @@ namespace Phramacy_Product.Views.Sales
 
         public SaleReturnViewModel()
         {
-            LoadInitialData();
-            // Subscribe to the CollectionChanged event to handle item additions/removals
             PagedSaleItems.CollectionChanged += PagedSaleItems_CollectionChanged;
         }
 
         private void PagedSaleItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            // Unsubscribe from old items
             if (e.OldItems != null)
             {
-                foreach (SaleItemReturn item in e.OldItems)
+                foreach (SaleItemReturn item in e.OldItems.OfType<SaleItemReturn>())
                 {
                     item.PropertyChanged -= Item_PropertyChanged;
                 }
             }
-
-            // Subscribe to new items
             if (e.NewItems != null)
             {
-                foreach (SaleItemReturn item in e.NewItems)
+                foreach (SaleItemReturn item in e.NewItems.OfType<SaleItemReturn>())
                 {
                     item.PropertyChanged += Item_PropertyChanged;
                 }
@@ -109,64 +81,60 @@ namespace Phramacy_Product.Views.Sales
 
         private void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            // Recalculate total when a property of an item changes
             if (e.PropertyName == nameof(SaleItemReturn.IsSelected) || e.PropertyName == nameof(SaleItemReturn.ReturnQty))
             {
                 CalculateReturnTotal();
             }
         }
 
-
-        public void LoadInitialData()
-        {
-            AllSaleItems = DbService.GetAllSaleItems();
-            System.Diagnostics.Debug.WriteLine($"Total items loaded: {AllSaleItems?.Count ?? 0}");
-        }
-
         public void SearchByBillNumber()
         {
-            // Clear details from previous selections
-            CurrentSale = null;
-            SelectedSaleItem = null;
-            PagedSaleItems.Clear();
-
-            // Filter the local list based on the bill number
             if (string.IsNullOrEmpty(TxtBillNumber))
             {
                 MessageBox.Show("Please enter a Bill Number to search.");
                 return;
             }
 
-            var filteredList = AllSaleItems.Where(i => i.BillNumber == TxtBillNumber).ToList();
-            if (filteredList.Any())
+            var saleDetail = DbService.GetSaleDetailByBillNumber(TxtBillNumber);
+
+            if (saleDetail != null)
             {
-                PagedSaleItems = new ObservableCollection<SaleItemReturn>(filteredList);
-                UpdateDetailsFromSelectedItem();
+                var saleItems = DbService.GetSaleItemsBySaleId(saleDetail.SaleID);
+                if (saleItems.Any())
+                {
+                    CurrentSale = saleDetail;
+                    PagedSaleItems.Clear();
+                    foreach (var item in saleItems)
+                    {
+
+                        PagedSaleItems.Add(item);
+
+                    }
+                }
+                else
+                {
+                    MessageBox.Show($"No items found for Bill Number: {TxtBillNumber}");
+                    PagedSaleItems.Clear();
+                    CurrentSale = null;
+                }
             }
             else
             {
                 MessageBox.Show($"No records found for Bill Number: {TxtBillNumber}");
+                PagedSaleItems.Clear();
+                CurrentSale = null;
             }
             CalculateReturnTotal();
         }
 
-
-        public void UpdateDetailsFromSelectedItem()
-        {
-            if (SelectedSaleItem != null)
-            {
-                CurrentSale = DbService.GetSaleDetailBySaleId(SelectedSaleItem.SaleID);
-            }
-            else
-            {
-                CurrentSale = null;
-            }
-        }
-
         public void CalculateReturnTotal()
         {
-            ReturnTotal = PagedSaleItems.Where(i => i.IsSelected)
-                                         .Sum(i => i.ReturnQty * (i.MRP - (i.MRP * i.Discount / 100)));
+            ReturnTotal = PagedSaleItems.Where(i => i.IsSelected && i.ReturnQty > 0)
+                                        .Sum(i =>
+                                        {
+                                            decimal priceAfterDiscount = i.MRP - (i.MRP * i.Discount / 100);
+                                            return i.ReturnQty * (priceAfterDiscount + (priceAfterDiscount * i.GST / 100));
+                                        });
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -68,6 +68,7 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 com.ExecuteNonQuery();
             }
             conn.Close();
-        }
+      } 
+      
     }
 }

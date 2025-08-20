@@ -57,7 +57,7 @@ namespace Phramacy_Product.Views.Sales
             {
                 conn.Open();
                 string query = @"
-                    SELECT Batch, price, Expiry, Discount, GST, pack_size_label, isnull(price, 0.0) as price, isnull(Quantity, 0) as Quantity
+                    SELECT id,Batch, price, Expiry, Discount, GST, pack_size_label, isnull(price, 0.0) as price, isnull(Quantity, 0) as Quantity
                     FROM Pharma_Medicines
                     WHERE name = @name";
 
@@ -77,7 +77,9 @@ namespace Phramacy_Product.Views.Sales
                                 Expiry = Convert.ToDateTime(reader["Expiry"]),
                                 StripInfo = reader["pack_size_label"].ToString(),
                                 Discount = Convert.ToDecimal(reader["Discount"]),
-                                MRP = Convert.ToDecimal(reader["price"])
+                                MRP = Convert.ToDecimal(reader["price"]),
+                                ItemId = (int)Convert.ToInt64(reader["id"])
+
                             };
 
                             if (gst == "With GST")
@@ -307,14 +309,15 @@ namespace Phramacy_Product.Views.Sales
 
                 // 2. Insert into SaleItem for each item
                 string insertItemQuery = @"
-                        INSERT INTO SaleItems (SaleID, ItemName,Batch,Expiry,Pack,MRP,Quantity,Discount,GST,CreatedAt,Is_Loose,NetAmount)
-                        VALUES (@SaleID,@ItemName,@Batch,@Expiry,@Pack,@MRP,@Quantity,@Discount,@GST,@CreatedAt,@Is_Loose,@NetAmount)";
+                        INSERT INTO SaleItems (SaleID,ItemId,ItemName,Batch,Expiry,Pack,MRP,Quantity,Discount,GST,CreatedAt,Is_Loose,NetAmount)
+                        VALUES (@SaleID,@ItemId,@ItemName,@Batch,@Expiry,@Pack,@MRP,@Quantity,@Discount,@GST,@CreatedAt,@Is_Loose,@NetAmount)";
 
                 SqlCommand itemCmd = new SqlCommand(insertItemQuery, conn, transaction);
                 foreach (var med in medicineBilling)
                 {
                     itemCmd.Parameters.Clear();
                     itemCmd.Parameters.AddWithValue("@SaleID", saleID);
+                    itemCmd.Parameters.AddWithValue("@ItemId", med.ItemId);
                     itemCmd.Parameters.AddWithValue("@ItemName", med.ProductName);
                     itemCmd.Parameters.AddWithValue("@Batch", med.BatchNumber);
                     itemCmd.Parameters.AddWithValue("@Expiry", med.Expiry);

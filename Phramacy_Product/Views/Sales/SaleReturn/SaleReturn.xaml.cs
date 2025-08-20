@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Phramacy_Product.DataModel;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-
 namespace Phramacy_Product.Views.Sales
 {
     public partial class SaleReturn : Page
@@ -18,21 +18,42 @@ namespace Phramacy_Product.Views.Sales
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
-            // Clear details from previous selections.
-            // The logic to handle the search is moved to the view model.
             viewModel.SearchByBillNumber();
         }
 
         private void SubmitReturnButton_Click(object sender, RoutedEventArgs e)
         {
+            if (ownerComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Please select an owner before proceeding.");
+                return;
+            }
+            string createdBy = ((System.Windows.Controls.ComboBoxItem)ownerComboBox.SelectedItem).Content.ToString();
             var itemsToReturn = viewModel.PagedSaleItems.Where(i => i.IsSelected && i.ReturnQty > 0).ToList();
             if (itemsToReturn.Any())
             {
-                viewModel.DbService.UpdateReturnedItems(itemsToReturn);
-                MessageBox.Show("Return submitted successfully!");
-                // Clear the filtered results after submission
-                viewModel.PagedSaleItems.Clear();
-                viewModel.CurrentSale = null;
+                try
+                {
+                    viewModel.DbService.ProcessSaleReturn(itemsToReturn, viewModel.CurrentSale,createdBy);
+                    MessageBox.Show("Return submitted successfully!");
+                    var updatedSaleItems = viewModel.DbService.GetSaleItemsBySaleId(viewModel.CurrentSale.SaleID);
+                    var invoiceData = new SalePdfInvoice
+                    {
+                        BillNo = viewModel.CurrentSale.BillNumber,
+                        CustomerName = viewModel.CurrentSale.CustomerName,
+                        Date = (System.DateTime)viewModel.CurrentSale.BillDate,
+                        PaymentType = viewModel.CurrentSale.PaymentStatus
+                        
+                    };
+                   string billPath = PdfInvoiceGenerator.GenerateRevisedInvoice(invoiceData, updatedSaleItems, itemsToReturn);
+                    viewModel.PagedSaleItems.Clear();
+                    viewModel.CurrentSale = null;
+                    viewModel.ReturnTotal = 0;
+                }
+                catch (System.Exception ex)
+                {
+                    // The exception message is already handled in the DatabaseService, but you can add a generic message here
+                }
             }
             else
             {

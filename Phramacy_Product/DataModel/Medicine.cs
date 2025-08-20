@@ -8,6 +8,7 @@ namespace Phramacy_Product.DataModel
 {
     public class Medicine
     {
+        public int ItemId { get; set; }
         public string ProductName { get; set; }
         public string CompanyName { get; set; }
         public string StripInfo { get; set; }
@@ -20,8 +21,6 @@ namespace Phramacy_Product.DataModel
         public int QtyL { get; set; }
         public decimal Discount { get; set; }
         public decimal GST { get; set; }
-
-        //public decimal PaidAmount { get; set; }
         public decimal Total { get; set; }
         public string PaymentApp { get; set; }
         public string TransactionNumber { get; set; }
