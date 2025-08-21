@@ -18,8 +18,8 @@ namespace Phramacy_Product.Views.Sales
     public partial class NewSalePage : Page
     {
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["databaseConnection"].ConnectionString;
-        private List<Medicine> medicineBilling = new List<Medicine>();
-        SalesDBManager saleDBManager = new SalesDBManager();
+        private readonly List<Medicine> medicineBilling = new List<Medicine>();
+        readonly SalesDBManager saleDBManager = new SalesDBManager();
         public NewSalePage()
         {
             InitializeComponent();
@@ -31,9 +31,8 @@ namespace Phramacy_Product.Views.Sales
             string productName = SearchTextBox.Text;
             string quantityType = qtyType.Text;
             string qtyText = quantity.Text.Trim();
-            int qty;
 
-            if (!int.TryParse(qtyText, out qty) || qty <= 0)
+            if (!int.TryParse(qtyText, out int qty) || qty <= 0)
             {
                 MessageBox.Show("Please enter a valid quantity greater than 0.", "Invalid Quantity", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -134,7 +133,7 @@ namespace Phramacy_Product.Views.Sales
             quantity.Clear();
             formGSTOption.SelectedItem = null;
         }
-        private void updateMedicineQuantity(SqlConnection conn, SqlTransaction transaction)
+        private void UpdateMedicineQuantity(SqlConnection conn, SqlTransaction transaction)
         {
             // Combine the updates into a single query to reduce database calls
             string updateQuery = @"
@@ -162,6 +161,8 @@ namespace Phramacy_Product.Views.Sales
                 }
             }
         }
+
+        [Obsolete]
         private void AddTo_SaleItemDetailPharmaCustomer(Object sender, RoutedEventArgs e)
         {
 
@@ -189,7 +190,7 @@ namespace Phramacy_Product.Views.Sales
                 saleDBManager.updatePharmaCustomer(conn, customerName, mobile, totalAmount, totalPaidAmount, customerExists);
                 string billNumber = saleDBManager.GenerateBillNumber(conn);
                 String billPath = SaveButton_Click(sender, e);
-                updateSaleItemDetails(conn, billNumber, billPath, totalAmount, totalPaidAmount);
+                UpdateSaleItemDetails(conn, billNumber, billPath, totalAmount, totalPaidAmount);
             }
 
         }
@@ -248,7 +249,7 @@ namespace Phramacy_Product.Views.Sales
             }
         }
 
-        private void updateSaleItemDetails(SqlConnection conn, String billNumber, String billPath, decimal totalAmount, decimal paidAmount)
+        private void UpdateSaleItemDetails(SqlConnection conn, String billNumber, String billPath, decimal totalAmount, decimal paidAmount)
         {
 
             SqlTransaction transaction = conn.BeginTransaction();
@@ -331,7 +332,7 @@ namespace Phramacy_Product.Views.Sales
                     itemCmd.Parameters.AddWithValue("@NetAmount", med.Total);
                     itemCmd.ExecuteNonQuery();
                 }
-                updateMedicineQuantity(conn, transaction);
+                UpdateMedicineQuantity(conn, transaction);
 
                 transaction.Commit();
                 MessageBox.Show("Sale successfully saved!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -380,9 +381,11 @@ namespace Phramacy_Product.Views.Sales
                     {
                         while (reader.Read())
                         {
-                            CustomerDetail newCustomer = new CustomerDetail();
-                            newCustomer.CustomerName = reader["CustomerName"].ToString();
-                            newCustomer.CustomerNumber = reader["Mobile"].ToString();
+                            CustomerDetail newCustomer = new CustomerDetail
+                            {
+                                CustomerName = reader["CustomerName"].ToString(),
+                                CustomerNumber = reader["Mobile"].ToString()
+                            };
                             newCustomerList.Add(newCustomer);
                         }
                     }
@@ -464,7 +467,7 @@ namespace Phramacy_Product.Views.Sales
         }
 
         //Choose cash or online payment mode
-        private void formPaymentType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void FormPaymentType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (formPaymentType.SelectedItem is ComboBoxItem selectedItem)
             {
@@ -477,6 +480,29 @@ namespace Phramacy_Product.Views.Sales
                     : Visibility.Collapsed;
 
                 RootDialogHost.IsOpen = true;
+            }
+        }
+        private void DeleteRow_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProductGrid.SelectedItem != null)
+            {
+                Medicine selectedMedicine = ProductGrid.SelectedItem as Medicine;
+                medicineBilling.Remove(selectedMedicine);
+                decimal totalAmount = medicineBilling.Sum(m => m.Total);
+                Total_Amount.Text = "Total Amount: " + totalAmount.ToString("C", CultureInfo.GetCultureInfo("en-IN"));
+                ProductGrid.ItemsSource = null;
+                ProductGrid.ItemsSource = medicineBilling;
+
+                if (medicineBilling.Count == 0)
+                {
+                    formPaymentType.IsEnabled = false;
+                }
+
+                MessageBox.Show("Item successfully removed from the bill.", "Item Removed", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("Please select an item to delete.", "No Item Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
         private decimal totalPaidAmount;
@@ -533,6 +559,8 @@ namespace Phramacy_Product.Views.Sales
             ProductGrid.ItemsSource = null;
             Total_Amount.Text = "Total Amount: ";
         }
+
+        [Obsolete]
         public String SaveButton_Click(object sender, RoutedEventArgs e)
         {
             // Populate the Sale object with actual data from your form fields
@@ -542,7 +570,7 @@ namespace Phramacy_Product.Views.Sales
                 Mobile = SearchNumberBox.Text,
                 BillNo = saleDBManager.GenerateBillNumber(new SqlConnection(connectionString)),
                 Date = formBillDate.SelectedDate ?? DateTime.Now,
-                // The rest of the values will be calculated by the generator
+
                 PaymentType = formPaymentType.SelectedItem is ComboBoxItem item2 ? item2.Content.ToString() : "Cash",
             };
 

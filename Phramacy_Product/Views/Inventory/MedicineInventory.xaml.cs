@@ -23,7 +23,7 @@ namespace Phramacy_Product.Views.Inventory
     {
         private readonly DataService dataService = new DataService();
         private int currentPage = 1;
-        private int pageSize = 11;
+        private readonly int pageSize = 11;
         public ObservableCollection<PharmaMedicine> Medicines { get; set; } = new ObservableCollection<PharmaMedicine>();
 
         public int CurrentPage

@@ -10,12 +10,13 @@ namespace Phramacy_Product.Views.Sales
 {
     public class PdfInvoiceGenerator
     {
+        [System.Obsolete]
         public static string GenerateInvoice(SalePdfInvoice sale, List<Medicine> billingItems)
         {
             // Create document
             Document doc = new Document();
             Style normal = doc.Styles["Normal"];
-            normal.Font.Name = "Arial";
+            normal.Font.Name = "cour";
             normal.Font.Size = 9;
 
             Section section = doc.AddSection();
@@ -113,19 +114,19 @@ namespace Phramacy_Product.Views.Sales
 
             var row1 = totalsTable.AddRow();
             row1.Cells[0].AddParagraph($"Total Items: {billingItems.Count}");
-            row1.Cells[1].AddParagraph($"Net Amount: {totalNet.ToString("0.00")}");
+            row1.Cells[1].AddParagraph($"Net Amount: {totalNet:0.00}");
 
             var row2 = totalsTable.AddRow();
             row2.Cells[0].AddParagraph($"Payment Mode: {sale.PaymentType}");
-            row2.Cells[1].AddParagraph($"SGST: {sgst.ToString("0.00")}");
+            row2.Cells[1].AddParagraph($"SGST: {sgst:0.00}");
 
             var row3 = totalsTable.AddRow();
             row3.Cells[0].AddParagraph("");
-            row3.Cells[1].AddParagraph($"CGST: {cgst.ToString("0.00")}");
+            row3.Cells[1].AddParagraph($"CGST: {cgst:0.00}");
 
             var row4 = totalsTable.AddRow();
             row4.Cells[0].AddParagraph("");
-            var grandTotalPara = row4.Cells[1].AddParagraph($"Grand Total: {totalAmount.ToString("0.00")}");
+            var grandTotalPara = row4.Cells[1].AddParagraph($"Grand Total: {totalAmount:0.00}");
             grandTotalPara.Format.Font.Bold = true;
 
             section.AddParagraph("\n");
@@ -145,9 +146,10 @@ namespace Phramacy_Product.Views.Sales
             string fullPath = Path.Combine(folderPath, fileName);
             renderer.PdfDocument.Save(fullPath);
             Process.Start(new ProcessStartInfo(fullPath) { UseShellExecute = true });
-
             return fullPath;
         }
+
+        [System.Obsolete]
         public static string GenerateRevisedInvoice(SalePdfInvoice sale, List<SaleItemReturn> allSaleItems, List<SaleItemReturn> returnedItems)
         {
             // 2. If no items remain, do not generate the PDF
@@ -159,7 +161,7 @@ namespace Phramacy_Product.Views.Sales
             // Create document
             Document doc = new Document();
             Style normal = doc.Styles["Normal"];
-            normal.Font.Name = "Arial";
+            normal.Font.Name = "cour";
             normal.Font.Size = 9;
 
             Section section = doc.AddSection();
@@ -172,7 +174,7 @@ namespace Phramacy_Product.Views.Sales
             headerPara.Format.Alignment = ParagraphAlignment.Center;
             section.AddParagraph("\n");
 
-            
+
 
             // Seller Header (Template from screenshot)
             var sellerInfoTable = section.AddTable();
@@ -272,19 +274,19 @@ namespace Phramacy_Product.Views.Sales
 
             var row1 = totalsTable.AddRow();
             row1.Cells[0].AddParagraph($"Total Items: {allSaleItems.Count}");
-            row1.Cells[1].AddParagraph($"Net Amount: {totalNet.ToString("0.00")}");
+            row1.Cells[1].AddParagraph($"Net Amount: {totalNet:0.00}");
 
             var row2 = totalsTable.AddRow();
             row2.Cells[0].AddParagraph($"Payment Mode: {sale.PaymentType}");
-            row2.Cells[1].AddParagraph($"SGST: {sgst.ToString("0.00")}");
+            row2.Cells[1].AddParagraph($"SGST: {sgst:0.00}");
 
             var row3 = totalsTable.AddRow();
             row3.Cells[0].AddParagraph("");
-            row3.Cells[1].AddParagraph($"CGST: {cgst.ToString("0.00")}");
+            row3.Cells[1].AddParagraph($"CGST: {cgst:0.00}");
 
             var row4 = totalsTable.AddRow();
             row4.Cells[0].AddParagraph("");
-            var grandTotalPara = row4.Cells[1].AddParagraph($"Grand Total: {newTotalAmount.ToString("0.00")}");
+            var grandTotalPara = row4.Cells[1].AddParagraph($"Grand Total: {newTotalAmount:0.00}");
             grandTotalPara.Format.Font.Bold = true;
             grandTotalPara.Format.Font.Size = 14;
             grandTotalPara.Format.Font.Color = Colors.DarkRed;

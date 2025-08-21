@@ -1,42 +1,56 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PdfSharp.Fonts;
 using System.IO;
 using System.Reflection;
+using PdfSharp.Fonts;
 
 namespace Phramacy_Product
 {
-
-
     public class MyFontResolver : IFontResolver
     {
-        public static readonly MyFontResolver Instance = new MyFontResolver();
-
-        public string DefaultFontName => "CourierNew";
+        public string DefaultFontName => "cour";
 
         public byte[] GetFont(string faceName)
         {
-            var assembly = Assembly.GetExecutingAssembly();
-            using (Stream stream = assembly.GetManifestResourceStream("Phramacy_Product.Fonts.cour.ttf"))
+            if (faceName.Equals("cour", StringComparison.OrdinalIgnoreCase))
             {
-                using (MemoryStream ms = new MemoryStream())
+                var assembly = Assembly.GetExecutingAssembly();
+                using (Stream stream = assembly.GetManifestResourceStream("Phramacy_Product.Fonts.cour.ttf"))
                 {
-                    stream.CopyTo(ms);
-                    return ms.ToArray();
+                    if (stream != null)
+                    {
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            stream.CopyTo(ms);
+                            return ms.ToArray();
+                        }
+                    }
                 }
             }
+            return null;
         }
 
         public FontResolverInfo ResolveTypeface(string familyName, bool isBold, bool isItalic)
         {
+            // Now that you're explicitly using "cour" in your code, 
+            // the resolver needs to handle that request directly.
+            if (familyName.Equals("cour", StringComparison.OrdinalIgnoreCase))
+            {
+                // This line is now crucial. It tells the library that "cour" is a valid font name.
+                return new FontResolverInfo("cour");
+            }
+
+            // Keep the Arial mapping as a fallback for any other parts of the code.
+            //if (familyName.Equals("Arial", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    return new FontResolverInfo("cour");
+            //}
+
             if (familyName.Equals("Courier New", StringComparison.OrdinalIgnoreCase))
-                return new FontResolverInfo("CourierNew");
+            {
+                return new FontResolverInfo("cour");
+            }
 
             return null;
         }
     }
-
 }

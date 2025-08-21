@@ -67,7 +67,7 @@
                          materialDesign:HintAssist.Hint="Select Payment"
                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
                          IsEnabled="False"
-                         SelectionChanged="formPaymentType_SelectionChanged">
+                         SelectionChanged="FormPaymentType_SelectionChanged">
                         <ComboBoxItem Content="Cash" />
                         <ComboBoxItem Content="Online"/>
                     </ComboBox>
@@ -398,8 +398,8 @@ ValidatesOnDataErrors="True">
                     <DataGridTemplateColumn Header="DELETE ITEM" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="❌" Foreground="Red"/>
-                                <!--Click="DeleteRow_Click-->
+                                <Button Content="❌" Click="DeleteRow_Click" Foreground="Red"/>
+                                
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

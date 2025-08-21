@@ -21,6 +21,7 @@ namespace Phramacy_Product.Views.Sales
             viewModel.SearchByBillNumber();
         }
 
+        [System.Obsolete]
         private void SubmitReturnButton_Click(object sender, RoutedEventArgs e)
         {
             if (ownerComboBox.SelectedItem == null)
@@ -33,7 +34,7 @@ namespace Phramacy_Product.Views.Sales
             if (itemsToReturn.Any())
             {
                 try
-                {
+                {   
                     viewModel.DbService.ProcessSaleReturn(itemsToReturn, viewModel.CurrentSale,createdBy);
                     MessageBox.Show("Return submitted successfully!");
                     var updatedSaleItems = viewModel.DbService.GetSaleItemsBySaleId(viewModel.CurrentSale.SaleID);
@@ -52,6 +53,7 @@ namespace Phramacy_Product.Views.Sales
                 }
                 catch (System.Exception ex)
                 {
+                    MessageBox.Show($"An error occurred while processing the return: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     // The exception message is already handled in the DatabaseService, but you can add a generic message here
                 }
             }
