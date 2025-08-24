@@ -34,13 +34,10 @@ namespace Phramacy_Product.Views.Sales
         }
         public NewSalePage()
         {
-           
              InitializeComponent();
              this.selectedMember = GlobalData.LoggedInUser; 
              this.DataContext = this;
-
         }
-        // Adding Drug and making Bill of it
         private void AddBill_CustomerDetails(object sender, RoutedEventArgs e)
         {
             string productName = SearchTextBox.Text;

@@ -137,11 +137,11 @@ namespace Phramacy_Product.Views.Sales
             thanks.Format.Alignment = ParagraphAlignment.Center;
             thanks.Format.Font.Size = 8;
 
-            // PDF rendering and saving
             var renderer = new PdfDocumentRenderer(true) { Document = doc };
             renderer.RenderDocument();
-            string folderPath = @"C:\Users\Developer\Documents\WPF Application\Phramacy_Product\SaleInvoices\";
-            if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+            string folderPath = @"SaleInvoices";
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
             string fileName = $"Invoice_{sale.BillNo}.pdf";
             string fullPath = Path.Combine(folderPath, fileName);
             renderer.PdfDocument.Save(fullPath);
@@ -302,7 +302,8 @@ namespace Phramacy_Product.Views.Sales
             // PDF rendering and saving
             var renderer = new PdfDocumentRenderer(true) { Document = doc };
             renderer.RenderDocument();
-            string folderPath = @"C:\Users\Developer\Documents\WPF Application\Phramacy_Product\SaleInvoices\";
+            string folderPath = @"SaleInvoices";
+
             if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
             string fileName = $"RevisedInvoice_{sale.BillNo}.pdf";
             string fullPath = Path.Combine(folderPath, fileName);
