@@ -1,0 +1,76 @@
+﻿<UserControl x:Class="Phramacy_Product.Views.Profile.PlanContent"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="700">
+    <UserControl.Resources>
+        <!-- A simple style for the text boxes to make them look clean -->
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderBrush" Value="#DCDCDC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="#F9F9F9"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                Background="{TemplateBinding Background}" 
+                                CornerRadius="5" SnapsToDevicePixels="True">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="False" 
+                                          HorizontalScrollBarVisibility="Hidden" 
+                                          VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#B0B0B0"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#4B89F2"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="10,0">
+                <TextBlock Text="Subscription Plan" 
+                           FontSize="22" 
+                           FontWeight="SemiBold" 
+                           Margin="0,0,0,20"/>
+
+                <!-- Main Content Area for Plans -->
+                <TextBlock Text="This section will show the details of your current plan and available subscription options." 
+                           FontSize="16" 
+                           Foreground="#666" 
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,20"/>
+
+                <!-- Example of a simple plan card -->
+                <Border BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="8" Background="White" Padding="20" Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock Text="Current Plan: Standard" 
+                                   FontSize="18" 
+                                   FontWeight="SemiBold" 
+                                   Margin="0,0,0,10"/>
+                        <TextBlock Text="Details: Unlimited products, 5 staff accounts, basic reports." 
+                                   Foreground="#555" 
+                                   TextWrapping="Wrap"/>
+                        <TextBlock Text="Next Billing Date: August 22, 2025" 
+                                   Foreground="#555" 
+                                   Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

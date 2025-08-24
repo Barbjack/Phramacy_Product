@@ -1,0 +1,172 @@
+﻿<UserControl x:Class="Phramacy_Product.Views.Profile.AboutContent"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="700">
+    <UserControl.Resources>
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="BorderBrush" Value="#DCDCDC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="#F9F9F9"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="5" SnapsToDevicePixels="True">
+                            <Grid>
+                                <!-- The TextBlock that will act as the placeholder -->
+                                <TextBlock x:Name="PlaceholderTextBlock"
+                                           Text="{TemplateBinding Tag}"
+                                           Foreground="#AAA"
+                                           FontStyle="Italic"
+                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                           HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                           Margin="{TemplateBinding Padding}"
+                                           IsHitTestVisible="False"
+                                           Visibility="Collapsed"/>
+                                <!-- The actual ScrollViewer for the TextBox content -->
+                                <ScrollViewer x:Name="PART_ContentHost"
+                                              Focusable="False"
+                                              HorizontalScrollBarVisibility="Visible"
+                                              VerticalScrollBarVisibility="Visible"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- This trigger makes the placeholder visible when the TextBox is not focused and has no text -->
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsKeyboardFocused" Value="False"/>
+                                    <Condition Property="Text" Value=""/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="PlaceholderTextBlock" Property="Visibility" Value="Visible"/>
+                            </MultiTrigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#B0B0B0"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#4B89F2"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        
+            <StackPanel Margin="10,0">
+                <Rectangle Height="1" Fill="Brown" Margin="0,0,0,20"/>
+                <TextBlock Text="Create Profile"
+                           FontSize="22"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,5"/>
+
+                <Grid x:Name="FormGrid" Margin="0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="15"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,15">
+                        <Label Content="Pharmacy Name" Foreground="#444" FontWeight="SemiBold"/>
+                        <!-- Now using the Tag property for the placeholder text -->
+                        <TextBox x:Name="PharmacyNameTextBox" Tag="Enter pharmacy name" Style="{StaticResource ModernTextBoxStyle}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,15">
+                        <Label Content="Pharmacist Name" Foreground="#444" FontWeight="SemiBold"/>
+                        <TextBox x:Name="PharmacistNameTextBox" Tag="Enter pharmacist name" Style="{StaticResource ModernTextBoxStyle}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,15">
+                        <Label Content="Mobile Number" Foreground="#444" FontWeight="SemiBold"/>
+                        <TextBox x:Name="MobileTextBox" Tag="Enter mobile number" Style="{StaticResource ModernTextBoxStyle}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,15">
+                        <Label Content="Email" Foreground="#444" FontWeight="SemiBold"/>
+                        <TextBox x:Name="EmailTextBox"  Tag="Enter email" Style="{StaticResource ModernTextBoxStyle}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,0,15">
+                        <Label Content="Address" Foreground="#444" FontWeight="SemiBold"/>
+                        <TextBox x:Name="AddressTextBox" Tag="Enter address" Style="{StaticResource ModernTextBoxStyle}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,15">
+                        <Label Content="Address Line 2" Foreground="#444" FontWeight="SemiBold"/>
+                        <TextBox x:Name="Address2TextBox" Tag="Enter address line 2" Style="{StaticResource ModernTextBoxStyle}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,0,15">
+                        <Label Content="Area" Foreground="#444" FontWeight="SemiBold"/>
+                        <TextBox x:Name="AreaTextBox" Tag="Enter area" Style="{StaticResource ModernTextBoxStyle}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,0,15">
+                        <Label Content="Pincode" Foreground="#444" FontWeight="SemiBold"/>
+                        <TextBox x:Name="PincodeTextBox" Tag="Enter pincode" Style="{StaticResource ModernTextBoxStyle}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="4" Grid.Column="0" Margin="0,0,0,15">
+                        <Label Content="City" Foreground="#444" FontWeight="SemiBold"/>
+                        <TextBox x:Name="CityTextBox" Tag="Enter city" Style="{StaticResource ModernTextBoxStyle}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="4" Grid.Column="2" Margin="0,0,0,15">
+                        <Label Content="State" Foreground="#444" FontWeight="SemiBold"/>
+                        <TextBox x:Name="StateTextBox" Tag="Enter state" Style="{StaticResource ModernTextBoxStyle}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="5" Grid.Column="0" Margin="0,0,0,15">
+                        <Label Content="Company Logo" Foreground="#444" FontWeight="SemiBold"/>
+                        <Border x:Name="CompanyLogoBorder" BorderBrush="#DCDCDC" BorderThickness="1" Height="100" CornerRadius="4" 
+        Background="#F8F8F8" AllowDrop="True" Drop="CompanyLogoBorder_Drop" 
+        MouseLeftButtonDown="CompanyLogoBorder_MouseLeftButtonDown">
+                            <Grid>
+                            <TextBlock x:Name="CompanyLogoPrompt" Text="Drag &amp; Drop or Select" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#444" FontWeight="SemiBold" FontStyle="Italic"/>
+                                <Image x:Name="CompanyLogoImage" Stretch="Uniform" Visibility="Collapsed"/>
+                            </Grid>
+                        </Border>
+
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="5" Grid.Column="2" Margin="0,0,0,15">
+                        <Label Content="Signature" Foreground="#444" FontWeight="SemiBold"/>
+                        <Border x:Name="SignatureBorder" BorderBrush="#DCDCDC" BorderThickness="1" Height="100" CornerRadius="4" 
+        Background="#F8F8F8" AllowDrop="True" Drop="SignatureBorder_Drop"
+        MouseLeftButtonDown="SignatureBorder_MouseLeftButtonDown">
+                            <Grid>
+                            <TextBlock x:Name="SignaturePrompt" FontWeight="SemiBold" Text="Drag &amp; Drop or Select" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#444" FontStyle="Italic"/>
+                                <Image x:Name="SignatureImage" Stretch="Uniform" Visibility="Collapsed"/>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+
+                <Button Content="Save Profile" 
+                        x:Name="SaveProfileButton"
+                        Click="SaveProfileButton_Click"
+                        HorizontalAlignment="Right"
+                        Margin="0,20,0,0"
+                        Width="150"
+                        Height="40"/>
+            </StackPanel>
+        
+    </Grid>
+</UserControl>

@@ -191,10 +191,14 @@
     </ApplicationDefinition>
     <Compile Include="DataModel\CustomerDetail.cs" />
     <Compile Include="DataModel\SalePdfInvoice.cs" />
+    <Compile Include="GlobalData.cs" />
     <Compile Include="MyFontResolver.cs" />
     <Compile Include="DataModel\SaleDetail.cs" />
     <Compile Include="DataModel\Medicine.cs" />
     <Compile Include="DataModel\SaleItemReturn.cs" />
+    <Compile Include="Views\Components\Dashboard.xaml.cs">
+      <DependentUpon>Dashboard.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Inventory\AddMedicineWindow.xaml.cs">
       <DependentUpon>AddMedicineWindow.xaml</DependentUpon>
     </Compile>
@@ -203,6 +207,37 @@
       <DependentUpon>MedicineInventory.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataModel\PharmaMedicine.cs" />
+    <Compile Include="Views\Profile\AboutContent.xaml.cs">
+      <DependentUpon>AboutContent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Profile\DocumentContent.xaml.cs">
+      <DependentUpon>DocumentContent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Profile\IntegrationsContent.xaml.cs">
+      <DependentUpon>IntegrationsContent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Profile\LicenseInputControl.xaml.cs">
+      <DependentUpon>LicenseInputControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Profile\PasswordContent.xaml.cs">
+      <DependentUpon>PasswordContent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\PharmacyProfile.cs" />
+    <Compile Include="Views\Profile\PlanContent.xaml.cs">
+      <DependentUpon>PlanContent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Profile\SecurityContent.xaml.cs">
+      <DependentUpon>SecurityContent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Profile\SettingContent.xaml.cs">
+      <DependentUpon>SettingContent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Profile\StaffContent.xaml.cs">
+      <DependentUpon>StaffContent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Profile\UserProfile.xaml.cs">
+      <DependentUpon>UserProfile.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Sales\PdfInvoiceGenerator.cs" />
     <Compile Include="Views\Sales\SaleReturn\DatabaseService.cs" />
     <Compile Include="Views\Sales\GenerateSaleInvoice\NewSalePage.xaml.cs">
@@ -245,6 +280,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Cards\UpcomingPdc.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Components\Dashboard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -298,6 +337,46 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Inventory\MedicineInventory.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Profile\AboutContent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Profile\DocumentContent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Profile\IntegrationsContent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Profile\LicenseInputControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Profile\PasswordContent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Profile\PlanContent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Profile\SecurityContent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Profile\SettingContent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Profile\StaffContent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Profile\UserProfile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -357,6 +436,10 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Assets\EpharmaLogin.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MaterialDesignThemes.4.0.0\build\MaterialDesignThemes.targets" Condition="Exists('..\packages\MaterialDesignThemes.4.0.0\build\MaterialDesignThemes.targets')" />

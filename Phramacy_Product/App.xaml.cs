@@ -16,14 +16,6 @@ namespace Phramacy_Product
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            // --- Temporary debug code ---
-            var assembly = Assembly.GetExecutingAssembly();
-            var resourceNames = assembly.GetManifestResourceNames();
-            System.Diagnostics.Debug.WriteLine("Embedded Resources:");
-            foreach (var name in resourceNames)
-            {
-                System.Diagnostics.Debug.WriteLine(name);
-            }
             GlobalFontSettings.FontResolver = new MyFontResolver();
         }
     }

@@ -32,9 +32,13 @@ namespace Phramacy_Product.Views.Components
         {
             NavigateToPage(new Views.Sales.SaleInvoices());
         }
+        private void NavigateToUserProfile(object sender, RoutedEventArgs e)
+        {
+            NavigateToPage(new Views.Profile.UserProfile());
+        }
         private void NavigateToPage(Page page)
         {
-            var mainWindow = Application.Current.MainWindow as MainWindow;
+            var mainWindow = Window.GetWindow(this) as Dashboard;
             if (mainWindow != null)
             {
                 var dashboard = mainWindow.FindName("DashboardContent") as UIElement;
@@ -50,7 +54,7 @@ namespace Phramacy_Product.Views.Components
         }
         private void Home(object sender, RoutedEventArgs e)
         {
-            var mainWindow = Application.Current.MainWindow as MainWindow;
+            var mainWindow = Window.GetWindow(this) as Dashboard;
             if (mainWindow != null)
             {
                 var dashboard = mainWindow.FindName("DashboardContent") as UIElement;
@@ -61,8 +65,19 @@ namespace Phramacy_Product.Views.Components
                     dashboard.Visibility = Visibility.Visible;
                     frame.Visibility = Visibility.Collapsed;
 
-                    // You might want to clear the frame history here if needed
                 }
+            }
+        }
+        private void Logout_Profile(object sender, RoutedEventArgs e)
+        {
+            MainWindow loginWindow = new MainWindow();
+            var currentDashboard = Window.GetWindow(this);
+            if (currentDashboard != null)
+            {
+                loginWindow.Show();
+                currentDashboard.Close();
+                
+                
             }
         }
     }

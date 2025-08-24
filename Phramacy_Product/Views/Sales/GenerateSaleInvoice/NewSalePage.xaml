@@ -54,14 +54,12 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Owner Dropdown -->
-                    <ComboBox Grid.Column="0" Margin="5" x:Name="formCreatedBy"
-                  materialDesign:HintAssist.Hint="Select Member"
-                  Style="{StaticResource MaterialDesignOutlinedComboBox}">
-                        <ComboBoxItem Content="Owner" IsSelected="True"/>
-                        <ComboBoxItem Content="Manager"/>
-                        <ComboBoxItem Content="Staff"/>
-                    </ComboBox>
-
+                    <TextBox Grid.Column="0" Margin="5" x:Name="formCreatedBy"
+         materialDesign:HintAssist.Hint="Created By"
+         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+         Text="{Binding SelectedMember}"
+         IsReadOnly="True"/>
+                    
                     <!-- Select Payment Dropdown -->
                     <ComboBox Grid.Column="1" Margin="5" x:Name="formPaymentType"
                          materialDesign:HintAssist.Hint="Select Payment"

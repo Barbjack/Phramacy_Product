@@ -20,9 +20,24 @@ namespace Phramacy_Product.Views.Sales
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["databaseConnection"].ConnectionString;
         private readonly List<Medicine> medicineBilling = new List<Medicine>();
         readonly SalesDBManager saleDBManager = new SalesDBManager();
+        private string selectedMember;
+
+        
+        public string SelectedMember
+        {
+            get { return selectedMember; }
+            set
+            {
+                selectedMember = value;
+                
+            }
+        }
         public NewSalePage()
         {
-            InitializeComponent();
+           
+             InitializeComponent();
+             this.selectedMember = GlobalData.LoggedInUser; 
+             this.DataContext = this;
 
         }
         // Adding Drug and making Bill of it
@@ -227,7 +242,7 @@ namespace Phramacy_Product.Views.Sales
             ValidateBinding(formCreateAt, DatePicker.SelectedDateProperty);
 
             // Add a check for other required fields not covered by binding
-            if (formCreatedBy.SelectedItem == null) isValid = false;
+            if (formCreatedBy.Text == null) isValid = false;
             if (formPaymentType.SelectedItem == null) isValid = false;
 
             return isValid;
@@ -276,7 +291,7 @@ namespace Phramacy_Product.Views.Sales
                 {
                     saleCmd.Parameters.AddWithValue("@BillDate", DBNull.Value);
                 }
-                string createdBy = (formCreatedBy.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? string.Empty;
+                string createdBy = formCreatedBy.Text;
                 string paymentType = formPaymentType.SelectedItem is ComboBoxItem item2 ? item2.Content.ToString() : string.Empty;
                 string gstOption = formGSTOption.SelectedItem is ComboBoxItem item3 ? item3.Content.ToString() : string.Empty;
 
@@ -551,7 +566,7 @@ namespace Phramacy_Product.Views.Sales
             formDocName.Clear();
             formPatientName.Clear();
             formPaymentType.SelectedItem = null;
-            formCreatedBy.SelectedItem = null;
+            formCreatedBy.Clear();
             formGSTOption.SelectedItem = null;
             formBillDate.SelectedDate = DateTime.Now;
             formCreateAt.SelectedDate = DateTime.Now;

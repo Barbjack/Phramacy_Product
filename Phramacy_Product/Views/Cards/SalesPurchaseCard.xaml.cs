@@ -22,7 +22,6 @@ using System.Windows.Shapes;
 
 namespace Phramacy_Product.Views.Cards
 {
-
     public partial class SalesPurchaseCard : UserControl
     {
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["databaseConnection"].ConnectionString;

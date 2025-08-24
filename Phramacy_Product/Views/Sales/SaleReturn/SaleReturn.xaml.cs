@@ -8,12 +8,27 @@ namespace Phramacy_Product.Views.Sales
     public partial class SaleReturn : Page
     {
         private readonly SaleReturnViewModel viewModel;
+        private string selectedMember;
 
+
+        public string SelectedMember
+        {
+            get { return selectedMember; }
+            set
+            {
+                selectedMember = value;
+
+            }
+        }
+       
+            
         public SaleReturn()
         {
             InitializeComponent();
+            this.selectedMember = GlobalData.LoggedInUser;
             viewModel = new SaleReturnViewModel();
-            this.DataContext = viewModel;
+            
+            this.DataContext = this;
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
@@ -24,12 +39,12 @@ namespace Phramacy_Product.Views.Sales
         [System.Obsolete]
         private void SubmitReturnButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ownerComboBox.SelectedItem == null)
+            if (formCreatedBy.Text == null)
             {
                 MessageBox.Show("Please select an owner before proceeding.");
                 return;
             }
-            string createdBy = ((System.Windows.Controls.ComboBoxItem)ownerComboBox.SelectedItem).Content.ToString();
+            string createdBy = formCreatedBy.Text;
             var itemsToReturn = viewModel.PagedSaleItems.Where(i => i.IsSelected && i.ReturnQty > 0).ToList();
             if (itemsToReturn.Any())
             {

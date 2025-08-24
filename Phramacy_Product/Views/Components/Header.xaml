@@ -142,9 +142,9 @@
                     <MenuItem.Header>
                         <materialDesign:PackIcon Kind="AccountCircle" Width="24" Height="24" Foreground="White"/>
                     </MenuItem.Header>
-                    <MenuItem Header="Profile" Style="{StaticResource SubMenuItemStyle}"/>
+                    <MenuItem Header="Profile"  Click="NavigateToUserProfile" Style="{StaticResource SubMenuItemStyle}"/>
                     <MenuItem Header="Settings" Style="{StaticResource SubMenuItemStyle}"/>
-                    <MenuItem Header="Logout" Style="{StaticResource SubMenuItemStyle}"/>
+                    <MenuItem Header="Logout" Click="Logout_Profile" Style="{StaticResource SubMenuItemStyle}"/>
                 </MenuItem>
             </Menu>
         </DockPanel>

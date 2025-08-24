@@ -3,36 +3,44 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Phramacy_Product"
-        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
-        xmlns:components="clr-namespace:Phramacy_Product.Views.Components"
-        xmlns:cards="clr-namespace:Phramacy_Product.Views.Cards"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:local="clr-namespace:Phramacy_Product.Views"
         mc:Ignorable="d"
-        Title="Dashboard" Height="800" Width="1400"
-        Background="{DynamicResource MaterialDesignPaper}">
-    <DockPanel>
-        <components:Header DockPanel.Dock="Top"/>
-        <!-- Content Grid with Frame and Dashboard -->
-        <Grid>
-            <!-- Dashboard Section -->
-            <ScrollViewer VerticalScrollBarVisibility="Auto" x:Name="DashboardContent">
-                <UniformGrid Columns="3" Rows="3" Margin="10"
-                             HorizontalAlignment="Stretch" VerticalAlignment="Top">
-                    <cards:SalesPurchaseCard/>
-                    <cards:SalesMargin/>
-                    <cards:ExpiringItemCard/>
-                    <cards:CollectDueAmount/>
-                    <cards:PayDueAmount/>
-                    <cards:StockOverview/>
-                    <cards:StaffOverview/>
-                    <cards:UpcomingPdc/>
-                </UniformGrid>
-            </ScrollViewer>
-            <!-- Navigation Frame (initially hidden) -->
-            <Frame x:Name="MainFrame"
-                   NavigationUIVisibility="Hidden"
-                   Visibility="Collapsed"/>
-        </Grid>
-    </DockPanel>
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="#1a237e">
+            <Image Source="/Assets/EpharmaLogin.png" Stretch="Uniform" Width="1000" />
+        </Border>
+
+        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="50">
+            <TextBlock Text="Login" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,30" />
+
+            <TextBlock Text="Mobile Number" Margin="0,0,0,5" />
+            <TextBox x:Name="MobileNumberTextBox" Padding="5" />
+
+            <TextBlock Text="Password" Margin="0,15,0,5" />
+            <PasswordBox x:Name="PasswordBox" Padding="5" />
+
+            <Button x:Name="LoginButton" Height="50" Content="Login" Margin="0,30,0,10" Padding="10" Background="#3f51b5" Foreground="White" Click="LoginButton_Click" />
+            <TextBlock Text="Forgot Password?" HorizontalAlignment="Center" Foreground="#3f51b5" Margin="0,5,0,20" Cursor="Hand" />
+
+            <TextBlock HorizontalAlignment="Center">
+                <Run Text="Do you own a Pharmacy? " />
+                <Hyperlink NavigateUri="#">
+                    <Run Text="Join as Chemist" />
+                </Hyperlink>
+            </TextBlock>
+            <StackPanel Width="100">
+                <Button Margin="10 20" Style="{StaticResource MaterialDesignFloatingActionButton}" Background="{x:Null}"
+                ToolTip="Close" x:Name="btnExit" Click="btnExit_Click">
+                    <materialDesign:PackIcon Kind="Close" Foreground="Red" Width="30" Height="30" />
+                </Button>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
 </Window>
