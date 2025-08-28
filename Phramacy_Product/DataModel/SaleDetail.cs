@@ -20,6 +20,8 @@ namespace Phramacy_Product.DataModel
         public decimal TotalAmount { get; set; }
         public decimal PaidAmount { get; set; }
         public String PaymentStatus { get; set; }
+        public String PaymentType { get; set; }
+
         public String BillPath { get; set; }
         private int CustomerNumber { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;

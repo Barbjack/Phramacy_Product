@@ -42,7 +42,7 @@ namespace Phramacy_Product.Views.Sales
         public int TotalPages
         {
             get => totalPages;
-            private set // Changed to private set to control updates internally
+            private set 
             {
                 if (totalPages != value)
                 {
@@ -97,6 +97,7 @@ namespace Phramacy_Product.Views.Sales
                 }
 
             }
+
             catch (SqlException ex)
             {
                 MessageBox.Show($"Database error: {ex.Message}");
@@ -360,13 +361,13 @@ namespace Phramacy_Product.Views.Sales
 
         private void NewSaleButton_Click(object sender, RoutedEventArgs e)
         {
-            var newSalePage = new NewSalePage();
+            var newSalePage = new GenerateSaleInvoice.NewSalePage();
             NavigationService?.Navigate(newSalePage);
         }
 
         private void SaleReturn_Click(object sender, RoutedEventArgs e)
         {
-            var newSaleReturn = new SaleReturn();
+            var newSaleReturn = new SaleReturn.SaleReturn();
             NavigationService?.Navigate(newSaleReturn);
         }
     }

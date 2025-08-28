@@ -1,5 +1,4 @@
 ﻿using Phramacy_Product.DataModel;
-using Phramacy_Product.Views.Sales.GenerateSaleInvoice;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -7,7 +6,7 @@ using System.Data.SqlClient;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Phramacy_Product.Views.Sales
+namespace Phramacy_Product.Views.Sales.SaleReturn
 {
     public class DatabaseService
     {
@@ -83,7 +82,7 @@ namespace Phramacy_Product.Views.Sales
             return items;
         }
 
-        public void ProcessSaleReturn(List<SaleItemReturn> returnedItems, SaleDetail currentSale,string createdBy)
+        public void ProcessSaleReturn(List<SaleItemReturn> returnedItems, SaleDetail currentSale, string createdBy)
         {
             if (returnedItems == null || returnedItems.Count == 0 || currentSale == null)
             {
@@ -147,7 +146,7 @@ namespace Phramacy_Product.Views.Sales
                         returnCommand.ExecuteNonQuery();
 
                         // 4. Update SaleDetails: Adjust total and paid amounts
-                        
+
 
                         string updateSaleDetailsQuery = "UPDATE SaleDetails SET TotalAmount = TotalAmount - @returnAmount, PaidAmount = PaidAmount - @actualReturnAmount WHERE SaleID = @saleId;";
                         var saleDetailsCommand = new SqlCommand(updateSaleDetailsQuery, connection, transaction);
@@ -199,6 +198,6 @@ namespace Phramacy_Product.Views.Sales
                 }
             }
         }
-       
+
     }
 }

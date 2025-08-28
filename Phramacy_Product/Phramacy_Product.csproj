@@ -190,6 +190,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DataModel\CustomerDetail.cs" />
+    <Compile Include="DataModel\DistributorItems.cs" />
     <Compile Include="DataModel\SalePdfInvoice.cs" />
     <Compile Include="GlobalData.cs" />
     <Compile Include="MyFontResolver.cs" />
@@ -199,6 +200,12 @@
     <Compile Include="Views\Components\Dashboard.xaml.cs">
       <DependentUpon>Dashboard.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Distributors\AddNewDistributor.xaml.cs">
+      <DependentUpon>AddNewDistributor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Distributors\DistributorsPage.xaml.cs">
+      <DependentUpon>DistributorsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Inventory\AddMedicineWindow.xaml.cs">
       <DependentUpon>AddMedicineWindow.xaml</DependentUpon>
     </Compile>
@@ -207,6 +214,9 @@
       <DependentUpon>MedicineInventory.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataModel\PharmaMedicine.cs" />
+    <Compile Include="Views\Payment\PaymentDetail.xaml.cs">
+      <DependentUpon>PaymentDetail.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Profile\AboutContent.xaml.cs">
       <DependentUpon>AboutContent.xaml</DependentUpon>
     </Compile>
@@ -238,15 +248,15 @@
     <Compile Include="Views\Profile\UserProfile.xaml.cs">
       <DependentUpon>UserProfile.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Sales\PdfInvoiceGenerator.cs" />
-    <Compile Include="Views\Sales\SaleReturn\DatabaseService.cs" />
     <Compile Include="Views\Sales\GenerateSaleInvoice\NewSalePage.xaml.cs">
       <DependentUpon>NewSalePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Sales\PdfInvoiceGenerator.cs" />
     <Compile Include="Views\Sales\GenerateSaleInvoice\SalesDBManager.cs" />
     <Compile Include="Views\Sales\SaleInvoices.xaml.cs">
       <DependentUpon>SaleInvoices.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Sales\SaleReturn\DatabaseServices.cs" />
     <Compile Include="Views\Sales\SaleReturn\SaleReturn.xaml.cs">
       <DependentUpon>SaleReturn.xaml</DependentUpon>
     </Compile>
@@ -332,11 +342,23 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\Distributors\AddNewDistributor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Distributors\DistributorsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Inventory\AddMedicineWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Inventory\MedicineInventory.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Payment\PaymentDetail.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -437,9 +459,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="SaleInvoices\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Assets\EpharmaLogin.png" />
   </ItemGroup>

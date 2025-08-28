@@ -6,12 +6,11 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-
 namespace Phramacy_Product.Views.Profile
 {
     public partial class LicenseInputControl : UserControl
     {
-        private byte[] documentData;
+        private string filePath;
         private string documentName;
         private string documentType;
 
@@ -45,11 +44,11 @@ namespace Phramacy_Product.Views.Profile
 
             if (openFileDialog.ShowDialog() == true)
             {
-                string filePath = openFileDialog.FileName;
+                filePath = openFileDialog.FileName;
                 documentName = Path.GetFileName(filePath);
-                documentType = Path.GetExtension(filePath);
-                documentType = documentType.Substring(1);
-                documentData = File.ReadAllBytes(filePath);
+                documentType = (Path.GetExtension(filePath)).Substring(1);
+                
+                //documentData = File.ReadAllBytes(filePath);
 
                 fileNameTextBlock.Text = documentName;
                 fileNameTextBlock.Visibility = Visibility.Visible;
@@ -65,7 +64,7 @@ namespace Phramacy_Product.Views.Profile
                 return;
             }
 
-            if (documentData == null || documentData.Length == 0)
+            if (filePath == null || filePath.Length == 0)
             {
                 MessageBox.Show("Please upload a file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -91,7 +90,7 @@ namespace Phramacy_Product.Views.Profile
                         command.Parameters.AddWithValue("@user_id", GlobalData.userId); 
                         command.Parameters.AddWithValue("@document_name", documentName);
                         command.Parameters.AddWithValue("@document_type", documentType);
-                        command.Parameters.AddWithValue("@document_data", documentData);
+                        command.Parameters.AddWithValue("@document_data", filePath);
                         command.Parameters.AddWithValue("@doc_expiry", expiryDate ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@created_at", DateTime.Now);
                         command.Parameters.AddWithValue("@license_number", licenseNumber);
@@ -116,7 +115,7 @@ namespace Phramacy_Product.Views.Profile
             fileNameTextBlock.Text = string.Empty;
             fileNameTextBlock.Visibility = Visibility.Collapsed;
             plusSignTextBlock.Visibility = Visibility.Visible;
-            documentData = null;
+            filePath = null;
             documentName = null;
             documentType = null;
         }

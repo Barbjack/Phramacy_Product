@@ -7,7 +7,6 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              Height="50">
-
     <UserControl.Resources>
         <DropShadowEffect x:Key="DropShadow" BlurRadius="8" ShadowDepth="2" Direction="270" Color="Black" Opacity="0.2"/>
         <Style x:Key="TopLevelMenuItemStyle" TargetType="MenuItem">
@@ -84,17 +83,26 @@
                         </Grid>
                     </MenuItem.Header>
                     <MenuItem Header="Sale Invoices" Click="NavigateToSaleInvoices" Style="{StaticResource SubMenuItemStyle}"/>
-                    <MenuItem Header="Payment In" Style="{StaticResource SubMenuItemStyle}"/>
-                    <MenuItem Header="Sale Order" Style="{StaticResource SubMenuItemStyle}"/>
-                    <MenuItem Header="Sale Return" Style="{StaticResource SubMenuItemStyle}"/>
+                    <MenuItem Header="Payment In" Click="RevenueDetail_Click" Style="{StaticResource SubMenuItemStyle}"/>
+                    <MenuItem Header="Generate Invoice" Click="GenerateNewInvoice_Click" Style="{StaticResource SubMenuItemStyle}"/>
+                    <MenuItem Header="Sale Return" Click="ReturnSale_Click" Style="{StaticResource SubMenuItemStyle}"/>
                 </MenuItem>
-                <!-- Inventory -->
+                <!-- Inventory -  -->
                 <MenuItem Style="{StaticResource TopLevelMenuItemStyle}"
-          Click="NavigateToInventory">
+                      Click="NavigateToInventory">
                     <MenuItem.Header>
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Warehouse" Width="20" Height="20" Foreground="White" Margin="0,3,7,0"/>
                             <TextBlock Text="Inventory" Foreground="White" FontWeight="Bold" Margin="2,5,0,5"/>
+                        </StackPanel>
+                    </MenuItem.Header>
+                </MenuItem>
+                <MenuItem Style="{StaticResource TopLevelMenuItemStyle}"
+                      Click="NavigateToDistributors">
+                    <MenuItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Users" Width="20" Height="20" Foreground="White" Margin="0,3,7,0"/>
+                            <TextBlock Text="Distributors" Foreground="White" FontWeight="Bold" Margin="2,5,0,5"/>
                         </StackPanel>
                     </MenuItem.Header>
                 </MenuItem>

@@ -1,0 +1,65 @@
+﻿<Window x:Class="Phramacy_Product.Views.Distributors.AddNewDistributor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Phramacy_Product.Views.Distributors"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStyle="None"
+        BorderBrush="#3B4252" BorderThickness="1"
+        ResizeMode="NoResize"
+        Title="AddNewDistributor" Height="300" Width="450">
+    <Border Background="White" CornerRadius="10" Padding="20">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="Distributor Form" FontWeight="Bold" FontSize="18" Margin="0,0,0,15"/>
+
+            <Grid Grid.Row="1" VerticalAlignment="Top" Margin="0,10,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                   
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,10">
+                    <TextBlock Text="Distributor Name" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+                    <TextBox x:Name="DistributorNameTextBox" Grid.Column="1" Padding="5" materialDesign:HintAssist.Hint="Enter distributor name"/>
+                </StackPanel>
+                <StackPanel Grid.Row="0" Grid.Column="1" Margin="10,0,0,10">
+                    <TextBlock Text="Contact Number" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+                    <TextBox x:Name="ContactNumberTextBox" Grid.Column="1" Padding="5" materialDesign:HintAssist.Hint="Enter contact number"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,10">
+                    <TextBlock Text="Email" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+                    <TextBox x:Name="EmailTextBox" Grid.Column="1" Padding="5" materialDesign:HintAssist.Hint="Enter email address"/>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="1" Margin="10,0,0,10">
+                    <TextBlock Text="Address" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+                    <TextBox x:Name="AddressTextBox" Grid.Column="1" Padding="5" materialDesign:HintAssist.Hint="Enter address"/>
+                </StackPanel>
+
+            </Grid>
+
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                <Button Content="Cancel" Click="CancelButton_Click" Background="#F0F2F5" Foreground="Black" Margin="0,0,10,0"/>
+                <Button Content="Save"  Click="SaveButton_Click" Background="#3A5389" Foreground="White" BorderBrush="#3A5389"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
+<!--"-->
+    

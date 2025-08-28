@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using Phramacy_Product.DataModel;
 
-namespace Phramacy_Product.Views.Sales
+namespace Phramacy_Product.Views.Sales.SaleReturn
 {
     public class SaleReturnViewModel : INotifyPropertyChanged
     {

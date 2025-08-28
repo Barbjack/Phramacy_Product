@@ -1,9 +1,11 @@
 ﻿using Phramacy_Product.DataModel;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 using System.Windows;
 using System.Windows.Controls;
-namespace Phramacy_Product.Views.Sales
+using Phramacy_Product.Views.Sales.SaleReturn;
+namespace Phramacy_Product.Views.Sales.SaleReturn
 {
     public partial class SaleReturn : Page
     {
@@ -20,14 +22,14 @@ namespace Phramacy_Product.Views.Sales
 
             }
         }
-       
-            
+
+
         public SaleReturn()
         {
             InitializeComponent();
             this.selectedMember = GlobalData.LoggedInUser;
             viewModel = new SaleReturnViewModel();
-            
+
             this.DataContext = this;
         }
 
@@ -49,8 +51,8 @@ namespace Phramacy_Product.Views.Sales
             if (itemsToReturn.Any())
             {
                 try
-                {   
-                    viewModel.DbService.ProcessSaleReturn(itemsToReturn, viewModel.CurrentSale,createdBy);
+                {
+                    viewModel.DbService.ProcessSaleReturn(itemsToReturn, viewModel.CurrentSale, createdBy);
                     MessageBox.Show("Return submitted successfully!");
                     var updatedSaleItems = viewModel.DbService.GetSaleItemsBySaleId(viewModel.CurrentSale.SaleID);
                     var invoiceData = new SalePdfInvoice
@@ -59,9 +61,9 @@ namespace Phramacy_Product.Views.Sales
                         CustomerName = viewModel.CurrentSale.CustomerName,
                         Date = (System.DateTime)viewModel.CurrentSale.BillDate,
                         PaymentType = viewModel.CurrentSale.PaymentStatus
-                        
+
                     };
-                   string billPath = PdfInvoiceGenerator.GenerateRevisedInvoice(invoiceData, updatedSaleItems, itemsToReturn);
+                    string billPath = PdfInvoiceGenerator.GenerateRevisedInvoice(invoiceData, updatedSaleItems, itemsToReturn);
                     viewModel.PagedSaleItems.Clear();
                     viewModel.CurrentSale = null;
                     viewModel.ReturnTotal = 0;

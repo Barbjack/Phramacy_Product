@@ -1,5 +1,6 @@
 ﻿using Phramacy_Product.DataModel;
-using Phramacy_Product.Views.Sales.GenerateSaleInvoice;
+using Phramacy_Product.Views.Sales;
+//using Phramacy_Product.Views.Sales.GenerateSaleInvoice;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -13,7 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 //using System.Text.RegularExpressions;
-namespace Phramacy_Product.Views.Sales
+namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
 {
     public partial class NewSalePage : Page
     {
@@ -22,21 +23,21 @@ namespace Phramacy_Product.Views.Sales
         readonly SalesDBManager saleDBManager = new SalesDBManager();
         private string selectedMember;
 
-        
+
         public string SelectedMember
         {
             get { return selectedMember; }
             set
             {
                 selectedMember = value;
-                
+
             }
         }
         public NewSalePage()
         {
-             InitializeComponent();
-             this.selectedMember = GlobalData.LoggedInUser; 
-             this.DataContext = this;
+            InitializeComponent();
+            this.selectedMember = GlobalData.LoggedInUser;
+            this.DataContext = this;
         }
         private void AddBill_CustomerDetails(object sender, RoutedEventArgs e)
         {

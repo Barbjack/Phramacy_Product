@@ -14,9 +14,6 @@ using System.Windows.Shapes;
 
 namespace Phramacy_Product.Views.Components
 {
-    /// <summary>
-    /// Interaction logic for Dashboard.xaml
-    /// </summary>
     public partial class Dashboard : Window
     {
         public Dashboard()

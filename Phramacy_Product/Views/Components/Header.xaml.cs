@@ -24,6 +24,10 @@ namespace Phramacy_Product.Views.Components
         {
             InitializeComponent();
         }
+        private void NavigateToDistributors(object sender, RoutedEventArgs e)
+        {
+            NavigateToPage(new Views.Distributors.DistributorsPage());
+        }
         private void NavigateToInventory(object sender, RoutedEventArgs e)
         {
             NavigateToPage(new Views.Inventory.MedicineInventory());
@@ -35,6 +39,18 @@ namespace Phramacy_Product.Views.Components
         private void NavigateToUserProfile(object sender, RoutedEventArgs e)
         {
             NavigateToPage(new Views.Profile.UserProfile());
+        }
+        private void GenerateNewInvoice_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToPage(new Views.Sales.GenerateSaleInvoice.NewSalePage());
+        }
+        private void ReturnSale_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToPage(new Views.Sales.SaleReturn.SaleReturn());
+        }
+        private void RevenueDetail_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToPage(new Views.Payment.PaymentDetail());
         }
         private void NavigateToPage(Page page)
         {
@@ -52,6 +68,7 @@ namespace Phramacy_Product.Views.Components
             }
 
         }
+
         private void Home(object sender, RoutedEventArgs e)
         {
             var mainWindow = Window.GetWindow(this) as Dashboard;
