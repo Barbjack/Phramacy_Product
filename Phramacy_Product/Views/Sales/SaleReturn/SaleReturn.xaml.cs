@@ -9,28 +9,12 @@ namespace Phramacy_Product.Views.Sales.SaleReturn
 {
     public partial class SaleReturn : Page
     {
-        private readonly SaleReturnViewModel viewModel;
-        private string selectedMember;
-
-
-        public string SelectedMember
-        {
-            get { return selectedMember; }
-            set
-            {
-                selectedMember = value;
-
-            }
-        }
-
-
+        private readonly SaleReturnViewModel viewModel = new SaleReturnViewModel();
         public SaleReturn()
         {
             InitializeComponent();
-            this.selectedMember = GlobalData.LoggedInUser;
-            viewModel = new SaleReturnViewModel();
-
-            this.DataContext = this;
+            viewModel.SelectedMember = GlobalData.LoggedInUser;
+            this.DataContext = viewModel;
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)

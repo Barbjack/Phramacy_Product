@@ -1,0 +1,66 @@
+﻿<Page x:Class="Phramacy_Product.Views.Purchase.PurchaseOrders.PurchaseOrder"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Phramacy_Product.Views.Purchase.PurchaseOrders"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="PurchaseOrder">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Margin="15" Padding="10" Background="#F5F8FF" CornerRadius="5">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock  
+                              x:Name="HeaderTextBlock" 
+                           FontSize="24" 
+                           FontWeight="Bold"
+                           Foreground="DarkBlue"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Row="1" Margin="20,0,20,20" Background="#F5F8FF" CornerRadius="5">
+                <DataGrid x:Name="PurchaseOrderDataGrid" 
+                      AutoGenerateColumns="False" 
+                      IsReadOnly="True"
+                      HeadersVisibility="Column"
+                      FontSize="15"
+                      Margin="10,0"
+                      BorderBrush="Transparent">
+                    <DataGrid.Resources>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="Background" Value="DarkBlue"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="Padding" Value="10,5"/>
+                        <Setter Property="FontSize" Value="18"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="BorderBrush" Value="Transparent"/>
+                        </Style>
+                    
+                        <Style TargetType="{x:Type DataGridRow}">
+                            <!--Setter Property="BorderBrush" Value="LightGray"/-->
+                            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                        </Style>
+                   
+                   
+                        <!--Style TargetType="{x:Type DataGridCell}">
+                            <Setter Property="BorderBrush" Value="LightGray"/>
+                            <Setter Property="BorderThickness" Value="1,0,0,0"/>
+                        </Style-->
+                   
+                </DataGrid.Resources>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Purchase Order ID" Binding="{Binding PurchaseOrderID}" Width="*"/>
+                        <DataGridTextColumn Header="Created At" Binding="{Binding CreatedAt, StringFormat='{}{0:dd/MM/yyyy}'}" Width="*"/>
+                        <DataGridTextColumn Header="Items Count" Binding="{Binding ItemsCount}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
+    </Page>

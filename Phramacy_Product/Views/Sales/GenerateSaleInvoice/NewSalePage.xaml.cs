@@ -1,6 +1,4 @@
 ﻿using Phramacy_Product.DataModel;
-using Phramacy_Product.Views.Sales;
-//using Phramacy_Product.Views.Sales.GenerateSaleInvoice;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -13,7 +11,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
-//using System.Text.RegularExpressions;
 namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
 {
     public partial class NewSalePage : Page
@@ -601,7 +598,7 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 return new ValidationResult(false, "This field is required.");
             }
             return ValidationResult.ValidResult;
-        }
+        } 
     }
     public class PositiveNumberValidationRule : ValidationRule
     {

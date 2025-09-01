@@ -23,7 +23,7 @@ namespace Phramacy_Product.DataModel
         public String PaymentType { get; set; }
 
         public String BillPath { get; set; }
-        private int CustomerNumber { get; set; }
+       
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {

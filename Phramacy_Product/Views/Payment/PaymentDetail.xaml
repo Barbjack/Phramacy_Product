@@ -104,7 +104,7 @@
                 </DataGrid>
             </Grid>
         </materialDesign:Card>
-        <Grid VerticalAlignment="Bottom" Margin="0,8,0,0">
+        <Grid VerticalAlignment="Bottom" Margin="0,0,0,10">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
                 <Button Background="DarkBlue" Content="&lt;&lt;" Click="FirstPageClick" Margin="0,0,5,0"/>
                 <Button Background="DarkBlue" Content="&lt;" Click="PreviousPageClick" Margin="0,0,5,0"/>

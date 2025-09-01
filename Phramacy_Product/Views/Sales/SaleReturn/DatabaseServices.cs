@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace Phramacy_Product.Views.Sales.SaleReturn
 {
-    public class DatabaseService
+    public class DatabaseServices
     {
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["databaseConnection"].ConnectionString;
 
@@ -33,7 +33,7 @@ namespace Phramacy_Product.Views.Sales.SaleReturn
                             BillDate = reader.IsDBNull(3) ? DateTime.MinValue : reader.GetDateTime(3),
                             TotalAmount = reader.GetDecimal(4),
                             PaidAmount = reader.GetDecimal(5),
-                            PaymentStatus = reader.IsDBNull(5) ? "Cash" : reader.GetString(6)
+                            PaymentStatus = reader.IsDBNull(6) ? "Cash" : reader.GetString(6)
                         };
                     }
                 }

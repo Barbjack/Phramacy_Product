@@ -11,12 +11,22 @@ namespace Phramacy_Product.Views.Sales.SaleReturn
 {
     public class SaleReturnViewModel : INotifyPropertyChanged
     {
-        public readonly DatabaseService DbService = new DatabaseService();
+        public readonly DatabaseServices DbService = new DatabaseServices();
         private SaleDetail currentSale;
         private string txtBillNumber;
         private decimal returnTotal;
         public ObservableCollection<SaleItemReturn> PagedSaleItems { get; private set; } = new ObservableCollection<SaleItemReturn>();
 
+        private string selectedMember;
+        public string SelectedMember
+        {
+            get { return selectedMember; }
+            set
+            {
+                selectedMember = value;
+
+            }
+        }
         public string TxtBillNumber
         {
             get => txtBillNumber;

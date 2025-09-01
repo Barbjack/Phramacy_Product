@@ -52,6 +52,22 @@ namespace Phramacy_Product.Views.Components
         {
             NavigateToPage(new Views.Payment.PaymentDetail());
         }
+        private void NavigateToPurchaseBills(object sender,RoutedEventArgs e)
+        {
+            NavigateToPage(new Views.Purchase.PurchaseDetails.PurchaseBills());
+        }
+        private void NavigateToPaymentOut(object sender, RoutedEventArgs e)
+        {
+            NavigateToPage(new Views.Purchase.PurchasePayment.PaymentOut());
+        }
+        private void NavigateToPurchaseOrder(object sender,RoutedEventArgs e)
+        {
+            NavigateToPage(new Views.Purchase.PurchaseOrders.PurchaseOrder());
+        }
+        private void NavigateToPurchaseReturn(object sender, RoutedEventArgs e)
+        {
+            NavigateToPage(new Views.Purchase.PurchaseReturn.PurchaseReturn());
+        }
         private void NavigateToPage(Page page)
         {
             var mainWindow = Window.GetWindow(this) as Dashboard;
@@ -92,9 +108,7 @@ namespace Phramacy_Product.Views.Components
             if (currentDashboard != null)
             {
                 loginWindow.Show();
-                currentDashboard.Close();
-                
-                
+                currentDashboard.Close();    
             }
         }
     }

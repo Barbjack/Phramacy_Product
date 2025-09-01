@@ -43,6 +43,7 @@ namespace Phramacy_Product.Views.Cards
         }
         private void LoadData(int days)
         {
+            days = days + 1;
             decimal totalSales = 0;
             int salesCount = 0;
 

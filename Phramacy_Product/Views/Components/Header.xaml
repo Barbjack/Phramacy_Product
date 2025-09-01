@@ -87,6 +87,22 @@
                     <MenuItem Header="Generate Invoice" Click="GenerateNewInvoice_Click" Style="{StaticResource SubMenuItemStyle}"/>
                     <MenuItem Header="Sale Return" Click="ReturnSale_Click" Style="{StaticResource SubMenuItemStyle}"/>
                 </MenuItem>
+                <!-- Purchase-->
+                <MenuItem Style="{StaticResource TopLevelMenuItemStyle}">
+                    <MenuItem.Header>
+                        <Grid Background="Transparent">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Cart" Width="20" Height="20" Foreground="White" Margin="0,0,5,0"/>
+                                <TextBlock Text="Purchase" Foreground="White" FontWeight="Bold"/>
+                                <materialDesign:PackIcon Kind="ChevronDown" Width="16" Height="16" Foreground="White" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </MenuItem.Header>
+                    <MenuItem Header="Purchase Bills" Click="NavigateToPurchaseBills" Style="{StaticResource SubMenuItemStyle}"/>
+                    <MenuItem Header="Payment Out" Click="NavigateToPaymentOut" Style="{StaticResource SubMenuItemStyle}"/>
+                    <MenuItem Header="Purchase Order" Click="NavigateToPurchaseOrder" Style="{StaticResource SubMenuItemStyle}"/>
+                    <MenuItem Header="Purchase Return" Click="NavigateToPurchaseReturn" Style="{StaticResource SubMenuItemStyle}"/>
+                </MenuItem>
                 <!-- Inventory -  -->
                 <MenuItem Style="{StaticResource TopLevelMenuItemStyle}"
                       Click="NavigateToInventory">
@@ -108,7 +124,7 @@
                 </MenuItem>
 
                 <!-- Reports -->
-                <MenuItem Style="{StaticResource TopLevelMenuItemStyle}">
+                <!--MenuItem Style="{StaticResource TopLevelMenuItemStyle}">
                     <MenuItem.Header>
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="ChartBar" Width="20" Height="20" Foreground="White" Margin="0,0,5,0"/>
@@ -118,10 +134,10 @@
                     </MenuItem.Header>
                     <MenuItem Header="Daily Report" Style="{StaticResource SubMenuItemStyle}"/>
                     <MenuItem Header="Monthly Report" Style="{StaticResource SubMenuItemStyle}"/>
-                </MenuItem>
+                </MenuItem-->
 
                 <!-- More -->
-                <MenuItem Style="{StaticResource TopLevelMenuItemStyle}">
+                <!--MenuItem Style="{StaticResource TopLevelMenuItemStyle}">
                     <MenuItem.Header>
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="EllipsisHorizontal" Width="20" Height="20" Foreground="White"  Margin="0,0,5,0"/>
@@ -129,7 +145,7 @@
                             <materialDesign:PackIcon Kind="ChevronDown" Width="16" Height="16" Foreground="White" Margin="5,0,0,0"/>
                         </StackPanel>
                     </MenuItem.Header>
-                </MenuItem>
+                </MenuItem-->
             </Menu>
 
             <!-- Right-aligned user menu -->
@@ -158,3 +174,4 @@
         </DockPanel>
     </materialDesign:ColorZone>
 </UserControl>
+    
