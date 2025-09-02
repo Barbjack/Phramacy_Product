@@ -190,6 +190,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DataModel\CustomerDetail.cs" />
+    <Compile Include="DataModel\DistributorDetail.cs" />
     <Compile Include="DataModel\DistributorItems.cs" />
     <Compile Include="DataModel\OrderQuantity.cs" />
     <Compile Include="DataModel\PurchaseDetail.cs" />
@@ -254,6 +255,10 @@
     <Compile Include="Views\Purchase\PurchaseDetails\PurchaseBills.xaml.cs">
       <DependentUpon>PurchaseBills.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Purchase\PurchaseGenerate\NewPurchaseGenerate.xaml.cs">
+      <DependentUpon>NewPurchaseGenerate.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Purchase\PurchaseGenerate\PurchaseDBManager.cs" />
     <Compile Include="Views\Purchase\PurchaseOrders\PurchaseOrder.xaml.cs">
       <DependentUpon>PurchaseOrder.xaml</DependentUpon>
     </Compile>
@@ -422,6 +427,10 @@
     <Page Include="Views\Purchase\PurchaseDetails\PurchaseBills.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Purchase\PurchaseGenerate\NewPurchaseGenerate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Purchase\PurchaseOrders\PurchaseOrder.xaml">
       <SubType>Designer</SubType>

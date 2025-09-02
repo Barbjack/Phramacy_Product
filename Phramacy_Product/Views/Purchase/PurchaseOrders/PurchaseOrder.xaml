@@ -20,7 +20,7 @@
                               x:Name="HeaderTextBlock" 
                            FontSize="24" 
                            FontWeight="Bold"
-                           Foreground="DarkBlue"/>
+                           Foreground="OrangeRed"/>
                 </StackPanel>
             </Border>
 
@@ -34,7 +34,7 @@
                       BorderBrush="Transparent">
                     <DataGrid.Resources>
                         <Style TargetType="{x:Type DataGridColumnHeader}">
-                            <Setter Property="Background" Value="DarkBlue"/>
+                            <Setter Property="Background" Value="OrangeRed"/>
                             <Setter Property="Foreground" Value="White"/>
                             <Setter Property="FontWeight" Value="Bold"/>
                             <Setter Property="Padding" Value="10,5"/>

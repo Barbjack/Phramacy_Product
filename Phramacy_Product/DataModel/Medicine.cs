@@ -23,6 +23,7 @@ namespace Phramacy_Product.DataModel
         public decimal GST { get; set; }
         public decimal Total { get; set; }
         public string PaymentApp { get; set; }
+        public  decimal SchAmt { get; set; }
         public string TransactionNumber { get; set; }
     }
 }

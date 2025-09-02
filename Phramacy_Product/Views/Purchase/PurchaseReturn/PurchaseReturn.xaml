@@ -12,12 +12,12 @@
             <Style x:Key="WhiteHeaderStyle" TargetType="DataGridColumnHeader">
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="FontWeight" Value="Bold"/>
-                <Setter Property="Background" Value="DarkBlue"/>
+                <Setter Property="Background" Value="OrangeRed"/>
                 <Setter Property="Height" Value="38"/>
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
             </Style>
             <Style x:Key="UserDefinedButtonStyle" TargetType="Button">
-                <Setter Property="Background" Value="DarkBlue"/>
+                <Setter Property="Background" Value="OrangeRed"/>
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="Padding" Value="16,8"/>
                 <Setter Property="FontWeight" Value="Bold"/>
@@ -51,7 +51,7 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,20,0">
-                            <TextBlock FontWeight="Bold" Foreground="DarkBlue" FontSize="24" Text="Purchase Return"/>
+                            <TextBlock FontWeight="Bold" Foreground="OrangeRed" FontSize="24" Text="Purchase Return"/>
                         </StackPanel>
 
                         <Grid Grid.Column="2" HorizontalAlignment="Right">
@@ -141,7 +141,7 @@ IsReadOnly="True"/>
                         </StackPanel>
                         <Button Grid.Column="1"
                             Content="Submit Return"
-                            Background="DarkBlue"
+                            Background="OrangeRed"
                             Margin="0,0,8,0"
                             HorizontalAlignment="Right"
                             Click="SubmitReturnButton_Click"/>

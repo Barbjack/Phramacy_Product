@@ -36,7 +36,7 @@
         <!-- A style for the DataGrid column headers to match the design. -->
         <Style x:Key="BlueHeaderStyle" TargetType="DataGridColumnHeader">
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Background" Value="#2563EB"/>
+            <Setter Property="Background" Value="OrangeRed"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Padding" Value="5,0"/>
         </Style>
@@ -59,16 +59,16 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Purchases" FontSize="28" FontWeight="SemiBold" Foreground="#1F2937" VerticalAlignment="Center" Margin="10,0"/>
+                    <TextBlock Text="Purchases" FontSize="28" FontWeight="SemiBold" Foreground="OrangeRed" VerticalAlignment="Center" Margin="10,0"/>
 
                     <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" x:Name="ActionPanel">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Button x:Name="SearchButton" Width="40" Height="36" Margin="20,0,25,0" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Search" Click="SearchButton_Click">
-                                <materialDesign:PackIcon Kind="Magnify" Width="20" Height="20" />
+                                <materialDesign:PackIcon Kind="Magnify" Width="20" Height="20" Foreground="OrangeRed"/>
                             </Button>
                             <TextBox x:Name="SearchBox" Width="200" Height="36" VerticalAlignment="Center" Visibility="Collapsed" Background="White" Foreground="Black" materialDesign:HintAssist.Hint="Search..." LostFocus="SearchBox_LostFocus" Margin="0,0,25,0" />
                         </StackPanel>
-                        <Button Content="+ New Purchase" Click="NewPurchaseButton_Click" Height="36" Padding="20,0" Background="#2563EB" Foreground="White" FontWeight="SemiBold" BorderThickness="1" Cursor="Hand" Margin="0,0,25,0" Style="{StaticResource NoHoverFlatButtonStyle}" />
+                        <Button Content="+ New Purchase" Click="NewPurchaseButton_Click" Height="36" Padding="20,0" Background="OrangeRed" Foreground="White" FontWeight="SemiBold" BorderThickness="1" Cursor="Hand" Margin="0,0,25,0" Style="{StaticResource NoHoverFlatButtonStyle}" />
                         <Button Content="Purchase Return" Click="PurchaseReturn_Click" Height="36" Padding="20,0" Background="#16A34A" Foreground="White" FontWeight="SemiBold" BorderThickness="1" Cursor="Hand" Margin="0,0,25,0" Style="{StaticResource NoHoverFlatButtonStyle}" />
                     </StackPanel>
                 </Grid>
@@ -117,13 +117,13 @@
                         <!-- Pagination controls. -->
                         <Grid Margin="0,8,0,0" VerticalAlignment="Bottom">
                             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-                                <Button Background="DarkBlue" Content="&lt;&lt;" Click="FirstPageClick" Margin="0,0,5,0"/>
-                                <Button Background="DarkBlue" Content="&lt;" Click="PreviousPageClick" Margin="0,0,5,0"/>
+                                <Button Background="OrangeRed" Content="&lt;&lt;" Click="FirstPageClick" Margin="0,0,5,0"/>
+                                <Button Background="OrangeRed" Content="&lt;" Click="PreviousPageClick" Margin="0,0,5,0"/>
                                 <TextBlock Text="{Binding CurrentPage}" VerticalAlignment="Center" Margin="5,0"/>
                                 <TextBlock Text="/" VerticalAlignment="Center"/>
                                 <TextBlock Text="{Binding TotalPages}" VerticalAlignment="Center" Margin="5,0"/>
-                                <Button Background="DarkBlue" Content=">" Click="NextPageClick" Margin="5,0,5,0"/>
-                                <Button Background="DarkBlue" Content=">>" Click="LastPageClick"/>
+                                <Button Background="OrangeRed" Content=">" Click="NextPageClick" Margin="5,0,5,0"/>
+                                <Button Background="OrangeRed" Content=">>" Click="LastPageClick"/>
                             </StackPanel>
                         </Grid>
 

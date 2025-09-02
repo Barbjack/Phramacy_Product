@@ -33,7 +33,7 @@ namespace Phramacy_Product
                 Dashboard dashboardWindow = new Dashboard();
                 this.Close();
                 dashboardWindow.Show();
-                MessageBox.Show("Logged in Successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                //MessageBox.Show("Logged in Successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 Clear_Form();
             }
             else

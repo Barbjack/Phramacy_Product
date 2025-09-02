@@ -12,7 +12,7 @@
       Title="PaymentOut">
       <Page.Resources>
             <Style x:Key="WhiteHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
-                <Setter Property="Background" Value="DarkBlue"/>
+                <Setter Property="Background" Value="OrangeRed"/>
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="FontWeight" Value="Bold"/>
                 <Setter Property="FontSize" Value="14"/>
@@ -39,12 +39,12 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <materialDesign:PackIcon Kind="CashMultiple" Foreground="DarkBlue" Width="32" Height="32" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Payment Out" FontWeight="Bold" Foreground="DarkBlue" FontSize="24" VerticalAlignment="Center"/>
+                            <materialDesign:PackIcon Kind="CashMultiple" Foreground="OrangeRed" Width="32" Height="32" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="Payment Out" FontWeight="Bold" Foreground="OrangeRed" FontSize="24" VerticalAlignment="Center"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left" Margin="20,0,0,0">
-                            <materialDesign:PackIcon Kind="Magnify" Width="30" Height="30" Margin="0,10"/>
+                            <materialDesign:PackIcon Kind="Magnify" Width="30" Height="30" Margin="0,10" Foreground="OrangeRed"/>
                             <TextBox x:Name="SearchBox" 
                                  materialDesign:HintAssist.Hint="Search by Bill Number..."
                                  Width="200" 
@@ -103,14 +103,15 @@
             </materialDesign:Card>
             <Grid VerticalAlignment="Bottom" Margin="0,0,0,10">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-                    <Button Background="DarkBlue" Content="&lt;&lt;" Click="FirstPageClick" Margin="0,0,5,0"/>
-                    <Button Background="DarkBlue" Content="&lt;" Click="PreviousPageClick" Margin="0,0,5,0"/>
+                    <Button Background="OrangeRed" Content="&lt;&lt;" Click="FirstPageClick" Margin="0,0,5,0"/>
+                    <Button Background="OrangeRed" Content="&lt;" Click="PreviousPageClick" Margin="0,0,5,0"/>
                     <TextBlock Text="{Binding CurrentPage}" VerticalAlignment="Center" Margin="5,0"/>
                     <TextBlock Text="/" VerticalAlignment="Center"/>
                     <TextBlock Text="{Binding TotalPages}" VerticalAlignment="Center" Margin="5,0"/>
-                    <Button Background="DarkBlue" Content=">" Click="NextPageClick" Margin="5,0,5,0"/>
-                    <Button Background="DarkBlue" Content=">>" Click="LastPageClick"/>
+                    <Button Background="OrangeRed" Content=">" Click="NextPageClick" Margin="5,0,5,0"/>
+                    <Button Background="OrangeRed" Content=">>" Click="LastPageClick"/>
                 </StackPanel>
             </Grid>
         </Grid>
     </Page>
+    

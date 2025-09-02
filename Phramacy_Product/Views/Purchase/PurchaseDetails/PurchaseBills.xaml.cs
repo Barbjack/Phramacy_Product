@@ -350,16 +350,12 @@ namespace Phramacy_Product.Views.Purchase.PurchaseDetails
         // Navigation methods
         private void NewPurchaseButton_Click(object sender, RoutedEventArgs e)
         {
-            // Assuming there's a NewPurchasePage class to navigate to.
-            // Replace with your actual navigation logic.
-            // For example: NavigationService?.Navigate(new NewPurchasePage());
+          NavigationService?.Navigate(new PurchaseGenerate.NewPurchaseGenerate());
         }
 
         private void PurchaseReturn_Click(object sender, RoutedEventArgs e)
         {
-            // Assuming there's a PurchaseReturnPage class to navigate to.
-            // Replace with your actual navigation logic.
-            // For example: NavigationService?.Navigate(new PurchaseReturnPage());
+          NavigationService?.Navigate(new PurchaseReturn.PurchaseReturn());
         }
     }
     public class NullToVisibilityConverter : IValueConverter

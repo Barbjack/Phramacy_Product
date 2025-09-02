@@ -51,7 +51,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Sales" FontSize="28" FontWeight="SemiBold" Foreground="#1F2937" VerticalAlignment="Center" Margin="10,0"/>
+                    <TextBlock Text="Sales" FontSize="28" FontWeight="SemiBold" Foreground="#2563EB" VerticalAlignment="Center" Margin="15,0"/>
                     <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" x:Name="ActionPanel">
                         <StackPanel Orientation="Horizontal"  VerticalAlignment="Center">
                             <Button x:Name="SearchButton" Width="40" Height="36" Margin="20,0,25,0" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Search" Click="SearchButton_Click">
