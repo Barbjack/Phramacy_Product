@@ -17,8 +17,9 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkProfile />
     <PublishUrl>C:\Users\Developer\Desktop\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -42,6 +43,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -100,6 +102,12 @@
     <Reference Include="MigraDoc.RtfRendering-gdi, Version=6.2.1.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
       <HintPath>..\packages\PDFsharp-MigraDoc-GDI.6.2.1\lib\net462\MigraDoc.RtfRendering-gdi.dll</HintPath>
     </Reference>
+    <Reference Include="MoonPdfLib, Version=0.3.0.0, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\MoonPdfLib.Package-x86.0.3.7\lib\net4\MoonPdfLib.dll</HintPath>
+    </Reference>
+    <Reference Include="MouseKeyboardActivityMonitor, Version=3.0.1.29184, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\MoonPdfLib.Package-x86.0.3.7\lib\net4\MouseKeyboardActivityMonitor.dll</HintPath>
+    </Reference>
     <Reference Include="PdfSharp-gdi, Version=6.2.1.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
       <HintPath>..\packages\PDFsharp-GDI.6.2.1\lib\net462\PdfSharp-gdi.dll</HintPath>
     </Reference>
@@ -140,12 +148,16 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=8.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Diagnostics.DiagnosticSource.8.0.1\lib\net462\System.Diagnostics.DiagnosticSource.dll</HintPath>
     </Reference>
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
     </Reference>
+    <Reference Include="System.Net" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
@@ -157,12 +169,23 @@
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Security" />
+    <Reference Include="System.Security.AccessControl, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.AccessControl.6.0.0\lib\net461\System.Security.AccessControl.dll</HintPath>
+    </Reference>
     <Reference Include="System.Security.Cryptography.Pkcs, Version=8.0.0.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Security.Cryptography.Pkcs.8.0.1\lib\net462\System.Security.Cryptography.Pkcs.dll</HintPath>
     </Reference>
+    <Reference Include="System.Security.Permissions, Version=9.0.0.8, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Permissions.9.0.8\lib\net462\System.Security.Permissions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Principal.Windows, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Principal.Windows.5.0.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="System.Transactions" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -179,6 +202,30 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="Vintasoft.Imaging, Version=14.1.9.1, Culture=neutral, PublicKeyToken=e553c7d3e075f61c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Vintasoft.Imaging.14.1.9.1\lib\net472\Vintasoft.Imaging.dll</HintPath>
+    </Reference>
+    <Reference Include="Vintasoft.Imaging.Gdi, Version=14.1.9.1, Culture=neutral, PublicKeyToken=e553c7d3e075f61c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Vintasoft.Imaging.Gdi.14.1.9.1\lib\net472\Vintasoft.Imaging.Gdi.dll</HintPath>
+    </Reference>
+    <Reference Include="Vintasoft.Imaging.Pdf, Version=11.1.9.1, Culture=neutral, PublicKeyToken=e553c7d3e075f61c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Vintasoft.Imaging.Pdf.11.1.9.1\lib\net472\Vintasoft.Imaging.Pdf.dll</HintPath>
+    </Reference>
+    <Reference Include="Vintasoft.Imaging.Pdf.Wpf.UI, Version=11.1.9.1, Culture=neutral, PublicKeyToken=e553c7d3e075f61c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Vintasoft.Imaging.Pdf.Wpf.UI.11.1.9.1\lib\net472\Vintasoft.Imaging.Pdf.Wpf.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Vintasoft.Imaging.UI, Version=14.1.9.1, Culture=neutral, PublicKeyToken=e553c7d3e075f61c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Vintasoft.Imaging.UI.14.1.9.1\lib\net472\Vintasoft.Imaging.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Vintasoft.Imaging.Wpf, Version=14.1.9.1, Culture=neutral, PublicKeyToken=e553c7d3e075f61c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Vintasoft.Imaging.Wpf.14.1.9.1\lib\net472\Vintasoft.Imaging.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="Vintasoft.Imaging.Wpf.UI, Version=14.1.9.1, Culture=neutral, PublicKeyToken=e553c7d3e075f61c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Vintasoft.Imaging.Wpf.UI.14.1.9.1\lib\net472\Vintasoft.Imaging.Wpf.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Vintasoft.Shared, Version=4.5.0.1, Culture=neutral, PublicKeyToken=e553c7d3e075f61c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Vintasoft.Shared.4.5.0.1\lib\net472\Vintasoft.Shared.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -272,6 +319,10 @@
     <Compile Include="Views\Purchase\PurchaseReturn\PurchaseReturnViewModel.cs" />
     <Compile Include="Views\Sales\GenerateSaleInvoice\NewSalePage.xaml.cs">
       <DependentUpon>NewSalePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Sales\GenerateSaleInvoice\PdfPrintManager.cs" />
+    <Compile Include="Views\Sales\GenerateSaleInvoice\PopupPdfInvoice.xaml.cs">
+      <DependentUpon>PopupPdfInvoice.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Sales\PdfInvoiceGenerator.cs" />
     <Compile Include="Views\Sales\GenerateSaleInvoice\SalesDBManager.cs" />
@@ -448,6 +499,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Sales\GenerateSaleInvoice\PopupPdfInvoice.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Sales\SaleInvoices.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -501,9 +556,13 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Resource Include="Assets\EpharmaLogin.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="libmupdf.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MaterialDesignThemes.4.0.0\build\MaterialDesignThemes.targets" Condition="Exists('..\packages\MaterialDesignThemes.4.0.0\build\MaterialDesignThemes.targets')" />

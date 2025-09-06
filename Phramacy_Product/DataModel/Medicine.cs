@@ -16,6 +16,7 @@ namespace Phramacy_Product.DataModel
         public int Stock { get; set; }
         public String BatchNumber { get; set; }
         public DateTime Expiry { get; set; }
+        public string expiryMedicine { get; set; }
         public String qtyType { get; set; }
         public int QtyF { get; set; }
         public int QtyL { get; set; }
@@ -24,6 +25,7 @@ namespace Phramacy_Product.DataModel
         public decimal Total { get; set; }
         public string PaymentApp { get; set; }
         public  decimal SchAmt { get; set; }
+        public bool IsLoose { get; set; }
         public string TransactionNumber { get; set; }
     }
 }

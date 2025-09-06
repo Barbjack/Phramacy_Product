@@ -145,7 +145,7 @@ namespace Phramacy_Product.Views.Sales
             string fileName = $"Invoice_{sale.BillNo}.pdf";
             string fullPath = Path.Combine(folderPath, fileName);
             renderer.PdfDocument.Save(fullPath);
-            Process.Start(new ProcessStartInfo(fullPath) { UseShellExecute = true });
+           // Process.Start(new ProcessStartInfo(fullPath) { UseShellExecute = true });
             return fullPath;
         }
 
@@ -308,7 +308,7 @@ namespace Phramacy_Product.Views.Sales
             string fileName = $"RevisedInvoice_{sale.BillNo}.pdf";
             string fullPath = Path.Combine(folderPath, fileName);
             renderer.PdfDocument.Save(fullPath);
-            Process.Start(new ProcessStartInfo(fullPath) { UseShellExecute = true });
+            //Process.Start(new ProcessStartInfo(fullPath) { UseShellExecute = true });
 
             return fullPath;
         }

@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Phramacy_Product.Views.Sales.GenerateSaleInvoice"
-      
+      xmlns:mpp="clr-namespace:MoonPdfLib;assembly=MoonPdfLib"
       xmlns:sys="clr-namespace:System;assembly=mscorlib"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       Title="NewSalePage">
@@ -389,11 +389,11 @@ ValidatesOnDataErrors="True">
                     <DataGridTextColumn Header="EXPIRY" Binding="{Binding Expiry}" Width="*"/>
                     <DataGridTextColumn Header="QTY(F)" Binding="{Binding QtyF}" Width="*"/>
                     <DataGridTextColumn Header="QTY(L)" Binding="{Binding QtyL}" Width="*"/>
-                    <DataGridTextColumn Header="M.R.P" Binding="{Binding MRP,StringFormat='₹{0}'}" Width="*"/>
+                    <DataGridTextColumn Header="M.R.P" Binding="{Binding MRP,StringFormat='₹{0:0.00}'}" Width="*"/>
                     <DataGridTextColumn Header="DISC%" Binding="{Binding Discount}" Width="*"/>
                     <DataGridTextColumn Header="GST%" Binding="{Binding GST}" Width="*"/>
                     <!--DataGridTextColumn Header="PAID AMOUNT" Binding="{Binding PaidAmount}" Width="*"/-->
-                    <DataGridTextColumn Header="TOTAL AMOUNT" Binding="{Binding Total, StringFormat='₹{0}'}" Width="*"/>
+                    <DataGridTextColumn Header="TOTAL AMOUNT" Binding="{Binding Total, StringFormat='₹{0:0.00}'}" Width="*"/>
                     <DataGridTemplateColumn Header="DELETE ITEM" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -404,7 +404,7 @@ ValidatesOnDataErrors="True">
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
-
+              
             <materialDesign:Card Margin="0,40,0,20" Background="White">
                 <Grid Margin="10,20">
                     <Grid.ColumnDefinitions>
@@ -415,6 +415,93 @@ ValidatesOnDataErrors="True">
                     <Button Content="Save Sale" Click="AddTo_SaleItemDetailPharmaCustomer" Width="100" Background="#2563EB" Foreground="White" Margin="0,0,0,0" VerticalAlignment="Center" Grid.Column="1"/>
                 </Grid>
             </materialDesign:Card>
+            <Grid>
+                <StackPanel x:Name="PreviousPurchasesPanel" Orientation="Vertical" Visibility="Collapsed" Margin="0,20,0,0">
+                    <TextBlock Text="Previous Purchases" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" />
+                    <DataGrid x:Name="PreviousPurchasesGrid" AutoGenerateColumns="False" IsReadOnly="True" Margin="0,0,0,10">
+                        <DataGrid.Columns>
+                            
+                            <DataGridTextColumn Header="PRODUCT NAME" Binding="{Binding ProductName}" Width="*"/>
+                            <DataGridTextColumn Header="BATCH NUMBER" Binding="{Binding BatchNumber}" Width="*"/>
+                            <DataGridTextColumn Header="EXPIRY" Binding="{Binding expiryMedicine}" Width="*"/>
+                            <DataGridTextColumn Header="QTY(F)" Binding="{Binding QtyF}" Width="*"/>
+                            <DataGridTextColumn Header="QTY(L)" Binding="{Binding QtyL}" Width="*"/>
+                            <DataGridTextColumn Header="M.R.P" Binding="{Binding MRP,StringFormat='₹{0:0.00}'}" Width="*"/>
+                            <DataGridTextColumn Header="DISC%" Binding="{Binding Discount}" Width="*"/>
+                            <DataGridTextColumn Header="GST%" Binding="{Binding GST}" Width="*"/>
+                            <!--DataGridTextColumn Header="PAID AMOUNT" Binding="{Binding PaidAmount}" Width="*"/-->
+                            <DataGridTextColumn Header="TOTAL AMOUNT" Binding="{Binding Total, StringFormat='₹{0:0.00}'}" Width="*"/>
+
+                            <DataGridTemplateColumn Header="Action" Width="Auto">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Add" Click="AddPreviousItem_Click" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Grid>
+       <Popup x:Name="PdfPopup"
+       Placement="Center"
+       IsOpen="False"
+       AllowsTransparency="True"
+       PopupAnimation="Fade">
+
+      <Border Background="White"
+            BorderBrush="LightGray"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="20"
+            Effect="{StaticResource MaterialDesignShadowDepth5}">
+
+                    <Grid Width="700">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Button Grid.Column="0"
+            Content="Cancel"
+            Background="Red"
+            HorizontalAlignment="Left"
+            Click="Click_ToCancel"
+            Margin="0,0,10,10"/>
+
+                            <Button Grid.Column="1"
+            Content="Save"
+            HorizontalAlignment="Right"
+            Background="Green"
+            Foreground="White"
+            Click="SavePdf_Click"
+            Margin="0,0,10,10"/>
+
+                            <Button Grid.Column="2"
+            Content="Print Invoice"
+            HorizontalAlignment="Right"
+            Background="#2563EB"
+            Foreground="White"
+            Click="PrintButton_Click"
+            Margin="10,0,0,10"/>
+                        </Grid>
+                        <Border Grid.Row="0"
+                    BorderBrush="LightGray"
+                    BorderThickness="1"
+                    Height="500">
+                            <mpp:MoonPdfPanel
+                    x:Name="pdfViewControl" />
+                        </Border>
+                    </Grid>
+                </Border>
+            </Popup>
         </StackPanel>
     </ScrollViewer>
 </Page>

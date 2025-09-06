@@ -1,9 +1,11 @@
-﻿using Phramacy_Product.DataModel;
+﻿using MoonPdfLib;
+using Phramacy_Product.DataModel;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -11,6 +13,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
+using Vintasoft.Imaging.Wpf.UI.UIElements;
+
 namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
 {
     public partial class NewSalePage : Page
@@ -19,8 +23,8 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
         private readonly List<Medicine> medicineBilling = new List<Medicine>();
         readonly SalesDBManager saleDBManager = new SalesDBManager();
         private string selectedMember;
-
-
+        private  MoonPdfPanel pdfViewerControl;
+        private string currentPath;
         public string SelectedMember
         {
             get { return selectedMember; }
@@ -35,7 +39,10 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
             InitializeComponent();
             this.selectedMember = GlobalData.LoggedInUser;
             this.DataContext = this;
+            pdfViewerControl = this.FindName("pdfViewControl") as MoonPdfLib.MoonPdfPanel;
         }
+        
+
         private void AddBill_CustomerDetails(object sender, RoutedEventArgs e)
         {
             string productName = SearchTextBox.Text;
@@ -175,7 +182,6 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
         [Obsolete]
         private void AddTo_SaleItemDetailPharmaCustomer(Object sender, RoutedEventArgs e)
         {
-
             if (!ValidateAllFields())
             {
                 MessageBox.Show("Please fill all required fields.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -201,6 +207,7 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 string billNumber = saleDBManager.GenerateBillNumber(conn);
                 String billPath = SaveButton_Click(sender, e);
                 UpdateSaleItemDetails(conn, billNumber, billPath, totalAmount, totalPaidAmount);
+
             }
 
         }
@@ -238,8 +245,11 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
 
             // Add a check for other required fields not covered by binding
             if (formCreatedBy.Text == null) isValid = false;
-            if (formPaymentType.SelectedItem == null) isValid = false;
-
+            if (formPaymentType.SelectedItem == null)
+            {
+                MessageBox.Show("Please fill the bill amount!");
+                return false;
+            }
             return isValid;
         }
 
@@ -345,7 +355,7 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 UpdateMedicineQuantity(conn, transaction);
 
                 transaction.Commit();
-                MessageBox.Show("Sale successfully saved!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                //MessageBox.Show("Sale successfully saved!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 ClearForm();
 
             }
@@ -355,8 +365,6 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 MessageBox.Show("Error: " + ex.Message);
             }
         }
-
-        //Customer Number List
         private async void SearchTextBox_NumberChanged(object sender, EventArgs e)
         {
             String input = SearchNumberBox.Text;
@@ -411,9 +419,10 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 formCustomerName.Text = selectedItem.CustomerName;
                 NumberPopup.IsOpen = false;
                 NumberList.SelectedItem = null;
+                LoadPreviousPurchases(selectedItem.CustomerName);
             }
         }
-        //Medicine Search List Feature 
+
         private async void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             string input = SearchTextBox.Text;
@@ -475,8 +484,6 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
             }
             return results;
         }
-
-        //Choose cash or online payment mode
         private void FormPaymentType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (formPaymentType.SelectedItem is ComboBoxItem selectedItem)
@@ -515,6 +522,123 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 MessageBox.Show("Please select an item to delete.", "No Item Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
+        private void LoadPreviousPurchases(string customerName)
+        {
+            if (string.IsNullOrWhiteSpace(customerName))
+            {
+                PreviousPurchasesGrid.ItemsSource = null;
+                PreviousPurchasesPanel.Visibility = Visibility.Collapsed;
+               
+                return;
+            }
+
+            var previousPurchases = new List<Medicine>();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = @"SELECT si.ItemName,si.Batch,si.Expiry,si.Pack,si.MRP,si.Quantity,si.Discount,si.GST,si.Is_Loose,si.NetAmount,si.ItemId FROM SaleDetails sd JOIN SaleItems si ON sd.SaleID = si.SaleID  WHERE sd.CustomerName Like @CustomerName + '%'";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@CustomerName", customerName);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Medicine medicine = new Medicine();
+
+                                medicine.ItemId = reader["ItemId"] != DBNull.Value ? (int)Convert.ToInt64(reader["ItemId"]) :0 ;
+                                medicine.ProductName = reader["ItemName"]?.ToString();
+                                medicine.BatchNumber = reader["Batch"]?.ToString();
+                                
+                                medicine.expiryMedicine = reader["Expiry"]?.ToString();
+                                medicine.StripInfo = reader["Pack"]?.ToString();
+                                medicine.MRP = reader["MRP"] != DBNull.Value?Convert.ToDecimal(reader["MRP"]):0;
+                                medicine.IsLoose = Convert.ToBoolean(reader["Is_Loose"]);
+                                if (!medicine.IsLoose)
+                                {
+                                    medicine.QtyF = reader["Quantity"] != DBNull.Value ? (int)Convert.ToInt64(reader["Quantity"]) : 0;
+                                }
+                                else
+                                {
+                                    medicine.QtyL = reader["Quantity"] != DBNull.Value ? (int)Convert.ToInt64(reader["Quantity"]) : 0;
+                                }
+                                medicine.Discount = reader["Discount"] != DBNull.Value ? Convert.ToDecimal(reader["Discount"]) : 0;
+                                medicine.GST = reader["GST"] != DBNull.Value ? Convert.ToDecimal(reader["GST"]) : 0;
+                                medicine.Total = reader["NetAmount"] != DBNull.Value ? Convert.ToDecimal(reader["NetAmount"]) : 0;
+                                previousPurchases.Add(medicine);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading previous purchases: " + ex.Message, "Database Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                PreviousPurchasesGrid.ItemsSource = null;
+                PreviousPurchasesPanel.Visibility = Visibility.Collapsed;
+                return; // Important: Exit the method on error to avoid subsequent logic
+            }
+
+            // After the try-catch block, check if the list is empty
+            if (previousPurchases.Count == 0)
+            {
+                MessageBox.Show("No previous purchases found for this customer.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                PreviousPurchasesGrid.ItemsSource = null;
+                PreviousPurchasesPanel.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                PreviousPurchasesGrid.ItemsSource = previousPurchases;
+                PreviousPurchasesPanel.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void AddPreviousItem_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            if (button != null)
+            {
+                var selectedItem = button.DataContext as Medicine;
+                if (selectedItem != null)
+                {
+                        Medicine newItem = new Medicine();
+
+                        newItem.ItemId = selectedItem.ItemId;
+                        newItem.ProductName = selectedItem.ProductName;
+                        newItem.BatchNumber = selectedItem.BatchNumber;
+                        newItem.Expiry = Convert.ToDateTime(selectedItem.expiryMedicine);
+                        newItem.StripInfo = selectedItem.StripInfo;
+                        newItem.MRP = selectedItem.MRP;
+                        newItem.Discount = selectedItem.Discount;
+                        newItem.GST = selectedItem.GST;
+                        if (newItem.QtyL > 0)
+                        {
+
+                        newItem.QtyL = selectedItem.QtyL;
+                        }
+                        else
+                        {
+                            newItem.QtyF = selectedItem.QtyF;
+                        }
+                        newItem.Total = selectedItem.Total; 
+                    medicineBilling.Add(newItem);
+                    decimal totalAmount = medicineBilling.Sum(m => m.Total);
+                    Total_Amount.Text = "Total Amount: " + totalAmount.ToString("C", CultureInfo.GetCultureInfo("en-IN"));
+
+                    // Refresh the main billing DataGrid
+                    ProductGrid.ItemsSource = null;
+                    ProductGrid.ItemsSource = medicineBilling;
+                    formPaymentType.IsEnabled = true;
+
+                    MessageBox.Show($"{selectedItem.ProductName} has been added to the current bill.", "Item Added", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+        }
+    
+        
         private decimal totalPaidAmount;
         private void DialogSubmit_Click(object sender, RoutedEventArgs e)
         {
@@ -561,7 +685,9 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
             formDocName.Clear();
             formPatientName.Clear();
             formPaymentType.SelectedItem = null;
-            formCreatedBy.Clear();
+            PreviousPurchasesPanel.Visibility = Visibility.Collapsed;
+            PreviousPurchasesGrid.ItemsSource = null;
+            // formCreatedBy.Clear();
             formGSTOption.SelectedItem = null;
             formBillDate.SelectedDate = DateTime.Now;
             formCreateAt.SelectedDate = DateTime.Now;
@@ -573,22 +699,108 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
         [Obsolete]
         public String SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            // Populate the Sale object with actual data from your form fields
             var sale = new SalePdfInvoice
             {
                 CustomerName = formCustomerName.Text,
                 Mobile = SearchNumberBox.Text,
                 BillNo = saleDBManager.GenerateBillNumber(new SqlConnection(connectionString)),
                 Date = formBillDate.SelectedDate ?? DateTime.Now,
-
                 PaymentType = formPaymentType.SelectedItem is ComboBoxItem item2 ? item2.Content.ToString() : "Cash",
             };
+            string pdfPath = PdfInvoiceGenerator.GenerateInvoice(sale, medicineBilling);
+            ShowPdfViewer(pdfPath);
+            pdfViewerControl.OpenFile(pdfPath);
+            
+            //pdfViewerControl.Visibility = Visibility.Visible;
+            //PrintButton.Visibility = Visibility.Visible;
+            //CancelButton.Visibility = Visibility.Visible;
 
-            // Pass both the Sale object and the list of billing items to the generator
-            return PdfInvoiceGenerator.GenerateInvoice(sale, medicineBilling);
+            return pdfPath;
+        }
+
+        private string ShowPdfViewer(string pdfPath)
+        {
+            if (!File.Exists(pdfPath))
+            {
+                MessageBox.Show("Invoice file not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+
+            
+            pdfViewerControl.OpenFile(pdfPath);
+            PdfPopup.IsOpen = true;
+            this.currentPath = pdfPath;
+            return pdfPath;
+        }
+
+        private void SavePdf_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(currentPath) || !File.Exists(currentPath))
+                {
+                    MessageBox.Show("No document is currently loaded to save.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    FileName = Path.GetFileName(currentPath), 
+                    DefaultExt = ".pdf", 
+                    Filter = "PDF Documents (.pdf)|*.pdf" 
+                };
+
+                bool? result = saveFileDialog.ShowDialog();
+
+                if (result == true)
+                {
+                    
+                    string destinationPath = saveFileDialog.FileName;
+                    File.Copy(currentPath, destinationPath, true); 
+
+                    MessageBox.Show($"File successfully saved to: {destinationPath}", "Save Successful", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while saving the file: {ex.Message}", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private void PrintButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(currentPath) && File.Exists(currentPath))
+                {
+                    if (System.Drawing.Printing.PrinterSettings.InstalledPrinters.Count > 0)
+                    {
+                        var printManager = new PdfPrintManager(currentPath);
+                        printManager.Print();
+                        MessageBox.Show("Printing in progress...", "Print", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("No printers are installed on this system. Please install a printer and try again.", "Printer Not Found", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("No document loaded to print.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred during printing: {ex.Message}");
+            }
+        }
+
+        private void Click_ToCancel(object sender, RoutedEventArgs e)
+        {
+            PdfPopup.IsOpen = false;
         }
 
     }
+
     public class RequiredFieldValidationRule : ValidationRule
     {
         public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
@@ -599,7 +811,7 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
             }
             return ValidationResult.ValidResult;
         } 
-    }
+    } 
     public class PositiveNumberValidationRule : ValidationRule
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
@@ -610,4 +822,5 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
             return new ValidationResult(false, "Amount must be a positive number.");
         }
     }
-}
+} 
+
