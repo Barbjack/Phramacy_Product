@@ -381,37 +381,130 @@ ValidatesOnDataErrors="True">
             </materialDesign:Card>
 
             <!-- Product Table -->
-            <DataGrid x:Name="ProductGrid" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False" Margin="0,0,0,10" 
-          ColumnHeaderStyle="{StaticResource WhiteHeaderStyle}">
+            <DataGrid x:Name="ProductGrid" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False" Margin="0,0,0,10" ColumnHeaderStyle="{StaticResource WhiteHeaderStyle}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="PRODUCT NAME" Binding="{Binding ProductName}" Width="*"/>
-                    <DataGridTextColumn Header="BATCH NUMBER" Binding="{Binding BatchNumber}" Width="*"/>
-                    <DataGridTextColumn Header="EXPIRY" Binding="{Binding Expiry}" Width="*"/>
-                    <DataGridTextColumn Header="QTY(F)" Binding="{Binding QtyF}" Width="*"/>
-                    <DataGridTextColumn Header="QTY(L)" Binding="{Binding QtyL}" Width="*"/>
-                    <DataGridTextColumn Header="M.R.P" Binding="{Binding MRP,StringFormat='₹{0:0.00}'}" Width="*"/>
-                    <DataGridTextColumn Header="DISC%" Binding="{Binding Discount}" Width="*"/>
-                    <DataGridTextColumn Header="GST%" Binding="{Binding GST}" Width="*"/>
-                    <!--DataGridTextColumn Header="PAID AMOUNT" Binding="{Binding PaidAmount}" Width="*"/-->
-                    <DataGridTextColumn Header="TOTAL AMOUNT" Binding="{Binding Total, StringFormat='₹{0:0.00}'}" Width="*"/>
+                    <DataGridTemplateColumn Header="PRODUCT NAME" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ProductName}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="BATCH NUMBER" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding BatchNumber}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="EXPIRY" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Expiry}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTextColumn Header="QTY(F)" Width="*" Binding="{Binding QtyF, UpdateSourceTrigger=PropertyChanged}">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                        <DataGridTextColumn.EditingElementStyle>
+                            <Style TargetType="{x:Type TextBox}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.EditingElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Header="QTY(L)" Width="*" Binding="{Binding QtyL, UpdateSourceTrigger=PropertyChanged}">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                        <DataGridTextColumn.EditingElementStyle>
+                            <Style TargetType="{x:Type TextBox}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.EditingElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTemplateColumn Header="M.R.P" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding MRP, StringFormat='₹{0:0.00}'}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding MRP, UpdateSourceTrigger=PropertyChanged, StringFormat='0.00'}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTextColumn Header="DISC%" Width="*" Binding="{Binding Discount, UpdateSourceTrigger=PropertyChanged,StringFormat='0.00'}">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                        <DataGridTextColumn.EditingElementStyle>
+                            <Style TargetType="{x:Type TextBox}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.EditingElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Header="GST%" Width="*" Binding="{Binding GST, UpdateSourceTrigger=PropertyChanged,StringFormat='0.00'}">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                        <DataGridTextColumn.EditingElementStyle>
+                            <Style TargetType="{x:Type TextBox}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.EditingElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTemplateColumn Header="TOTAL AMOUNT" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Total, StringFormat='₹{0:0.00}'}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
                     <DataGridTemplateColumn Header="DELETE ITEM" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="❌" Click="DeleteRow_Click" Foreground="Red"/>
-
+                                <Button Content="❌" Click="DeleteRow_Click" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
-              
+
             <materialDesign:Card Margin="0,40,0,20" Background="White">
                 <Grid Margin="10,20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock x:Name="Total_Amount" Text="Total Amount: " FontWeight="Bold" VerticalAlignment="Center" Grid.Column="0"/>
+                    <TextBlock x:Name="Total_Amount" Text="Grand Total: " FontWeight="Bold" VerticalAlignment="Center" Grid.Column="0"/>
                     <Button Content="Save Sale" Click="AddTo_SaleItemDetailPharmaCustomer" Width="100" Background="#2563EB" Foreground="White" Margin="0,0,0,0" VerticalAlignment="Center" Grid.Column="1"/>
                 </Grid>
             </materialDesign:Card>

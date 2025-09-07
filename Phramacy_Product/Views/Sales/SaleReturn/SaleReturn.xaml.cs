@@ -5,6 +5,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using Phramacy_Product.Views.Sales.SaleReturn;
+using System.Data.SqlClient;
 namespace Phramacy_Product.Views.Sales.SaleReturn
 {
     public partial class SaleReturn : Page
@@ -48,6 +49,7 @@ namespace Phramacy_Product.Views.Sales.SaleReturn
 
                     };
                     string billPath = PdfInvoiceGenerator.GenerateRevisedInvoice(invoiceData, updatedSaleItems, itemsToReturn);
+                    viewModel.DbService.updateInvoiceBill(billPath, invoiceData.BillNo);
                     viewModel.PagedSaleItems.Clear();
                     viewModel.CurrentSale = null;
                     viewModel.ReturnTotal = 0;
@@ -63,5 +65,6 @@ namespace Phramacy_Product.Views.Sales.SaleReturn
                 MessageBox.Show("Please select at least one item to return with a quantity greater than zero.");
             }
         }
+        
     }
 }

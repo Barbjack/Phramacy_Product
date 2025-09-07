@@ -186,9 +186,8 @@ namespace Phramacy_Product.Views.Sales.SaleReturn
                             customerCommand.ExecuteNonQuery();
                         }
 
-                        // Commit the transaction if all operations were successful
-                        transaction.Commit();
                     }
+                    transaction.Commit();
                 }
                 catch (Exception ex)
                 {
@@ -197,6 +196,21 @@ namespace Phramacy_Product.Views.Sales.SaleReturn
                     throw;
                 }
             }
+        }
+        public void updateInvoiceBill(string billPath, string billNo)
+        {
+            string query = @"update SaleDetails set BillPath=@BillPath where BillNumber = @BillNumber;";
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@BillPath", billPath);
+                    cmd.Parameters.AddWithValue("@BillNumber", billNo);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
         }
 
     }
