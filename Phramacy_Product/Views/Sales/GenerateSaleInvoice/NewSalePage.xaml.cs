@@ -641,10 +641,9 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 MessageBox.Show("Error loading previous purchases: " + ex.Message, "Database Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 PreviousPurchasesGrid.ItemsSource = null;
                 PreviousPurchasesPanel.Visibility = Visibility.Collapsed;
-                return; // Important: Exit the method on error to avoid subsequent logic
+                return; 
             }
 
-            // After the try-catch block, check if the list is empty
             if (previousPurchases.Count == 0)
             {
                 MessageBox.Show("No previous purchases found for this customer.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -671,8 +670,8 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                         newItem.ItemId = selectedItem.ItemId;
                         newItem.ProductName = selectedItem.ProductName;
                         newItem.BatchNumber = selectedItem.BatchNumber;
-                        string[] formats = { "MM/yy", "M/yy", "MM/yyyy", "M/yyyy", "yyyy-MM-dd", "MM/dd/yyyy" };
-                        DateTime expiryDate;
+                        string[] formats = { "MM/yy", "M/yy", "MM/yyyy", "M/yyyy", "yyyy-MM-dd", "MM/dd/yyyy", "MMM dd yyyy hh:mmt", "MMM dd yyyy hh:mmtt" };
+                         DateTime expiryDate;
                         if (DateTime.TryParseExact(selectedItem.expiryMedicine, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out expiryDate))
                         {
                         newItem.Expiry = expiryDate;
