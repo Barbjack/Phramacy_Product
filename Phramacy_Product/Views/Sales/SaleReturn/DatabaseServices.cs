@@ -44,9 +44,9 @@ namespace Phramacy_Product.Views.Sales.SaleReturn
         public List<SaleItemReturn> GetSaleItemsBySaleId(int saleId)
         {
             var items = new List<SaleItemReturn>();
-            string query = "SELECT si.SaleItemID, si.SaleID, si.ItemId, si.ItemName, si.Batch, si.Pack, si.Expiry, si.Quantity, si.Is_Loose," +
-                           " si.MRP, si.Discount, si.GST, si.NetAmount, si.Is_Returned " +
-                           "FROM SaleItems si WHERE si.SaleID = @saleId and si.Is_Returned=0 and si.Is_Loose=0;";
+            string query = "SELECT si.SaleItemID, si.SaleID, si.ItemId, si.ItemName, si.Batch, si.Pack, si.Expiry, si.Quantity," +
+                           " si.MRP, si.Discount, si.GST, si.NetAmount, si.Is_Returned,si.QtyLoose " +
+                           "FROM SaleItems si WHERE si.SaleID = @saleId and si.Is_Returned=0 and si.Quantity >0 ;";
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(query, connection);
@@ -67,13 +67,14 @@ namespace Phramacy_Product.Views.Sales.SaleReturn
                             Pack = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
                             Expiry = reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
                             FullQty = reader.IsDBNull(7) ? 0 : reader.GetInt32(7),
-                            Is_Loose = reader.IsDBNull(8) ? false : reader.GetBoolean(8),
-                            MRP = reader.IsDBNull(9) ? 0m : reader.GetDecimal(9),
-                            Discount = reader.IsDBNull(10) ? 0m : reader.GetDecimal(10),
-                            GST = reader.IsDBNull(11) ? 0m : reader.GetDecimal(11),
-                            NetAmount = reader.IsDBNull(12) ? 0m : reader.GetDecimal(12),
-                            Is_Returned = reader.IsDBNull(13) ? false : reader.GetBoolean(13),
+                            //Is_Loose = reader.IsDBNull(8) ? false : reader.GetBoolean(8),
+                            MRP = reader.IsDBNull(8) ? 0m : reader.GetDecimal(8),
+                            Discount = reader.IsDBNull(9) ? 0m : reader.GetDecimal(9),
+                            GST = reader.IsDBNull(10) ? 0m : reader.GetDecimal(10),
+                            NetAmount = reader.IsDBNull(11) ? 0m : reader.GetDecimal(11),
+                            Is_Returned = reader.IsDBNull(12) ? false : reader.GetBoolean(12),
                             ReturnQty = 0,
+                            LooseQty = reader.IsDBNull(13)?0:reader.GetInt32(13),
                             IsSelected = false
                         });
                     }
@@ -114,22 +115,19 @@ namespace Phramacy_Product.Views.Sales.SaleReturn
                         // 2. Update SaleItems: Adjust quantity and mark as fully returned if applicable
                         if (item.ReturnQty == item.FullQty)
                         {
-                            string updateSaleItemQuery = "UPDATE SaleItems SET Is_Returned = 1, ModifiedAt = GETDATE() WHERE SaleItemID = @saleItemId;";
+                            string updateSaleItemQuery = "UPDATE SaleItems SET Quantity = Quantity-@returnQty,NetAmount =NetAmount-@returnAmount Is_Returned = 1, ModifiedAt = GETDATE() WHERE SaleItemID = @saleItemId;";
                             var saleItemCommand = new SqlCommand(updateSaleItemQuery, connection, transaction);
                             saleItemCommand.Parameters.AddWithValue("@saleItemId", item.SaleItemID);
+                            saleItemCommand.Parameters.AddWithValue("@returnQty", item.ReturnQty);
+                            saleItemCommand.Parameters.AddWithValue("@returnAmount", returnAmount);
                             saleItemCommand.ExecuteNonQuery();
                         }
                         else if (item.ReturnQty < item.FullQty)
                         {
-                            decimal netAmountPerUnit = (item.MRP - (item.MRP * item.Discount / 100)) +
-                               ((item.MRP - (item.MRP * item.Discount / 100)) * item.GST / 100);
-
-                            decimal newNetAmount = (item.FullQty - item.ReturnQty) * netAmountPerUnit;
-
-                            string updateSaleItemQuery = "UPDATE SaleItems SET Quantity = @remainingQty, NetAmount = @newNetAmount, ModifiedAt = GETDATE() WHERE SaleItemID = @saleItemId;";
+                            string updateSaleItemQuery = "UPDATE SaleItems SET Quantity = @remainingQty, NetAmount = NetAmount - @newReturnAmount, ModifiedAt = GETDATE() WHERE SaleItemID = @saleItemId;";
                             var saleItemCommand = new SqlCommand(updateSaleItemQuery, connection, transaction);
                             saleItemCommand.Parameters.AddWithValue("@remainingQty", item.FullQty - item.ReturnQty);
-                            saleItemCommand.Parameters.AddWithValue("@newNetAmount", newNetAmount);
+                            saleItemCommand.Parameters.AddWithValue("@newReturnAmount", returnAmount);
                             saleItemCommand.Parameters.AddWithValue("@saleItemId", item.SaleItemID);
                             saleItemCommand.ExecuteNonQuery();
                         }

@@ -242,7 +242,9 @@
     <Compile Include="DataModel\OrderQuantity.cs" />
     <Compile Include="DataModel\PurchaseDetail.cs" />
     <Compile Include="DataModel\PurchaseItemReturn.cs" />
+    <Compile Include="DataModel\SaleItems.cs" />
     <Compile Include="DataModel\SalePdfInvoice.cs" />
+    <Compile Include="DataModel\ShortBookItem.cs" />
     <Compile Include="GlobalData.cs" />
     <Compile Include="MyFontResolver.cs" />
     <Compile Include="DataModel\SaleDetail.cs" />
@@ -354,11 +356,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Cards\StaffOverview.xaml">
+    <Page Include="Views\Cards\ShortBook.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Cards\StockOverview.xaml">
+    <Page Include="Views\Cards\SlowestSelling.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -399,11 +401,11 @@
     <Compile Include="Views\Cards\SalesPurchaseCard.xaml.cs">
       <DependentUpon>SalesPurchaseCard.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Cards\StaffOverview.xaml.cs">
-      <DependentUpon>StaffOverview.xaml</DependentUpon>
+    <Compile Include="Views\Cards\ShortBook.xaml.cs">
+      <DependentUpon>ShortBook.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Cards\StockOverview.xaml.cs">
-      <DependentUpon>StockOverview.xaml</DependentUpon>
+    <Compile Include="Views\Cards\SlowestSelling.xaml.cs">
+      <DependentUpon>SlowestSelling.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Cards\UpcomingPdc.xaml.cs">
       <DependentUpon>UpcomingPdc.xaml</DependentUpon>

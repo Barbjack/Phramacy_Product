@@ -121,7 +121,7 @@ IsReadOnly="True"/>
                         <DataGridTextColumn Header="Batch" Binding="{Binding Batch}" Width="*"/>
                         <DataGridTextColumn Header="Expiry" Binding="{Binding Expiry}" Width="*"/>
                         <DataGridTextColumn Header="Full Qty" Binding="{Binding FullQty}" Width="*"/>
-                        <DataGridTextColumn Header="Loose Qty" Binding="{Binding LooseQty}" Width="*"/>
+                        <!--DataGridTextColumn Header="Loose Qty" Binding="{Binding LooseQty}" Width="*"/-->
                         <DataGridTextColumn Header="MRP" Binding="{Binding MRP, StringFormat=₹{0:F2}}" Width="*"/>
                         <DataGridTextColumn Header="Discount" Binding="{Binding Discount, StringFormat={}{0:F2}%}" Width="*"/>
                         <DataGridTextColumn Header="GST" Binding="{Binding GST, StringFormat={}{0:F2}%}" Width="*"/>

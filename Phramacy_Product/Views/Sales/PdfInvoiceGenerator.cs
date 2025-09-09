@@ -68,6 +68,7 @@ namespace Phramacy_Product.Views.Sales
             medTable.AddColumn("2cm").Format.Alignment = ParagraphAlignment.Center;
             medTable.AddColumn("2cm").Format.Alignment = ParagraphAlignment.Center;
             medTable.AddColumn("1cm").Format.Alignment = ParagraphAlignment.Center;
+            medTable.AddColumn("1cm").Format.Alignment = ParagraphAlignment.Center;
             medTable.AddColumn("2cm").Format.Alignment = ParagraphAlignment.Center;
             medTable.AddColumn("1cm").Format.Alignment = ParagraphAlignment.Center;
             medTable.AddColumn("2cm").Format.Alignment = ParagraphAlignment.Center;
@@ -80,10 +81,11 @@ namespace Phramacy_Product.Views.Sales
             medHeader.Cells[1].AddParagraph("Item Description");
             medHeader.Cells[2].AddParagraph("Batch No");
             medHeader.Cells[3].AddParagraph("Exp Date");
-            medHeader.Cells[4].AddParagraph("Qty");
-            medHeader.Cells[5].AddParagraph("Rate");
-            medHeader.Cells[6].AddParagraph("Disc%");
-            medHeader.Cells[7].AddParagraph("Amount");
+            medHeader.Cells[4].AddParagraph("Qty Full");
+            medHeader.Cells[5].AddParagraph("Qty Loose");
+            medHeader.Cells[6].AddParagraph("Rate");
+            medHeader.Cells[7].AddParagraph("Disc%");
+            medHeader.Cells[8].AddParagraph("Amount");
 
             foreach (var item in billingItems)
             {
@@ -92,10 +94,11 @@ namespace Phramacy_Product.Views.Sales
                 row.Cells[1].AddParagraph(item.ProductName);
                 row.Cells[2].AddParagraph(item.BatchNumber);
                 row.Cells[3].AddParagraph(item.Expiry.ToString("MM/yy"));
-                row.Cells[4].AddParagraph(item.QtyF > 0 ? item.QtyF.ToString() : item.QtyL.ToString()); // Show QtyF or QtyL
-                row.Cells[5].AddParagraph(item.MRP.ToString("0.00"));
-                row.Cells[6].AddParagraph(item.Discount.ToString("0.00"));
-                row.Cells[7].AddParagraph(item.Total.ToString("0.00"));
+                row.Cells[4].AddParagraph(item.QtyF.ToString());
+                row.Cells[5].AddParagraph(item.QtyL.ToString());// Show QtyF or QtyL
+                row.Cells[6].AddParagraph(item.MRP.ToString("0.00"));
+                row.Cells[7].AddParagraph(item.Discount.ToString("0.00"));
+                row.Cells[8].AddParagraph(item.Total.ToString("0.00"));
             }
 
             // Totals Section
@@ -223,6 +226,7 @@ namespace Phramacy_Product.Views.Sales
             medTable.AddColumn("2cm").Format.Alignment = ParagraphAlignment.Center;
             medTable.AddColumn("2cm").Format.Alignment = ParagraphAlignment.Center;
             medTable.AddColumn("1cm").Format.Alignment = ParagraphAlignment.Center;
+            medTable.AddColumn("1cm").Format.Alignment = ParagraphAlignment.Center;
             medTable.AddColumn("2cm").Format.Alignment = ParagraphAlignment.Center;
             medTable.AddColumn("1cm").Format.Alignment = ParagraphAlignment.Center;
             medTable.AddColumn("2cm").Format.Alignment = ParagraphAlignment.Center;
@@ -235,10 +239,11 @@ namespace Phramacy_Product.Views.Sales
             medHeader.Cells[1].AddParagraph("Item Description");
             medHeader.Cells[2].AddParagraph("Batch No");
             medHeader.Cells[3].AddParagraph("Exp Date");
-            medHeader.Cells[4].AddParagraph("Qty");
-            medHeader.Cells[5].AddParagraph("Rate");
-            medHeader.Cells[6].AddParagraph("Disc%");
-            medHeader.Cells[7].AddParagraph("Amount");
+            medHeader.Cells[4].AddParagraph("Full Qty");
+            medHeader.Cells[5].AddParagraph("Loose Qty");
+            medHeader.Cells[6].AddParagraph("Rate");
+            medHeader.Cells[7].AddParagraph("Disc%");
+            medHeader.Cells[8].AddParagraph("Amount");
 
             // Populate the table with only the remaining items
             foreach (var item in allSaleItems)
@@ -249,9 +254,10 @@ namespace Phramacy_Product.Views.Sales
                 row.Cells[2].AddParagraph(item.Batch);
                 row.Cells[3].AddParagraph(item.Expiry);
                 row.Cells[4].AddParagraph(item.FullQty.ToString());
-                row.Cells[5].AddParagraph(item.MRP.ToString("0.00"));
-                row.Cells[6].AddParagraph(item.Discount.ToString("0.00"));
-                row.Cells[7].AddParagraph(item.NetAmount.ToString("0.00"));
+                row.Cells[5].AddParagraph(item.LooseQty.ToString());
+                row.Cells[6].AddParagraph(item.MRP.ToString("0.00"));
+                row.Cells[7].AddParagraph(item.Discount.ToString("0.00"));
+                row.Cells[8].AddParagraph(item.NetAmount.ToString("0.00"));
             }
 
             // Totals Section (Calculated from remainingItems)

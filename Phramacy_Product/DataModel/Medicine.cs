@@ -11,12 +11,42 @@ namespace Phramacy_Product.DataModel
 {
     public class Medicine : INotifyPropertyChanged
     {
+        public decimal qtFTotal { get; set; }
+        public decimal QtFTotal
+        {
+            get => qtFTotal;
+            set
+            {
+                if (qtFTotal != value)
+                {
+                    qtFTotal = value;
+                    OnPropertyChanged();
+                    RecalculateTotal();
+                }
+            }
+        }
+        public decimal qtLTotal { get; set; }
+        public decimal QtLTotal
+        {
+            get => qtLTotal;
+            set
+            {
+                if (qtLTotal != value)
+                {
+                    qtLTotal = value;
+                    OnPropertyChanged();
+                    RecalculateTotal();
+                }
+            }
+        }
         public int ItemId { get; set; }
         public string ProductName { get; set; }
         public string CompanyName { get; set; }
         public string StripInfo { get; set; }
         public decimal mRP { get; set; }
         public int Stock { get; set; }
+        public string BillNumber { get; set; } 
+        public DateTime? BillDate { get; set; }
         public String BatchNumber { get; set; }
         public DateTime Expiry { get; set; }
         public string expiryMedicine { get; set; }
@@ -123,19 +153,24 @@ namespace Phramacy_Product.DataModel
 
         public void RecalculateTotal()
         {
-            decimal priceAfterDiscount;
-            decimal priceWithGST;
-            decimal unitPrice;
-
+            decimal unitPriceF = 0;
+            decimal priceAfterDiscountF = 0;
+            decimal priceWithGSTF = 0;
+            decimal unitPriceL = 0;
+            decimal priceAfterDiscountL = 0;
+            decimal priceWithGSTL = 0;
             if (QtyF > 0)
             {
-                unitPrice = MRP;
-                priceAfterDiscount = unitPrice - (unitPrice * Discount / 100);
-                priceWithGST = priceAfterDiscount + (priceAfterDiscount * GST / 100);
-                Total = QtyF * priceWithGST;
-
+                unitPriceF = MRP;
+                priceAfterDiscountF = unitPriceF - (unitPriceF * Discount / 100);
+                priceWithGSTF = priceAfterDiscountF + (priceAfterDiscountF * GST / 100);
+                QtFTotal = QtyF * priceWithGSTF;
             }
-            else if (QtyL > 0)
+            else
+            {
+                QtFTotal = 0.0m;
+            }
+            if (QtyL > 0)
             {
                 decimal number = 0;
                 Match match = Regex.Match(StripInfo, @"\d+");
@@ -143,18 +178,24 @@ namespace Phramacy_Product.DataModel
                 {
                     number = Convert.ToDecimal(match.Value);
                 }
+
                 if (number > 0)
                 {
-                    unitPrice = MRP / number;
-                    priceAfterDiscount = unitPrice - (unitPrice * Discount / 100);
-                    priceWithGST = priceAfterDiscount + (priceAfterDiscount * GST / 100);
-                    Total = QtyL * priceWithGST;
+                    unitPriceL = MRP / number;
+                    priceAfterDiscountL = unitPriceL - (unitPriceL * Discount / 100);
+                    priceWithGSTL = priceAfterDiscountL + (priceAfterDiscountL * GST / 100);
+                    QtLTotal = QtyL * priceWithGSTL;
+                }
+                else
+                {
+                    QtLTotal = 0.0m;
                 }
             }
             else
             {
-                Total = 0.0m;
+                QtLTotal = 0.0m;
             }
+            Total = QtFTotal + QtLTotal;
         }
     }
 }

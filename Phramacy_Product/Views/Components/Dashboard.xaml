@@ -21,12 +21,12 @@
                              HorizontalAlignment="Stretch" VerticalAlignment="Top">
                     <cards:SalesPurchaseCard/>
                     <cards:SalesMargin/>
-                    <cards:ExpiringItemCard/>
+                    <cards:SlowestSelling/>
                     <cards:CollectDueAmount/>
                     <cards:PayDueAmount/>
-                    <cards:StockOverview/>
-                    <cards:StaffOverview/>
-                    <cards:UpcomingPdc/>
+                    <cards:ExpiringItemCard/>
+                    <cards:ShortBook/>
+                    
                 </UniformGrid>
             </ScrollViewer>
             <!-- Navigation Frame (initially hidden) -->

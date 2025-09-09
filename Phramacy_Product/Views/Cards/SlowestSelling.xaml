@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Phramacy_Product.Views.Cards.SalesMargin"
+﻿<UserControl x:Class="Phramacy_Product.Views.Cards.SlowestSelling"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -22,9 +22,9 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Text="Fastest Selling" Foreground="DarkBlue" FontWeight="Bold" FontSize="16" Grid.Column="0"/>
-                <TextBlock Text="{Binding TotalSaleAmount}" FontWeight="Bold" FontSize="16" Grid.Column="1"
-                       Foreground="Red" HorizontalAlignment="Right"/>
+                <TextBlock Text="Slowest Selling" Foreground="DarkBlue" FontWeight="Bold" FontSize="16" Grid.Column="0"/>
+                <TextBlock Text="{Binding TotalSaleAmount}" Foreground="Red" FontWeight="Bold" FontSize="16" Grid.Column="1"
+                        HorizontalAlignment="Right"/>
             </Grid>
 
             <Grid Grid.Row="1" Margin="0,10,0,8">
@@ -36,14 +36,14 @@
                 <TextBlock Text="Amount" FontWeight="SemiBold" FontSize="14" Grid.Column="1"/>
             </Grid>
             <!-- List Rows -->
-            <ItemsControl ItemsSource="{Binding FilteredFastestSaleItems}">
+            <ItemsControl ItemsSource="{Binding FilteredSlowestSaleItems}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Margin="0,0">
                             <Grid Margin="0,3">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" SharedSizeGroup="DistributorCol"/>
-                                    <ColumnDefinition Width="auto" SharedSizeGroup="AmountCol"/>
+                                    <ColumnDefinition SharedSizeGroup="DistributorCol"/>
+                                    <ColumnDefinition SharedSizeGroup="AmountCol"/>
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0">
@@ -52,7 +52,7 @@
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock>
         <Run Foreground ="IndianRed" Text="Batch:"/>
-        <Run Text="{Binding Batch}" />
+        <Run Text="{Binding Batch}"/>
                                         </TextBlock>
                                         <TextBlock Text=" | "/>
                                         <TextBlock>
@@ -61,8 +61,8 @@
                                         </TextBlock>
                                         <TextBlock Text=" | "/>
                                         <TextBlock>
-                                        <Run Foreground="IndianRed" Text="Qty :"/>
-                                        <Run Text="{Binding FullQty}" />
+ <Run Foreground="IndianRed" Text="Qty :"/>
+ <Run Text="{Binding FullQty}" />
                                         </TextBlock>
                                     </StackPanel>
                                 </StackPanel>

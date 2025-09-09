@@ -119,80 +119,97 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                         if (reader.Read())
                         {
                             //Medicine existingMedicine = medicineBilling.FirstOrDefault(m => m.ProductName == productName);
-                            Medicine existingMedicineF = medicineBilling.FirstOrDefault(m => m.QtyF > 0 && m.ProductName == productName);
-                            Medicine existingMedicineL = medicineBilling.FirstOrDefault(m => m.QtyL > 0 && m.ProductName == productName);
-                            if (existingMedicineF != null && quantityType == "QTY(F)")
+                            Medicine existingMedicine = medicineBilling.FirstOrDefault(m =>m.ProductName == productName);
+                           // Medicine existingMedicine = medicineBilling.FirstOrDefault(m => m.QtyL > 0 && m.ProductName == productName);
+                            if (existingMedicine != null)
                             {
-                                    existingMedicineF.QtyF += qty;
-                                    decimal priceAfterDiscount = existingMedicineF.MRP - (existingMedicineF.MRP * existingMedicineF.Discount / 100);
-                                    decimal priceWithGST = priceAfterDiscount + (priceAfterDiscount * existingMedicineF.GST / 100);
-                                    existingMedicineF.Total = existingMedicineF.QtyF * priceWithGST;
-                             }
-                            else if (existingMedicineL != null && quantityType != "QTY(F)")
-                              {
-                                    string input = existingMedicineL.StripInfo;
-                                    decimal number = 0;
-                                    Match match = Regex.Match(input, @"\d+");
-                                    if (match.Success)
-                                    {
-                                        number = Convert.ToDecimal(match.Value);
-                                    }
-                                    decimal drugPrice = existingMedicineL.MRP / number;
-                                    decimal drugPriceAfterDiscount = drugPrice - (drugPrice * existingMedicineL.Discount / 100);
-                                    decimal drugPriceWithGST = drugPriceAfterDiscount + (drugPriceAfterDiscount * existingMedicineL.GST / 100);
-                                    existingMedicineL.QtyL += qty;
-                                    existingMedicineL.Total = existingMedicineL.QtyL * drugPriceWithGST;
-                                
-                            }
-                            else
-                            {
-                                Medicine medicineObject = new Medicine
-                                {
-                                    ProductName = productName,
-                                    BatchNumber = reader["Batch"].ToString(),
-                                    Expiry = Convert.ToDateTime(reader["Expiry"]),
-                                    StripInfo = reader["pack_size_label"].ToString(),
-                                    Discount = Convert.ToDecimal(reader["Discount"]),
-                                    MRP = Convert.ToDecimal(reader["price"]),
-                                    ItemId = (int)Convert.ToInt64(reader["id"])
-                                };
-
                                 if (gst == "With GST")
                                 {
-                                    medicineObject.GST = Convert.ToDecimal(reader["GST"]);
+                                    existingMedicine.GST = Convert.ToDecimal(reader["GST"]);
                                 }
                                 else
                                 {
-                                    medicineObject.GST = 0.0m;
+                                    existingMedicine.GST = 0.0m;
                                 }
-
-                                if (quantityType == "QTY(F)")
-                                {
-                                    decimal priceAfterDiscount = medicineObject.MRP - (medicineObject.MRP * medicineObject.Discount / 100);
-                                    decimal priceWithGST = priceAfterDiscount + (priceAfterDiscount * medicineObject.GST / 100);
-                                    medicineObject.QtyF = qty;
-                                    medicineObject.Total = qty * priceWithGST;
+                                if (quantityType == "QTY(F)") { 
+                                    existingMedicine.QtyF += qty;
+                                    decimal priceAfterDiscount = existingMedicine.MRP - (existingMedicine.MRP * existingMedicine.Discount / 100);
+                                    decimal priceWithGST = priceAfterDiscount + (priceAfterDiscount * existingMedicine.GST / 100);
+                                    //decimal updatedQtFtotal = existingMedicine.qtFTotal + qty * priceWithGST;
+                                    existingMedicine.qtFTotal = existingMedicine.QtyF * priceWithGST;
+                                    existingMedicine.Total = existingMedicine.qtLTotal + existingMedicine.qtFTotal;
                                 }
                                 else
                                 {
-                                    string input = reader["pack_size_label"].ToString();
+                                    string input = existingMedicine.StripInfo;
                                     decimal number = 0;
                                     Match match = Regex.Match(input, @"\d+");
                                     if (match.Success)
                                     {
                                         number = Convert.ToDecimal(match.Value);
                                     }
-                                    decimal drugPrice = medicineObject.MRP / number;
-                                    decimal drugPriceAfterDiscount = drugPrice - (drugPrice * medicineObject.Discount / 100);
-                                    decimal drugPriceWithGST = drugPriceAfterDiscount + (drugPriceAfterDiscount * medicineObject.GST / 100);
-                                    medicineObject.QtyL = qty;
-                                    medicineObject.Total = qty * drugPriceWithGST;
+                                    decimal drugPrice = existingMedicine.MRP / number;
+                                    decimal drugPriceAfterDiscount = drugPrice - (drugPrice * existingMedicine.Discount / 100);
+                                    decimal drugPriceWithGST = drugPriceAfterDiscount + (drugPriceAfterDiscount * existingMedicine.GST / 100);
+                                    existingMedicine.QtyL += qty;
+                                    existingMedicine.qtLTotal = existingMedicine.QtyL * drugPriceWithGST;
+                                    existingMedicine.Total = existingMedicine.qtFTotal + existingMedicine.qtLTotal;
+                                 }
+
                                 }
-                                medicineBilling.Add(medicineObject);
-                            }
+                                else
+                                {
+                                    Medicine medicineObject = new Medicine
+                                    {
+                                        ProductName = productName,
+                                        BatchNumber = reader["Batch"].ToString(),
+                                        Expiry = Convert.ToDateTime(reader["Expiry"]),
+                                        StripInfo = reader["pack_size_label"].ToString(),
+                                        Discount = Convert.ToDecimal(reader["Discount"]),
+                                        MRP = Convert.ToDecimal(reader["price"]),
+                                        ItemId = (int)Convert.ToInt64(reader["id"])
+                                    };
+
+                                    if (gst == "With GST")
+                                    {
+                                        medicineObject.GST = Convert.ToDecimal(reader["GST"]);
+                                    }
+                                    else
+                                    {
+                                        medicineObject.GST = 0.0m;
+                                    }
+
+                                    if (quantityType == "QTY(F)")
+                                    {
+                                        decimal priceAfterDiscount = medicineObject.MRP - (medicineObject.MRP * medicineObject.Discount / 100);
+                                        decimal priceWithGST = priceAfterDiscount + (priceAfterDiscount * medicineObject.GST / 100);
+                                        medicineObject.QtyF = qty;
+                                        medicineObject.qtFTotal = qty * priceWithGST;
+                                        medicineObject.Total = qty * priceWithGST;
+                                    }
+                                    else
+                                    {
+                                        string input = reader["pack_size_label"].ToString();
+                                        decimal number = 0;
+                                        Match match = Regex.Match(input, @"\d+");
+                                        if (match.Success)
+                                        {
+                                            number = Convert.ToDecimal(match.Value);
+                                        }
+                                        decimal drugPrice = medicineObject.MRP / number;
+                                        decimal drugPriceAfterDiscount = drugPrice - (drugPrice * medicineObject.Discount / 100);
+                                        decimal drugPriceWithGST = drugPriceAfterDiscount + (drugPriceAfterDiscount * medicineObject.GST / 100);
+                                        medicineObject.QtyL = qty;
+                                        medicineObject.qtLTotal = qty * drugPriceWithGST;
+                                        medicineObject.Total = qty * drugPriceWithGST;
+                                    }
+                                    medicineBilling.Add(medicineObject);
+                                }
 
                             decimal totalAmount = medicineBilling.Sum(m => m.Total);
                             Total_Amount.Text = "Grand Total: " + totalAmount.ToString("C", CultureInfo.GetCultureInfo("en-IN"));
+                            
+                            dialogPaidAmount.Text = totalAmount.ToString("F2");
                         }
                         else
                         {
@@ -210,10 +227,8 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
             quantity.Clear();
             //formGSTOption.SelectedItem = null;
         }
-        
         private void UpdateMedicineQuantity(SqlConnection conn, SqlTransaction transaction)
         {
-            // Combine the updates into a single query to reduce database calls
             string updateQuery = @"
         UPDATE Pharma_Medicines
         SET
@@ -257,6 +272,7 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
 
             string inputNumber = SearchNumberBox.Text;
             decimal totalAmount = medicineBilling.Sum(m => m.Total);
+          
             //decimal paidAmount = medicineBilling.Sum(m => m.PaidAmount);
 
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -268,6 +284,7 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 string billNumber = saleDBManager.GenerateBillNumber(conn);
                 String billPath = SaveButton_Click(sender, e);
                 UpdateSaleItemDetails(conn, billNumber, billPath, totalAmount, totalPaidAmount);
+                MessageBox.Show("Invoice is saved to the file : " + billPath, "Invoice Saved", MessageBoxButton.OK, MessageBoxImage.Information);
 
             }
 
@@ -391,8 +408,8 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
 
                 // 2. Insert into SaleItem for each item
                 string insertItemQuery = @"
-                        INSERT INTO SaleItems (SaleID,ItemId,ItemName,Batch,Expiry,Pack,MRP,Quantity,Discount,GST,CreatedAt,Is_Loose,NetAmount)
-                        VALUES (@SaleID,@ItemId,@ItemName,@Batch,@Expiry,@Pack,@MRP,@Quantity,@Discount,@GST,@CreatedAt,@Is_Loose,@NetAmount)";
+                        INSERT INTO SaleItems (SaleID,ItemId,ItemName,Batch,Expiry,Pack,MRP,Quantity,QtyLoose,Discount,GST,CreatedAt,Is_Loose,NetAmount)
+                        VALUES (@SaleID,@ItemId,@ItemName,@Batch,@Expiry,@Pack,@MRP,@Quantity,@QtyLoose,@Discount,@GST,@CreatedAt,@Is_Loose,@NetAmount)";
 
                 SqlCommand itemCmd = new SqlCommand(insertItemQuery, conn, transaction);
                 foreach (var med in medicineBilling)
@@ -405,7 +422,8 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                     itemCmd.Parameters.AddWithValue("@Expiry", med.Expiry);
                     itemCmd.Parameters.AddWithValue("@Pack", med.StripInfo);
                     itemCmd.Parameters.AddWithValue("@MRP", med.MRP);
-                    itemCmd.Parameters.AddWithValue("@Quantity", med.QtyF + med.QtyL);
+                    itemCmd.Parameters.AddWithValue("@Quantity", med.QtyF);
+                    itemCmd.Parameters.AddWithValue("@QtyLoose", med.QtyL);
                     itemCmd.Parameters.AddWithValue("@Discount", med.Discount);
                     itemCmd.Parameters.AddWithValue("@GST", med.GST);
                     itemCmd.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
@@ -583,14 +601,13 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 MessageBox.Show("Please select an item to delete.", "No Item Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
-        
+
         private void LoadPreviousPurchases(string customerName)
         {
             if (string.IsNullOrWhiteSpace(customerName))
             {
-                PreviousPurchasesGrid.ItemsSource = null;
+                PreviousPurchasesItemsControl.ItemsSource = null;
                 PreviousPurchasesPanel.Visibility = Visibility.Collapsed;
-               
                 return;
             }
 
@@ -600,7 +617,15 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    string query = @"SELECT si.ItemName,si.Batch,si.Expiry,si.Pack,si.MRP,si.Quantity,si.Discount,si.GST,si.Is_Loose,si.NetAmount,si.ItemId FROM SaleDetails sd JOIN SaleItems si ON sd.SaleID = si.SaleID  WHERE sd.CustomerName Like @CustomerName + '%'";
+                    // Modified query to include BillNumber and BillDate from SaleDetails
+                    string query = @"
+                SELECT
+                    si.ItemName, si.Batch, si.Expiry, si.Pack, si.MRP, si.Quantity, si.Discount, si.GST, si.Is_Loose, si.NetAmount, si.ItemId,
+                    sd.BillNumber, sd.BillDate
+                FROM SaleDetails sd 
+                JOIN SaleItems si ON sd.SaleID = si.SaleID 
+                WHERE sd.CustomerName LIKE @CustomerName + '%'
+                ORDER BY sd.BillDate DESC, sd.BillNumber DESC";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -609,16 +634,22 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                         {
                             while (reader.Read())
                             {
-                                Medicine medicine = new Medicine();
+                                Medicine medicine = new Medicine
+                                {
+                                    ItemId = reader["ItemId"] != DBNull.Value ? (int)Convert.ToInt64(reader["ItemId"]) : 0,
+                                    ProductName = reader["ItemName"]?.ToString(),
+                                    BatchNumber = reader["Batch"]?.ToString(),
+                                    expiryMedicine = reader["Expiry"]?.ToString(),
+                                    StripInfo = reader["Pack"]?.ToString(),
+                                    MRP = reader["MRP"] != DBNull.Value ? Convert.ToDecimal(reader["MRP"]) : 0,
+                                    IsLoose = Convert.ToBoolean(reader["Is_Loose"]),
+                                    Discount = reader["Discount"] != DBNull.Value ? Convert.ToDecimal(reader["Discount"]) : 0,
+                                    GST = reader["GST"] != DBNull.Value ? Convert.ToDecimal(reader["GST"]) : 0,
+                                    Total = reader["NetAmount"] != DBNull.Value ? Convert.ToDecimal(reader["NetAmount"]) : 0,
+                                    BillNumber = reader["BillNumber"]?.ToString(), // New: Get BillNumber
+                                    BillDate = reader["BillDate"] as DateTime? // New: Get BillDate
+                                };
 
-                                medicine.ItemId = reader["ItemId"] != DBNull.Value ? (int)Convert.ToInt64(reader["ItemId"]) :0 ;
-                                medicine.ProductName = reader["ItemName"]?.ToString();
-                                medicine.BatchNumber = reader["Batch"]?.ToString();
-                                
-                                medicine.expiryMedicine = reader["Expiry"]?.ToString();
-                                medicine.StripInfo = reader["Pack"]?.ToString();
-                                medicine.MRP = reader["MRP"] != DBNull.Value?Convert.ToDecimal(reader["MRP"]):0;
-                                medicine.IsLoose = Convert.ToBoolean(reader["Is_Loose"]);
                                 if (!medicine.IsLoose)
                                 {
                                     medicine.QtyF = reader["Quantity"] != DBNull.Value ? (int)Convert.ToInt64(reader["Quantity"]) : 0;
@@ -627,33 +658,41 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                                 {
                                     medicine.QtyL = reader["Quantity"] != DBNull.Value ? (int)Convert.ToInt64(reader["Quantity"]) : 0;
                                 }
-                                medicine.Discount = reader["Discount"] != DBNull.Value ? Convert.ToDecimal(reader["Discount"]) : 0;
-                                medicine.GST = reader["GST"] != DBNull.Value ? Convert.ToDecimal(reader["GST"]) : 0;
-                                medicine.Total = reader["NetAmount"] != DBNull.Value ? Convert.ToDecimal(reader["NetAmount"]) : 0;
+
                                 previousPurchases.Add(medicine);
                             }
                         }
                     }
                 }
+
+                // Group the medicines by BillNumber
+                var groupedPurchases = previousPurchases
+                    .GroupBy(p => p.BillNumber)
+                    .Select(g => new PreviousBill
+                    {
+                        BillNumber = g.Key,
+                        BillDate = g.FirstOrDefault()?.BillDate,
+                        Items = new ObservableCollection<Medicine>(g)
+                    })
+                    .ToList();
+
+                if (groupedPurchases.Count == 0)
+                {
+                    MessageBox.Show("No previous purchases found for this customer.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    PreviousPurchasesItemsControl.ItemsSource = null;
+                    PreviousPurchasesPanel.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    PreviousPurchasesItemsControl.ItemsSource = groupedPurchases;
+                    PreviousPurchasesPanel.Visibility = Visibility.Visible;
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error loading previous purchases: " + ex.Message, "Database Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                PreviousPurchasesGrid.ItemsSource = null;
+                PreviousPurchasesItemsControl.ItemsSource = null;
                 PreviousPurchasesPanel.Visibility = Visibility.Collapsed;
-                return; 
-            }
-
-            if (previousPurchases.Count == 0)
-            {
-                MessageBox.Show("No previous purchases found for this customer.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                PreviousPurchasesGrid.ItemsSource = null;
-                PreviousPurchasesPanel.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                PreviousPurchasesGrid.ItemsSource = previousPurchases;
-                PreviousPurchasesPanel.Visibility = Visibility.Visible;
             }
         }
 
@@ -665,42 +704,94 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 var selectedItem = button.DataContext as Medicine;
                 if (selectedItem != null)
                 {
+                    //Do not Distrub
+                    Medicine existingMedicine = medicineBilling.FirstOrDefault(m => m.ProductName == selectedItem.ProductName.Trim());
+                    // Medicine existingMedicine = medicineBilling.FirstOrDefault(m => m.QtyL > 0 && m.ProductName == productName);
+                    if (existingMedicine != null)
+                    {
+                        if (selectedItem.GST > 0.0m)
+                        {
+                            existingMedicine.GST = selectedItem.GST;
+                        }
+                        else
+                        {
+                            existingMedicine.GST = 0.0m;
+                        }
+                        if (selectedItem.QtyF > 0)
+                        {
+                            existingMedicine.QtyF += selectedItem.QtyF;
+                            decimal priceAfterDiscount = selectedItem.MRP - (selectedItem.MRP * selectedItem.Discount / 100);
+                            decimal priceWithGST = priceAfterDiscount + (priceAfterDiscount * existingMedicine.GST / 100);
+                            //decimal updatedQtFtotal = existingMedicine.qtFTotal + qty * priceWithGST;
+                            existingMedicine.qtFTotal = existingMedicine.QtyF * priceWithGST;
+                            existingMedicine.Total = existingMedicine.qtLTotal + existingMedicine.qtFTotal;
+                        }
+                        else
+                        {
+                            string input = existingMedicine.StripInfo;
+                            decimal number = 0;
+                            Match match = Regex.Match(input, @"\d+");
+                            if (match.Success)
+                            {
+                                number = Convert.ToDecimal(match.Value);
+                            }
+                            decimal drugPrice = selectedItem.MRP / number;
+                            decimal drugPriceAfterDiscount = drugPrice - (drugPrice * selectedItem.Discount / 100);
+                            decimal drugPriceWithGST = drugPriceAfterDiscount + (drugPriceAfterDiscount * existingMedicine.GST / 100);
+                            existingMedicine.QtyL += selectedItem.QtyL;
+                            existingMedicine.qtLTotal = existingMedicine.QtyL * drugPriceWithGST;
+                            existingMedicine.Total = existingMedicine.qtFTotal + existingMedicine.qtLTotal;
+                        }
+
+                    }
+                    else
+                    {
                         Medicine newItem = new Medicine();
 
                         newItem.ItemId = selectedItem.ItemId;
                         newItem.ProductName = selectedItem.ProductName;
                         newItem.BatchNumber = selectedItem.BatchNumber;
                         string[] formats = { "MM/yy", "M/yy", "MM/yyyy", "M/yyyy", "yyyy-MM-dd", "MM/dd/yyyy", "MMM dd yyyy hh:mmt", "MMM dd yyyy hh:mmtt" };
-                         DateTime expiryDate;
+                        DateTime expiryDate;
                         if (DateTime.TryParseExact(selectedItem.expiryMedicine, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out expiryDate))
                         {
-                        newItem.Expiry = expiryDate;
-                        Console.WriteLine($"Successfully converted: {expiryDate}");
+                            newItem.Expiry = expiryDate;
+                            Console.WriteLine($"Successfully converted: {expiryDate}");
                         }
                         else
                         {
-                        Console.WriteLine("Error: The string is not a recognized date format.");
-                        newItem.Expiry = DateTime.MinValue;
+                            Console.WriteLine("Error: The string is not a recognized date format.");
+                            newItem.Expiry = DateTime.MinValue;
                         }
 
                         newItem.StripInfo = selectedItem.StripInfo;
                         newItem.MRP = selectedItem.MRP;
                         newItem.Discount = selectedItem.Discount;
                         newItem.GST = selectedItem.GST;
-                        if (newItem.QtyL > 0)
+                        if (selectedItem.QtyL > 0)
                         {
 
-                        newItem.QtyL = selectedItem.QtyL;
+                            newItem.QtyL = selectedItem.QtyL;
                         }
                         else
                         {
+                            newItem.QtyL = 0;
+                        }
+                        if (selectedItem.QtyF > 0)
+                        {
                             newItem.QtyF = selectedItem.QtyF;
                         }
-                        newItem.Total = selectedItem.Total; 
-                    medicineBilling.Add(newItem);
+                        else
+                        {
+                            newItem.QtyF = 0;
+                        }
+                        newItem.Total = selectedItem.Total;
+                        medicineBilling.Add(newItem);
+                    }
+
                     decimal totalAmount = medicineBilling.Sum(m => m.Total);
                     Total_Amount.Text = "Grand Total: " + totalAmount.ToString("C", CultureInfo.GetCultureInfo("en-IN"));
-
+                    dialogPaidAmount.Text = totalAmount.ToString("F2");
                     // Refresh the main billing DataGrid
                     ProductGrid.ItemsSource = null;
                     ProductGrid.ItemsSource = medicineBilling;
@@ -759,7 +850,8 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
             formPatientName.Clear();
             formPaymentType.SelectedItem = null;
             PreviousPurchasesPanel.Visibility = Visibility.Collapsed;
-            PreviousPurchasesGrid.ItemsSource = null;
+            //PreviousPurchasesGrid.ItemsSource = null;
+            PreviousPurchasesItemsControl.ItemsSource = null;
             // formCreatedBy.Clear();
             formGSTOption.SelectedItem = null;
             formBillDate.SelectedDate = DateTime.Now;
@@ -781,30 +873,10 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 PaymentType = formPaymentType.SelectedItem is ComboBoxItem item2 ? item2.Content.ToString() : "Cash",
             };
             List<Medicine> medicineList = medicineBilling.ToList();
-            string pdfPath = PdfInvoiceGenerator.GenerateInvoice(sale, medicineList);
-            ShowPdfViewer(pdfPath);
-            pdfViewerControl.OpenFile(pdfPath);
+            return PdfInvoiceGenerator.GenerateInvoice(sale, medicineList);
+            //ShowPdfViewer(pdfPath);
+            //pdfViewerControl.OpenFile(pdfPath);
             
-            //pdfViewerControl.Visibility = Visibility.Visible;
-            //PrintButton.Visibility = Visibility.Visible;
-            //CancelButton.Visibility = Visibility.Visible;
-
-            return pdfPath;
-        }
-
-        private string ShowPdfViewer(string pdfPath)
-        {
-            if (!File.Exists(pdfPath))
-            {
-                MessageBox.Show("Invoice file not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
-            }
-
-            
-            pdfViewerControl.OpenFile(pdfPath);
-            PdfPopup.IsOpen = true;
-            this.currentPath = pdfPath;
-            return pdfPath;
         }
 
         private void SavePdf_Click(object sender, RoutedEventArgs e)
@@ -868,13 +940,14 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
             }
         }
 
-        private void Click_ToCancel(object sender, RoutedEventArgs e)
-        {
-            PdfPopup.IsOpen = false;
-        }
-
     }
-
+    public class PreviousBill
+    {
+        public string BillNumber { get; set; }
+        public DateTime? BillDate { get; set; }
+        public ObservableCollection<Medicine> Items { get; set; }
+        public string BillNumberWithDate => $"{BillNumber} (Date: {BillDate?.ToShortDateString()})";
+    }
     public class RequiredFieldValidationRule : ValidationRule
     {
         public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)

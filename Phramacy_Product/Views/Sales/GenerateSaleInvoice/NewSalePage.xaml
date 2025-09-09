@@ -407,35 +407,31 @@ ValidatesOnDataErrors="True">
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTextColumn Header="QTY(F)" Width="*" Binding="{Binding QtyF, UpdateSourceTrigger=PropertyChanged}">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Setter Property="HorizontalAlignment" Value="Center" />
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                        <DataGridTextColumn.EditingElementStyle>
-                            <Style TargetType="{x:Type TextBox}">
-                                <Setter Property="HorizontalAlignment" Value="Center" />
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                            </Style>
-                        </DataGridTextColumn.EditingElementStyle>
-                    </DataGridTextColumn>
+                    <DataGridTemplateColumn Header="QTY(F)" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding QtyF}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding QtyF, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
 
-                    <DataGridTextColumn Header="QTY(L)" Width="*" Binding="{Binding QtyL, UpdateSourceTrigger=PropertyChanged}">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Setter Property="HorizontalAlignment" Value="Center" />
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                        <DataGridTextColumn.EditingElementStyle>
-                            <Style TargetType="{x:Type TextBox}">
-                                <Setter Property="HorizontalAlignment" Value="Center" />
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                            </Style>
-                        </DataGridTextColumn.EditingElementStyle>
-                    </DataGridTextColumn>
+                    <DataGridTemplateColumn Header="QTY(L)" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding QtyL}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding QtyL, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
 
                     <DataGridTemplateColumn Header="M.R.P" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
@@ -450,36 +446,31 @@ ValidatesOnDataErrors="True">
                         </DataGridTemplateColumn.CellEditingTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTextColumn Header="DISC%" Width="*" Binding="{Binding Discount, UpdateSourceTrigger=PropertyChanged,StringFormat='0.00'}">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Setter Property="HorizontalAlignment" Value="Center" />
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                        <DataGridTextColumn.EditingElementStyle>
-                            <Style TargetType="{x:Type TextBox}">
-                                <Setter Property="HorizontalAlignment" Value="Center" />
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                            </Style>
-                        </DataGridTextColumn.EditingElementStyle>
-                    </DataGridTextColumn>
+                    <DataGridTemplateColumn Header="DISC%" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Discount, StringFormat='0.00'}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Discount, UpdateSourceTrigger=PropertyChanged, StringFormat='0.00'}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
 
-                    <DataGridTextColumn Header="GST%" Width="*" Binding="{Binding GST, UpdateSourceTrigger=PropertyChanged,StringFormat='0.00'}">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Setter Property="HorizontalAlignment" Value="Center" />
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                        <DataGridTextColumn.EditingElementStyle>
-                            <Style TargetType="{x:Type TextBox}">
-                                <Setter Property="HorizontalAlignment" Value="Center" />
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                            </Style>
-                        </DataGridTextColumn.EditingElementStyle>
-                    </DataGridTextColumn>
-
+                    <DataGridTemplateColumn Header="GST%" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding GST, StringFormat='0.00'}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding GST, UpdateSourceTrigger=PropertyChanged, StringFormat='0.00'}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="TOTAL AMOUNT" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -511,90 +502,39 @@ ValidatesOnDataErrors="True">
             <Grid>
                 <StackPanel x:Name="PreviousPurchasesPanel" Orientation="Vertical" Visibility="Collapsed" Margin="0,20,0,0">
                     <TextBlock Text="Previous Purchases" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" />
-                    <DataGrid x:Name="PreviousPurchasesGrid" AutoGenerateColumns="False" IsReadOnly="True" Margin="0,0,0,10">
-                        <DataGrid.Columns>
-                            
-                            <DataGridTextColumn Header="PRODUCT NAME" Binding="{Binding ProductName}" Width="*"/>
-                            <DataGridTextColumn Header="BATCH NUMBER" Binding="{Binding BatchNumber}" Width="*"/>
-                            <DataGridTextColumn Header="EXPIRY" Binding="{Binding expiryMedicine}" Width="*"/>
-                            <DataGridTextColumn Header="QTY(F)" Binding="{Binding QtyF}" Width="*"/>
-                            <DataGridTextColumn Header="QTY(L)" Binding="{Binding QtyL}" Width="*"/>
-                            <DataGridTextColumn Header="M.R.P" Binding="{Binding MRP,StringFormat='₹{0:0.00}'}" Width="*"/>
-                            <DataGridTextColumn Header="DISC%" Binding="{Binding Discount}" Width="*"/>
-                            <DataGridTextColumn Header="GST%" Binding="{Binding GST}" Width="*"/>
-                            <!--DataGridTextColumn Header="PAID AMOUNT" Binding="{Binding PaidAmount}" Width="*"/-->
-                            <DataGridTextColumn Header="TOTAL AMOUNT" Binding="{Binding Total, StringFormat='₹{0:0.00}'}" Width="*"/>
-
-                            <DataGridTemplateColumn Header="Action" Width="Auto">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button Content="Add" Click="AddPreviousItem_Click" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <ItemsControl x:Name="PreviousPurchasesItemsControl">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Expander Header="{Binding BillNumberWithDate}" IsExpanded="False" Margin="0,5,0,0">
+                                    <DataGrid x:Name="PreviousPurchasesGrid" ItemsSource="{Binding Items}" AutoGenerateColumns="False" IsReadOnly="True" Margin="20,5,0,0">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="PRODUCT NAME" Binding="{Binding ProductName}" Width="*"/>
+                                            <DataGridTextColumn Header="BATCH NUMBER" Binding="{Binding BatchNumber}" Width="*"/>
+                                            <DataGridTextColumn Header="EXPIRY" Binding="{Binding expiryMedicine}" Width="*"/>
+                                            <DataGridTextColumn Header="QTY(F)" Binding="{Binding QtyF}" Width="*"/>
+                                            <DataGridTextColumn Header="QTY(L)" Binding="{Binding QtyL}" Width="*"/>
+                                            <DataGridTextColumn Header="M.R.P" Binding="{Binding MRP, StringFormat='₹{0:0.00}'}" Width="*"/>
+                                            <DataGridTextColumn Header="DISC%" Binding="{Binding Discount}" Width="*"/>
+                                            <DataGridTextColumn Header="GST%" Binding="{Binding GST}" Width="*"/>
+                                            <DataGridTextColumn Header="TOTAL AMOUNT" Binding="{Binding Total, StringFormat='₹{0:0.00}'}" Width="*"/>
+                                            <DataGridTemplateColumn Header="Action" Width="Auto">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Content="Add" Click="AddPreviousItem_Click" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Expander>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
             </Grid>
-       <Popup x:Name="PdfPopup"
-       Placement="Center"
-       IsOpen="False"
-       AllowsTransparency="True"
-       PopupAnimation="Fade">
 
-      <Border Background="White"
-            BorderBrush="LightGray"
-            BorderThickness="1"
-            CornerRadius="8"
-            Padding="20"
-            Effect="{StaticResource MaterialDesignShadowDepth5}">
-
-                    <Grid Width="700">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-
-                        <Grid Grid.Row="1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <Button Grid.Column="0"
-            Content="Cancel"
-            Background="Red"
-            HorizontalAlignment="Left"
-            Click="Click_ToCancel"
-            Margin="0,0,10,10"/>
-
-                            <Button Grid.Column="1"
-            Content="Save"
-            HorizontalAlignment="Right"
-            Background="Green"
-            Foreground="White"
-            Click="SavePdf_Click"
-            Margin="0,0,10,10"/>
-
-                            <Button Grid.Column="2"
-            Content="Print Invoice"
-            HorizontalAlignment="Right"
-            Background="#2563EB"
-            Foreground="White"
-            Click="PrintButton_Click"
-            Margin="10,0,0,10"/>
-                        </Grid>
-                        <Border Grid.Row="0"
-                    BorderBrush="LightGray"
-                    BorderThickness="1"
-                    Height="500">
-                            <mpp:MoonPdfPanel
-                    x:Name="pdfViewControl" />
-                        </Border>
-                    </Grid>
-                </Border>
-            </Popup>
+           
         </StackPanel>
     </ScrollViewer>
 </Page>
+    

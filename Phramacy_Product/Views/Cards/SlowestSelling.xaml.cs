@@ -20,11 +20,11 @@ using System.Windows.Shapes;
 
 namespace Phramacy_Product.Views.Cards
 {
-    public partial class SalesMargin : UserControl, INotifyPropertyChanged
+    public partial class SlowestSelling : UserControl, INotifyPropertyChanged
     {
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["databaseConnection"].ConnectionString;
-        public ObservableCollection<SaleItems> AllFastestSaleItems { get; set; } = new ObservableCollection<SaleItems>();
-        public ObservableCollection<SaleItems> FilteredFastestSaleItems { get; set; } = new ObservableCollection<SaleItems>();
+        public ObservableCollection<SaleItems> AllSlowestSaleItems { get; set; } = new ObservableCollection<SaleItems>();
+        public ObservableCollection<SaleItems> FilteredSlowestSaleItems { get; set; } = new ObservableCollection<SaleItems>();
         private int currentPage = 1;
         public int CurrentPage
         {
@@ -35,7 +35,7 @@ namespace Phramacy_Product.Views.Cards
                 {
                     currentPage = value;
                     OnPropertyChanged(nameof(CurrentPage));
-                    UpdateFilteredFastestSale();
+                    UpdateFilteredSlowestSale();
                     UpdateButtonStates(); // Call this to update button states
                 }
             }
@@ -49,7 +49,7 @@ namespace Phramacy_Product.Views.Cards
             {
                 itemsPerPage = value;
                 OnPropertyChanged(nameof(ItemsPerPage));
-                UpdateFilteredFastestSale();
+                UpdateFilteredSlowestSale();
                 UpdateButtonStates(); // Call this to update button states
             }
         }
@@ -99,14 +99,14 @@ namespace Phramacy_Product.Views.Cards
         protected void OnPropertyChanged(string name) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         public string TotalSaleAmount =>
-      AllFastestSaleItems.Any()
-       ? " ₹" + AllFastestSaleItems
+      AllSlowestSaleItems.Any()
+       ? " ₹" + AllSlowestSaleItems
            .Select(x => Decimal.TryParse(x.NetAmount.Replace("₹", "").Replace(",", ""), out var amt) ? amt : 0)
            .Sum()
            .ToString("N0")
        : " ₹0";
 
-        public SalesMargin()
+        public SlowestSelling()
         {
             InitializeComponent();
             DataContext = this;
@@ -114,10 +114,10 @@ namespace Phramacy_Product.Views.Cards
         }
         private void LoadFastestSaleItems()
         {
-            AllFastestSaleItems.Clear();
+            AllSlowestSaleItems.Clear();
             String query = @" SELECT top(20) ItemName,Batch,MRP,ItemId,SUM(Quantity) AS TotalSold,sum(NetAmount) as SoldAmount 
-                    FROM SaleItems where IsDeleted = 0 and Is_Returned = 0
-                     GROUP BY ItemName,Batch,MRP,ItemId ORDER BY TotalSold DESC;";
+                    FROM SaleItems where IsDeleted = 0 and Is_Returned = 0 and Quantity>0
+                     GROUP BY ItemName,Batch,MRP,ItemId ORDER BY TotalSold asc;";
 
             using (SqlConnection con = new SqlConnection(connectionString))
             {
@@ -130,28 +130,28 @@ namespace Phramacy_Product.Views.Cards
                         {
                             SaleItems saleItems = new SaleItems();
                             saleItems.ItemName = reader["ItemName"].ToString();
-                            saleItems.Batch= reader["Batch"].ToString();
+                            saleItems.Batch = reader["Batch"].ToString();
                             saleItems.MRP = Convert.ToDecimal(reader["MRP"]);
                             saleItems.FullQty = Convert.ToInt32(reader["TotalSold"]);
                             saleItems.NetAmount = "₹" + Convert.ToDecimal(reader["SoldAmount"]).ToString();
-                            AllFastestSaleItems.Add(saleItems);
+                            AllSlowestSaleItems.Add(saleItems);
                         }
                     }
                 }
             }
-            TotalPages = (int)Math.Ceiling((double)AllFastestSaleItems.Count / ItemsPerPage);
-            UpdateFilteredFastestSale();
+            TotalPages = (int)Math.Ceiling((double)AllSlowestSaleItems.Count / ItemsPerPage);
+            UpdateFilteredSlowestSale();
             UpdateButtonStates();
         }
-        private void UpdateFilteredFastestSale()
+        private void UpdateFilteredSlowestSale()
         {
-            FilteredFastestSaleItems.Clear();
+            FilteredSlowestSaleItems.Clear();
 
             int startIndex = (CurrentPage - 1) * ItemsPerPage;
-            var itemsToShow = AllFastestSaleItems.Skip(startIndex).Take(ItemsPerPage);
+            var itemsToShow = AllSlowestSaleItems.Skip(startIndex).Take(ItemsPerPage);
 
             foreach (var item in itemsToShow)
-                FilteredFastestSaleItems.Add(item);
+                FilteredSlowestSaleItems.Add(item);
         }
         private void UpdateButtonStates()
         {

@@ -20,11 +20,11 @@ using System.Windows.Shapes;
 
 namespace Phramacy_Product.Views.Cards
 {
-    public partial class SalesMargin : UserControl, INotifyPropertyChanged
+    public partial class ShortBook : UserControl, INotifyPropertyChanged
     {
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["databaseConnection"].ConnectionString;
-        public ObservableCollection<SaleItems> AllFastestSaleItems { get; set; } = new ObservableCollection<SaleItems>();
-        public ObservableCollection<SaleItems> FilteredFastestSaleItems { get; set; } = new ObservableCollection<SaleItems>();
+        public ObservableCollection<ShortBookItem> AllShortBookItems { get; set; } = new ObservableCollection<ShortBookItem>();
+        public ObservableCollection<ShortBookItem> FilteredShortBookItems { get; set; } = new ObservableCollection<ShortBookItem>();
         private int currentPage = 1;
         public int CurrentPage
         {
@@ -35,7 +35,7 @@ namespace Phramacy_Product.Views.Cards
                 {
                     currentPage = value;
                     OnPropertyChanged(nameof(CurrentPage));
-                    UpdateFilteredFastestSale();
+                    UpdateFilteredShortBookItem();
                     UpdateButtonStates(); // Call this to update button states
                 }
             }
@@ -49,7 +49,7 @@ namespace Phramacy_Product.Views.Cards
             {
                 itemsPerPage = value;
                 OnPropertyChanged(nameof(ItemsPerPage));
-                UpdateFilteredFastestSale();
+                UpdateFilteredShortBookItem();
                 UpdateButtonStates(); // Call this to update button states
             }
         }
@@ -98,26 +98,26 @@ namespace Phramacy_Product.Views.Cards
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string name) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        public string TotalSaleAmount =>
-      AllFastestSaleItems.Any()
-       ? " ₹" + AllFastestSaleItems
-           .Select(x => Decimal.TryParse(x.NetAmount.Replace("₹", "").Replace(",", ""), out var amt) ? amt : 0)
-           .Sum()
-           .ToString("N0")
-       : " ₹0";
+      //  public string TotalSaleAmount =>
+      //AllShortBookItems.Any()
+      // ? " ₹" + AllShortBookItems
+      //     .Select(x => Decimal.TryParse(x.NetAmount.Replace("₹", "").Replace(",", ""), out var amt) ? amt : 0)
+      //     .Sum()
+      //     .ToString("N0")
+      // : " ₹0";
 
-        public SalesMargin()
+        public ShortBook()
         {
             InitializeComponent();
             DataContext = this;
-            LoadFastestSaleItems();
+            LoadShortBookItems();
         }
-        private void LoadFastestSaleItems()
+        private void LoadShortBookItems()
         {
-            AllFastestSaleItems.Clear();
-            String query = @" SELECT top(20) ItemName,Batch,MRP,ItemId,SUM(Quantity) AS TotalSold,sum(NetAmount) as SoldAmount 
-                    FROM SaleItems where IsDeleted = 0 and Is_Returned = 0
-                     GROUP BY ItemName,Batch,MRP,ItemId ORDER BY TotalSold DESC;";
+            AllShortBookItems.Clear();
+            String query = @" SELECT top(30) ItemName,Manufacturer,Priority,CurrentStock FROM ShortBookItems 
+                     where IsDeleted = 0 
+                     ORDER BY CurrentStock asc;";
 
             using (SqlConnection con = new SqlConnection(connectionString))
             {
@@ -128,30 +128,29 @@ namespace Phramacy_Product.Views.Cards
                     {
                         while (reader.Read())
                         {
-                            SaleItems saleItems = new SaleItems();
-                            saleItems.ItemName = reader["ItemName"].ToString();
-                            saleItems.Batch= reader["Batch"].ToString();
-                            saleItems.MRP = Convert.ToDecimal(reader["MRP"]);
-                            saleItems.FullQty = Convert.ToInt32(reader["TotalSold"]);
-                            saleItems.NetAmount = "₹" + Convert.ToDecimal(reader["SoldAmount"]).ToString();
-                            AllFastestSaleItems.Add(saleItems);
+                            ShortBookItem shortBookItem = new ShortBookItem();
+                            shortBookItem.itemName = reader["ItemName"].ToString();
+                            shortBookItem.priority = reader["Priority"].ToString();
+                            shortBookItem.manufacturer = reader["Manufacturer"].ToString();
+                            shortBookItem.currentStock = Convert.ToInt32(reader["CurrentStock"]);
+                            AllShortBookItems.Add(shortBookItem);
                         }
                     }
                 }
             }
-            TotalPages = (int)Math.Ceiling((double)AllFastestSaleItems.Count / ItemsPerPage);
-            UpdateFilteredFastestSale();
+            TotalPages = (int)Math.Ceiling((double)AllShortBookItems.Count / ItemsPerPage);
+            UpdateFilteredShortBookItem();
             UpdateButtonStates();
         }
-        private void UpdateFilteredFastestSale()
+        private void UpdateFilteredShortBookItem()
         {
-            FilteredFastestSaleItems.Clear();
+            FilteredShortBookItems.Clear();
 
             int startIndex = (CurrentPage - 1) * ItemsPerPage;
-            var itemsToShow = AllFastestSaleItems.Skip(startIndex).Take(ItemsPerPage);
+            var itemsToShow = AllShortBookItems.Skip(startIndex).Take(ItemsPerPage);
 
             foreach (var item in itemsToShow)
-                FilteredFastestSaleItems.Add(item);
+                FilteredShortBookItems.Add(item);
         }
         private void UpdateButtonStates()
         {
