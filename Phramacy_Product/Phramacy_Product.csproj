@@ -250,6 +250,18 @@
     <Compile Include="DataModel\SaleDetail.cs" />
     <Compile Include="DataModel\Medicine.cs" />
     <Compile Include="DataModel\SaleItemReturn.cs" />
+    <Compile Include="Views\Analytics\ActiveUsers.xaml.cs">
+      <DependentUpon>ActiveUsers.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Analytics\AnalyticsPage.xaml.cs">
+      <DependentUpon>AnalyticsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Analytics\GrossRevenue.xaml.cs">
+      <DependentUpon>GrossRevenue.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Analytics\TrafficDistribution.xaml.cs">
+      <DependentUpon>TrafficDistribution.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Components\Dashboard.xaml.cs">
       <DependentUpon>Dashboard.xaml</DependentUpon>
     </Compile>
@@ -336,6 +348,22 @@
       <DependentUpon>SaleReturn.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Sales\SaleReturn\SalesReturnViewModel.cs" />
+    <Page Include="Views\Analytics\ActiveUsers.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Analytics\AnalyticsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Analytics\GrossRevenue.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Analytics\TrafficDistribution.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Cards\CollectDueAmount.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -562,6 +590,12 @@
     <Resource Include="Assets\EpharmaLogin.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Assets\ProfilePictures\image_1.png" />
+    <Resource Include="Assets\ProfilePictures\image_2.png" />
+    <Resource Include="Assets\ProfilePictures\image_6.png" />
+    <Resource Include="Assets\ProfilePictures\image_5.png" />
+    <Resource Include="Assets\ProfilePictures\image_4.png" />
+    <Resource Include="Assets\ProfilePictures\image_3.png" />
     <Content Include="libmupdf.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

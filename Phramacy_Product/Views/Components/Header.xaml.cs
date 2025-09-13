@@ -24,6 +24,10 @@ namespace Phramacy_Product.Views.Components
         {
             InitializeComponent();
         }
+        private void NavigateToBusinessAnalytics(object sender, RoutedEventArgs e)
+        {
+            NavigateToPage(new Views.Analytics.AnalyticsPage());
+        }
         private void NavigateToDistributors(object sender, RoutedEventArgs e)
         {
             NavigateToPage(new Views.Distributors.DistributorsPage());

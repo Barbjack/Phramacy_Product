@@ -105,6 +105,15 @@
                 </MenuItem>
                 <!-- Inventory -  -->
                 <MenuItem Style="{StaticResource TopLevelMenuItemStyle}"
+                       Click="NavigateToBusinessAnalytics">
+                    <MenuItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="HomeAnalytics" Width="20" Height="20" Foreground="White" Margin="0,3,7,0"/>
+                            <TextBlock Text="Analytics" Foreground="White" FontWeight="Bold" Margin="2,5,0,5"/>
+                        </StackPanel>
+                    </MenuItem.Header>
+                </MenuItem>
+                <MenuItem Style="{StaticResource TopLevelMenuItemStyle}"
                       Click="NavigateToInventory">
                     <MenuItem.Header>
                         <StackPanel Orientation="Horizontal">

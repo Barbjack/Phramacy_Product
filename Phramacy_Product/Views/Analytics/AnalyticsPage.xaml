@@ -1,0 +1,49 @@
+﻿<Page x:Class="Phramacy_Product.Views.Analytics.AnalyticsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Phramacy_Product.Views.Analytics"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+      xmlns:components="clr-namespace:Phramacy_Product.Views.Components"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="AnalyticsPage"
+      Background="{DynamicResource MaterialDesignPaper}">
+    
+
+        <Grid>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" x:Name="AnalyticsContent">
+                <Grid Margin="10"
+              HorizontalAlignment="Stretch" VerticalAlignment="Top">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <local:GrossRevenue Grid.Row="0" Grid.Column="0"/>
+                    <local:ActiveUsers Grid.Row="0" Grid.Column="1"/>
+                    <local:TrafficDistribution Grid.Row="0" Grid.Column="2"/>
+
+                    <!--cards:CollectDueAmount Grid.Row="1" Grid.Column="0"/>
+                    <cards:PayDueAmount Grid.Row="1" Grid.Column="1"/>
+                    <cards:ExpiringItemCard Grid.Row="1" Grid.Column="2"/>
+
+                    <cards:ShortBook Grid.Row="2" Grid.Column="0"/>
+                    <cards:MonthlySaleGraph Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"/-->
+
+                </Grid>
+            </ScrollViewer>
+            <!--Frame x:Name="MainFrame"
+           NavigationUIVisibility="Hidden"
+           Visibility="Collapsed"/-->
+        </Grid>
+</Page>
+
