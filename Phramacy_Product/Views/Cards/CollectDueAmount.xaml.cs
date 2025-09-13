@@ -36,12 +36,12 @@ namespace Phramacy_Product.Views.Cards
                     currentPage = value;
                     OnPropertyChanged(nameof(CurrentPage));
                     updateCollectDueAmount();
-                    UpdateButtonStates(); // Call this to update button states
+                    UpdateButtonStates(); 
                 }
             }
         }
 
-        private int itemsPerPage = 7;
+        private int itemsPerPage = 8;
         public int ItemsPerPage
         {
             get => itemsPerPage;
@@ -50,7 +50,7 @@ namespace Phramacy_Product.Views.Cards
                 itemsPerPage = value;
                 OnPropertyChanged(nameof(ItemsPerPage));
                 updateCollectDueAmount();
-                UpdateButtonStates(); // Call this to update button states
+                UpdateButtonStates(); 
             }
         }
 
@@ -62,11 +62,10 @@ namespace Phramacy_Product.Views.Cards
             {
                 totalPages = value;
                 OnPropertyChanged(nameof(TotalPages));
-                UpdateButtonStates(); // Call this to update button states
+                UpdateButtonStates(); 
             }
         }
 
-        // New properties for button states
         private bool isPreviousEnabled = false;
         public bool IsPreviousEnabled
         {

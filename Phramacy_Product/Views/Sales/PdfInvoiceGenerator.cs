@@ -142,7 +142,7 @@ namespace Phramacy_Product.Views.Sales
 
             var renderer = new PdfDocumentRenderer(true) { Document = doc };
             renderer.RenderDocument();
-            string folderPath = @"SaleInvoices";
+            string folderPath = @"C:\Users\Developer\Desktop\SaleInvoices";
             if (!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);
             string fileName = $"Invoice_{sale.BillNo}.pdf";
@@ -308,7 +308,7 @@ namespace Phramacy_Product.Views.Sales
             // PDF rendering and saving
             var renderer = new PdfDocumentRenderer(true) { Document = doc };
             renderer.RenderDocument();
-            string folderPath = @"SaleInvoices";
+            string folderPath = @"C:\Users\Developer\Desktop\SaleInvoices";
 
 
             if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);

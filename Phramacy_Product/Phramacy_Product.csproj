@@ -364,7 +364,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Cards\UpcomingPdc.xaml">
+    <Page Include="Views\Cards\MonthlySaleGraph.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -407,8 +407,8 @@
     <Compile Include="Views\Cards\SlowestSelling.xaml.cs">
       <DependentUpon>SlowestSelling.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Cards\UpcomingPdc.xaml.cs">
-      <DependentUpon>UpcomingPdc.xaml</DependentUpon>
+    <Compile Include="Views\Cards\MonthlySaleGraph.xaml.cs">
+      <DependentUpon>MonthlySaleGraph.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Components\Header.xaml.cs">
       <DependentUpon>Header.xaml</DependentUpon>

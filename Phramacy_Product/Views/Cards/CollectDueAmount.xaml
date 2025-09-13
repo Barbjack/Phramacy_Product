@@ -7,64 +7,64 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
 
     <Border Margin="10" Padding="10" Background="White" CornerRadius="8"
-        BorderBrush="#DDD" BorderThickness="1"
-        materialDesign:ShadowAssist.ShadowDepth="Depth1">
-    <StackPanel>
-        <!-- Title and Total Due -->
-        <DockPanel Margin="0,0,0,10">
-            <TextBlock Text="Need to Collect" FontWeight="Bold" FontSize="16" DockPanel.Dock="Left"/>
-            <TextBlock Text="{Binding CollectDueAmountsTotal, StringFormat=- ₹{0:N0}}" 
-                       FontWeight="Bold" Foreground="Red" FontSize="16" HorizontalAlignment="Right"/>
-        </DockPanel>
-        <Grid Grid.Row="1" Margin="0,0,0,8">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="Customer" FontWeight="SemiBold" FontSize="14" Grid.Column="0"/>
-            <TextBlock Text="Amount Due" FontWeight="SemiBold" FontSize="14" Grid.Column="1"/>
-        </Grid>
+            BorderBrush="#DDD" BorderThickness="1"
+            materialDesign:ShadowAssist.ShadowDepth="Depth1">
 
-        <!-- Item List -->
-        <ItemsControl ItemsSource="{Binding FilleteredDueAmounts}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel>
-                        <Grid Margin="0,4">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-                            <!-- Circle with Initial -->
-                            <Border Width="35" Height="35" CornerRadius="100" 
-                                Background="{Binding AvatarColor}" VerticalAlignment="Center">
-                                <TextBlock Text="{Binding Initial}" 
-                                       Foreground="White" FontWeight="Bold"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
+            <DockPanel Grid.Row="0" Margin="0,0,0,10">
+                <TextBlock Text="Need to Collect" FontWeight="Bold" FontSize="16" DockPanel.Dock="Left"/>
+                <TextBlock Text="{Binding CollectDueAmountsTotal, StringFormat=- ₹{0:N0}}" 
+                           FontWeight="Bold" Foreground="Red" FontSize="16" HorizontalAlignment="Right"/>
+            </DockPanel>
 
-                            <!-- Name and Mobile -->
-                            <StackPanel Grid.Column="1" Margin="10,0" VerticalAlignment="Center">
-                                <TextBlock Text="{Binding CustomerName}" FontWeight="SemiBold" FontSize="14"/>
-                                <TextBlock Text="{Binding MobileNumber}" FontSize="12" Foreground="Gray"/>
-                            </StackPanel>
+            <Grid Grid.Row="0" Margin="0,40,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Customer" FontWeight="SemiBold" FontSize="14" Grid.Column="0"/>
+                <TextBlock Text="Amount Due" FontWeight="SemiBold" FontSize="14" Grid.Column="1"/>
+            </Grid>
 
-                            <!-- Due Amount -->
-                            <TextBlock Grid.Column="2" Text="{Binding DueAmount}" 
-                                   Foreground="Red" FontWeight="SemiBold" FontSize="14"
-                                   VerticalAlignment="Center"/>
+            <ItemsControl Grid.Row="1" ItemsSource="{Binding FilleteredDueAmounts}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <Grid Margin="0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
 
-                        </Grid>
-                        <Border Height="1" Background="#EEE" Margin="0,4"/>
+                                <Border Width="35" Height="35" CornerRadius="100" 
+                                        Background="{Binding AvatarColor}" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Initial}" 
+                                               Foreground="White" FontWeight="Bold"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
 
-                    </StackPanel>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                                <StackPanel Grid.Column="1" Margin="10,0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding CustomerName}" FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBlock Text="{Binding MobileNumber}" FontSize="12" Foreground="Gray"/>
+                                </StackPanel>
 
-        <!-- Toggle Button -->
+                                <TextBlock Grid.Column="2" Text="{Binding DueAmount}" 
+                                           Foreground="Red" FontWeight="SemiBold" FontSize="14"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                            <Border Height="1" Background="#EEE" Margin="0,4"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
                 <Button Background="DarkBlue" Content="&lt;&lt;" Click="FirstPageClick" Margin="0,0,5,0"/>
                 <Button Background="DarkBlue" Content="&lt;" Click="PreviousPageClick" Margin="0,0,5,0"/>
@@ -74,6 +74,6 @@
                 <Button Background="DarkBlue" Content=">" Click="NextPageClick" Margin="5,0,5,0"/>
                 <Button Background="DarkBlue" Content=">>" Click="LastPageClick"/>
             </StackPanel>
-        </StackPanel>
-</Border>
+        </Grid>
+    </Border>
 </UserControl>

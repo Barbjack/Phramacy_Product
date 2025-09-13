@@ -44,7 +44,6 @@
 
             <DockPanel LastChildFill="True">
 
-                <!-- Header Section -->
                 <Grid DockPanel.Dock="Top" Margin="0,0,0,20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -53,17 +52,28 @@
 
                     <TextBlock Text="Sales" FontSize="28" FontWeight="SemiBold" Foreground="#2563EB" VerticalAlignment="Center" Margin="15,0"/>
                     <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" x:Name="ActionPanel">
-                        <StackPanel Orientation="Horizontal"  VerticalAlignment="Center">
-                            <Button x:Name="SearchButton" Width="40" Height="36" Margin="20,0,25,0" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Search" Click="SearchButton_Click">
-                                <materialDesign:PackIcon Kind="Magnify" Width="20" Height="20" />
+
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,20,0">
+                            <DatePicker x:Name="StartDatePicker" Foreground="DarkBlue" materialDesign:HintAssist.Hint="Start Date" Width="120" Margin="0,0,5,0" />
+                            <DatePicker x:Name="EndDatePicker" Foreground="DarkBlue" materialDesign:HintAssist.Hint="End Date" Width="120" Margin="0,0,5,0" />
+                            <Button x:Name="FilterButton" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Filter by Date" Click="FilterButton_Click">
+                                <materialDesign:PackIcon Kind="Filter" Width="20" Height="20" Foreground="DarkBlue"/>
                             </Button>
-                            <TextBox x:Name="SearchBox" Width="200" Height="36" VerticalAlignment="Center" Visibility="Collapsed" Background="White" Foreground="Black" materialDesign:HintAssist.Hint="Search..." LostFocus="SearchBox_LostFocus" Margin="0,0,25,0" />
+                            <Button x:Name="ClearFilterButton" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Clear Filter" Click="ClearFilterButton_Click">
+                                <materialDesign:PackIcon Kind="FilterOff" Width="20" Height="20"  Foreground="DarkBlue"/>
+                            </Button>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button x:Name="SearchButton" Width="40" Height="36" Margin="20,0,25,0" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Search" Click="SearchButton_Click">
+                                <materialDesign:PackIcon Kind="Magnify" Width="20" Height="20" Foreground="DarkBlue" />
+                            </Button>
+                            <TextBox x:Name="SearchBox" Width="200" Height="36" VerticalAlignment="Center" Visibility="Collapsed" Background="White" Foreground="DarkBlue" materialDesign:HintAssist.Hint="Search..." LostFocus="SearchBox_LostFocus" Margin="0,0,25,0" />
                         </StackPanel>
                         <Button Content="+ New Sale" Click="NewSaleButton_Click" Height="36" Padding="20,0" Background="#2563EB" Foreground="White" FontWeight="SemiBold" BorderThickness="1" Cursor="Hand" Margin="0,0,25,0" Style="{StaticResource NoHoverFlatButtonStyle}" />
                         <Button Content="Sale Return" Click="SaleReturn_Click" Height="36" Padding="20,0" Background="#16A34A" Foreground="White" FontWeight="SemiBold" BorderThickness="1" Cursor="Hand" Margin="0,0,25,0" Style="{StaticResource NoHoverFlatButtonStyle}" />
                     </StackPanel>
                 </Grid>
-                <!-- Body Content Wrapped in a Card -->
                 <Border Background="White" CornerRadius="6" Padding="10" Margin="0" Effect="{DynamicResource MaterialDesignElevation1}">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -71,9 +81,8 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <!-- Main DataGrid -->
                         <DataGrid x:Name="SalesDataGrid" Grid.Row="0" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" HeadersVisibility="Column" 
-                             GridLinesVisibility="None"  Margin="10"  RowHeight="40"  FontSize="14"  ColumnHeaderHeight="40" ColumnHeaderStyle="{StaticResource BlueHeaderStyle}">
+                                  GridLinesVisibility="None"  Margin="10"  RowHeight="40"  FontSize="14"  ColumnHeaderHeight="40" ColumnHeaderStyle="{StaticResource BlueHeaderStyle}">
                             <DataGrid.RowStyle>
                                 <Style TargetType="DataGridRow">
                                     <Setter Property="BorderThickness" Value="0,0,0,1"/>
@@ -93,7 +102,7 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Click="ViewPDF_Click" Tag="{Binding BillPath}" ToolTip="View PDF" Visibility="{Binding BillPath, 
-                                                Converter={StaticResource NullToVisibilityConverter}}" Style="{StaticResource MaterialDesignToolButton}">
+                                                    Converter={StaticResource NullToVisibilityConverter}}" Style="{StaticResource MaterialDesignToolButton}">
                                                 <materialDesign:PackIcon Kind="Eye" Width="20" Height="20" Foreground="#1E3A8A"/>
                                             </Button>
                                         </DataTemplate>
@@ -128,9 +137,8 @@
                             </StackPanel>
                         </Grid>
                         <Rectangle Fill="#80000000" Visibility="{Binding Visibility, ElementName=EditPanel}" Panel.ZIndex="99"/>
-                        <!-- Edit Overlay Panel (layered above everything else) -->
                         <Border x:Name="EditPanel" Background="White" CornerRadius="8" Padding="20" Margin="40" Visibility="Collapsed" VerticalAlignment="Center" 
-                                    HorizontalAlignment="Center" Width="400" Panel.ZIndex="100" Effect="{DynamicResource MaterialDesignElevation3}">
+                                HorizontalAlignment="Center" Width="400" Panel.ZIndex="100" Effect="{DynamicResource MaterialDesignElevation3}">
                             <StackPanel>
                                 <TextBlock Text="SaleDetails" FontSize="20" HorizontalAlignment="Center" FontWeight="Bold" Margin="0,0,0,10"/>
 

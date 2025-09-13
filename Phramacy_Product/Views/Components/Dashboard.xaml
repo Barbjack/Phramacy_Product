@@ -12,27 +12,39 @@
         Background="{DynamicResource MaterialDesignPaper}">
         
     <DockPanel>
-        <components:Header DockPanel.Dock="Top"/>
-        <!-- Content Grid with Frame and Dashboard -->
+        <components:Header DockPanel.Dock="Top"/> 
         <Grid>
-            <!-- Dashboard Section -->
             <ScrollViewer VerticalScrollBarVisibility="Auto" x:Name="DashboardContent">
-                <UniformGrid Columns="3" Rows="3" Margin="10"
-                             HorizontalAlignment="Stretch" VerticalAlignment="Top">
-                    <cards:SalesPurchaseCard/>
-                    <cards:SalesMargin/>
-                    <cards:SlowestSelling/>
-                    <cards:CollectDueAmount/>
-                    <cards:PayDueAmount/>
-                    <cards:ExpiringItemCard/>
-                    <cards:ShortBook/>
-                    
-                </UniformGrid>
+                <Grid Margin="10"
+              HorizontalAlignment="Stretch" VerticalAlignment="Top">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <cards:SalesPurchaseCard Grid.Row="0" Grid.Column="0"/>
+                    <cards:SalesMargin Grid.Row="0" Grid.Column="1"/>
+                    <cards:SlowestSelling Grid.Row="0" Grid.Column="2"/>
+
+                    <cards:CollectDueAmount Grid.Row="1" Grid.Column="0"/>
+                    <cards:PayDueAmount Grid.Row="1" Grid.Column="1"/>
+                    <cards:ExpiringItemCard Grid.Row="1" Grid.Column="2"/>
+
+                    <cards:ShortBook Grid.Row="2" Grid.Column="0"/>
+                    <cards:MonthlySaleGraph Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"/>
+
+                </Grid>
             </ScrollViewer>
-            <!-- Navigation Frame (initially hidden) -->
             <Frame x:Name="MainFrame"
-                   NavigationUIVisibility="Hidden"
-                   Visibility="Collapsed"/>
+           NavigationUIVisibility="Hidden"
+           Visibility="Collapsed"/>
         </Grid>
     </DockPanel>
 </Window>

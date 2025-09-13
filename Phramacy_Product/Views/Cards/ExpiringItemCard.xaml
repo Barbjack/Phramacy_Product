@@ -9,10 +9,17 @@
     <Border Margin="10" Padding="10" Background="White" CornerRadius="6"
             BorderBrush="#DDD" BorderThickness="1"
             materialDesign:ShadowAssist.ShadowDepth="Depth1">
-        <StackPanel>
-            <TextBlock Text="Expiring Items" FontWeight="Bold" FontSize="16" Margin="0,0,0,8" />
 
-            <ItemsControl ItemsSource="{Binding FilteredExpiringItems}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="Expiring Items" FontWeight="Bold" FontSize="16" Margin="0,0,0,8" />
+
+            <ItemsControl Grid.Row="1" ItemsSource="{Binding FilteredExpiringItems}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
@@ -44,17 +51,15 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <Grid Margin="0,8,0,0">
-                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-                    <Button Background="DarkBlue" Content="&lt;&lt;" Click="FirstPageClick" Margin="0,0,5,0"/>
-                    <Button Background="DarkBlue" Content="&lt;" Click="PreviousPageClick" Margin="0,0,5,0"/>
-                    <TextBlock Text="{Binding CurrentPage}" VerticalAlignment="Center" Margin="5,0"/>
-                    <TextBlock Text="/" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding TotalPages}" VerticalAlignment="Center" Margin="5,0"/>
-                    <Button Background="DarkBlue" Content=">" Click="NextPageClick" Margin="5,0,5,0"/>
-                    <Button Background="DarkBlue" Content=">>" Click="LastPageClick"/>
-                </StackPanel>
-            </Grid>
-        </StackPanel>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                <Button Background="DarkBlue" Content="&lt;&lt;" Click="FirstPageClick" Margin="0,0,5,0"/>
+                <Button Background="DarkBlue" Content="&lt;" Click="PreviousPageClick" Margin="0,0,5,0"/>
+                <TextBlock Text="{Binding CurrentPage}" VerticalAlignment="Center" Margin="5,0"/>
+                <TextBlock Text="/" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding TotalPages}" VerticalAlignment="Center" Margin="5,0"/>
+                <Button Background="DarkBlue" Content=">" Click="NextPageClick" Margin="5,0,5,0"/>
+                <Button Background="DarkBlue" Content=">>" Click="LastPageClick"/>
+            </StackPanel>
+        </Grid>
     </Border>
 </UserControl>

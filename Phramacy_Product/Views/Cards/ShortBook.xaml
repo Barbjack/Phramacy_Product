@@ -6,73 +6,78 @@
              xmlns:local="clr-namespace:Phramacy_Product.Views.Cards"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
     <Border Margin="10" Padding="10" Background="White" CornerRadius="8"
-        BorderBrush="#DDD" BorderThickness="1"
-        materialDesign:ShadowAssist.ShadowDepth="Depth1">
-        <StackPanel>
-            <StackPanel.Resources>
+            BorderBrush="#DDD" BorderThickness="1"
+            materialDesign:ShadowAssist.ShadowDepth="Depth1">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.Resources>
                 <Style TargetType="Grid">
                     <Setter Property="Grid.IsSharedSizeScope" Value="True"/>
                 </Style>
-            </StackPanel.Resources>
+            </Grid.Resources>
 
-            <!-- Header: Need to Pay + Amount -->
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
+            <StackPanel Grid.Row="0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                <TextBlock Text="ShortBook" Foreground="DarkBlue" FontWeight="Bold" FontSize="16" Grid.Column="0"/>
-                <!--TextBlock Text="{Binding TotalSaleAmount}" FontWeight="Bold" FontSize="16" Grid.Column="1"
-                       Foreground="Red" HorizontalAlignment="Right"/-->
-            </Grid>
+                    <TextBlock Text="ShortBook" Foreground="DarkBlue" FontWeight="Bold" FontSize="16" Grid.Column="0"/>
+                </Grid>
 
-            <Grid Grid.Row="1" Margin="0,10,0,8">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Medicine Name" FontWeight="SemiBold" FontSize="14" Grid.Column="0"/>
-                <TextBlock Text="CurrentStock" FontWeight="SemiBold" FontSize="14" Grid.Column="1"/>
-            </Grid>
-            <!-- List Rows -->
-            <ItemsControl ItemsSource="{Binding FilteredShortBookItems}">
+                <Grid Margin="0,10,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Medicine Name" FontWeight="SemiBold" FontSize="14" Grid.Column="0"/>
+                    <TextBlock Text="CurrentStock" FontWeight="SemiBold" FontSize="14" Grid.Column="1"/>
+                </Grid>
+            </StackPanel>
+
+            <ItemsControl Grid.Row="1" ItemsSource="{Binding FilteredShortBookItems}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Margin="0,0">
                             <Grid Margin="0,3">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="2*" SharedSizeGroup="DistributorCol"/>
+                                    <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="auto" SharedSizeGroup="AmountCol"/>
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0">
                                     <TextBlock Text="{Binding itemName}" FontSize="14" Padding="0,2,0,0"
-                                           Foreground="Blue" />
+                                               Foreground="Blue" />
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock>
-        <Run Foreground ="IndianRed" Text="Manufacturer:"/>
-        <Run Text="{Binding manufacturer}" />
+                                            <Run Foreground ="IndianRed" Text="Manufacturer:"/>
+                                            <Run Text="{Binding manufacturer}" />
                                         </TextBlock>
                                         <TextBlock Text=" | "/>
                                         <TextBlock>
-        <Run Foreground="IndianRed" Text="Priority:"/>
-        <Run Text="{Binding priority}"/>
+                                            <Run Foreground="IndianRed" Text="Priority:"/>
+                                            <Run Text="{Binding priority}"/>
                                         </TextBlock>
                                     </StackPanel>
                                 </StackPanel>
 
-                                <TextBlock Grid.Column="1" Text="{Binding currentStock}" FontSize="14"
-                                       Foreground="Black" HorizontalAlignment="Right" Padding="5,0"/>
+                                <TextBlock Grid.Column="2" Text="{Binding currentStock}" FontSize="14"
+                                           Foreground="Black" HorizontalAlignment="Right" Padding="5,0"/>
                             </Grid>
-
-                            <!-- Separator -->
                             <Border Height="1" Background="#EEE" Margin="0,4"/>
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <!-- Toggle Button -->
+
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
                 <Button Background="DarkBlue" Content="&lt;&lt;" Click="FirstPageClick" Margin="0,0,5,0"/>
                 <Button Background="DarkBlue" Content="&lt;" Click="PreviousPageClick" Margin="0,0,5,0"/>
@@ -82,6 +87,6 @@
                 <Button Background="DarkBlue" Content=">" Click="NextPageClick" Margin="5,0,5,0"/>
                 <Button Background="DarkBlue" Content=">>" Click="LastPageClick"/>
             </StackPanel>
-        </StackPanel>
+        </Grid>
     </Border>
 </UserControl>

@@ -41,7 +41,7 @@ namespace Phramacy_Product.Views.Cards
             }
         }
 
-        private int itemsPerPage = 7;
+        private int itemsPerPage = 8;
         public int ItemsPerPage
         {
             get => itemsPerPage;
@@ -115,10 +115,10 @@ namespace Phramacy_Product.Views.Cards
         private void LoadFastestSaleItems()
         {
             AllFastestSaleItems.Clear();
-            String query = @" SELECT top(20) ItemName,Batch,MRP,ItemId,SUM(Quantity) AS TotalSold,sum(NetAmount) as SoldAmount 
-                    FROM SaleItems where IsDeleted = 0 and Is_Returned = 0
-                     GROUP BY ItemName,Batch,MRP,ItemId ORDER BY TotalSold DESC;";
-
+            String query = @"SELECT ItemName,Batch,MRP,ItemId,SUM(Quantity) AS TotalSold,sum(NetAmount) as SoldAmount
+                           FROM SaleItems WHERE IsDeleted = 0 AND Is_Returned = 0 AND CreatedAt >= DATEADD(month, -3, GETDATE())
+                           GROUP BY ItemName,Batch,MRP,ItemId
+                           ORDER BY TotalSold DESC;";
             using (SqlConnection con = new SqlConnection(connectionString))
             {
                 using (SqlCommand com = new SqlCommand(query, con))

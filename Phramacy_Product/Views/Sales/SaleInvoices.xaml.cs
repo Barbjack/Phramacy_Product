@@ -42,7 +42,7 @@ namespace Phramacy_Product.Views.Sales
         public int TotalPages
         {
             get => totalPages;
-            private set 
+            private set
             {
                 if (totalPages != value)
                 {
@@ -61,11 +61,21 @@ namespace Phramacy_Product.Views.Sales
             LoadSalesData();
         }
 
-        private void LoadSalesData()
+        private void LoadSalesData(DateTime? startDate = null, DateTime? endDate = null)
         {
             allSales.Clear();
             string query = "SELECT BillNumber, CreatedAt, BillDate, CreatedBy, CustomerName, PatientName, " +
                            "TotalAmount, PaymentType, BillPath FROM SaleDetails";
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                query += " WHERE CreatedAt >= @StartDate AND CreatedAt < @EndDate";
+            }
+            else
+            {
+                query += " WHERE YEAR(CreatedAt) = YEAR(GETDATE()) AND MONTH(CreatedAt) = MONTH(GETDATE())";
+            }
+            query += " ORDER BY CreatedAt DESC";
+
 
             try
             {
@@ -73,31 +83,36 @@ namespace Phramacy_Product.Views.Sales
                 {
                     conn.Open();
                     using (SqlCommand com = new SqlCommand(query, conn))
-                    using (SqlDataReader reader = com.ExecuteReader())
                     {
-                        int srNo = 1;
-                        while (reader.Read())
+                        if (startDate.HasValue && endDate.HasValue)
                         {
-                            allSales.Add(new SaleDetail
+                            com.Parameters.AddWithValue("@StartDate", startDate.Value);
+                            com.Parameters.AddWithValue("@EndDate", endDate.Value.AddDays(1)); 
+                        }
+
+                        using (SqlDataReader reader = com.ExecuteReader())
+                        {
+                            int srNo = 1;
+                            while (reader.Read())
                             {
-                                SrNo = srNo++,
-                                BillNumber = reader["BillNumber"]?.ToString(),
-                                CreatedAt = reader["CreatedAt"] != DBNull.Value ? Convert.ToDateTime(reader["CreatedAt"]) : (DateTime?)null,
-                                BillDate = reader["BillDate"] != DBNull.Value ? Convert.ToDateTime(reader["BillDate"]) : (DateTime?)null,
-                                CreatedBy = reader["CreatedBy"]?.ToString(),
-                                CustomerName = reader["CustomerName"]?.ToString(),
-                                PatientName = reader["PatientName"]?.ToString(),
-                                TotalAmount = reader["TotalAmount"] != DBNull.Value ? Convert.ToDecimal(reader["TotalAmount"]) : 0,
-                                PaymentStatus = reader["PaymentType"]?.ToString(),
-                                BillPath = reader["BillPath"]?.ToString()
-                            });
+                                allSales.Add(new SaleDetail
+                                {
+                                    SrNo = srNo++,
+                                    BillNumber = reader["BillNumber"]?.ToString(),
+                                    CreatedAt = reader["CreatedAt"] != DBNull.Value ? Convert.ToDateTime(reader["CreatedAt"]) : (DateTime?)null,
+                                    BillDate = reader["BillDate"] != DBNull.Value ? Convert.ToDateTime(reader["BillDate"]) : (DateTime?)null,
+                                    CreatedBy = reader["CreatedBy"]?.ToString(),
+                                    CustomerName = reader["CustomerName"]?.ToString(),
+                                    PatientName = reader["PatientName"]?.ToString(),
+                                    TotalAmount = reader["TotalAmount"] != DBNull.Value ? Convert.ToDecimal(reader["TotalAmount"]) : 0,
+                                    PaymentStatus = reader["PaymentType"]?.ToString(),
+                                    BillPath = reader["BillPath"]?.ToString()
+                                });
+                            }
                         }
                     }
-
                 }
-
             }
-
             catch (SqlException ex)
             {
                 MessageBox.Show($"Database error: {ex.Message}");
@@ -107,7 +122,6 @@ namespace Phramacy_Product.Views.Sales
                 MessageBox.Show($"An error occurred while loading data: {ex.Message}");
             }
 
-            // After loading all data, apply the current search filter
             SearchBox_TextChanged(null, null);
             DisplayCurrentPage();
         }
@@ -156,9 +170,6 @@ namespace Phramacy_Product.Views.Sales
             if (string.IsNullOrEmpty(filter))
             {
                 filteredSales = allSales;
-                TotalPages = (int)Math.Ceiling(allSales.Count / (double)pageSize);
-                CurrentPage = 1;
-                DisplayCurrentPage();
             }
             else
             {
@@ -166,16 +177,15 @@ namespace Phramacy_Product.Views.Sales
                     .Where(x => x.CustomerName?.ToLower().Contains(filter) == true ||
                                 x.BillNumber?.ToLower().Contains(filter) == true)
                     .ToList();
-                SalesDataGrid.ItemsSource = filteredSales;
-                TotalPages = (int)Math.Ceiling(filteredSales.Count / (double)pageSize);
-                currentPage = 1;
-                DisplayCurrentPage();
             }
+
+            TotalPages = (int)Math.Ceiling(filteredSales.Count / (double)pageSize);
+            currentPage = 1;
+            DisplayCurrentPage();
         }
-       
+
         private void DisplayCurrentPage()
         {
-            // Ensure currentPage is not out of bounds
             if (currentPage < 1) currentPage = 1;
             if (currentPage > TotalPages) currentPage = TotalPages;
 
@@ -186,7 +196,6 @@ namespace Phramacy_Product.Views.Sales
 
             SalesDataGrid.ItemsSource = pagedData;
         }
-        
 
         private void ViewPDF_Click(object sender, RoutedEventArgs e)
         {
@@ -254,8 +263,6 @@ namespace Phramacy_Product.Views.Sales
                 MessageBox.Show("Invalid bill amount.");
                 return;
             }
-
-            // Using SelectedDate from DatePicker, which is more reliable than parsing a string from Text
             createdAt = editCreatedAt.SelectedDate ?? DateTime.MinValue;
             billDate = editBillDate.SelectedDate ?? DateTime.MinValue;
 
@@ -290,8 +297,7 @@ namespace Phramacy_Product.Views.Sales
                     {
                         MessageBox.Show("Sale record updated successfully.");
                         EditPanel.Visibility = Visibility.Collapsed;
-                        LoadSalesData(); // Refresh the DataGrid
-                    }
+                        LoadSalesData();                     }
                 }
             }
             catch (Exception ex)
@@ -299,7 +305,6 @@ namespace Phramacy_Product.Views.Sales
                 MessageBox.Show("Error updating record: " + ex.Message);
             }
         }
-
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
             var selected = (sender as FrameworkElement)?.DataContext as SaleDetail;
@@ -341,7 +346,6 @@ namespace Phramacy_Product.Views.Sales
 
         private void SearchBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            // Keep the search box visible if it has content, for better user experience
             if (string.IsNullOrWhiteSpace(SearchBox.Text))
             {
                 SearchBox.Visibility = Visibility.Collapsed;
@@ -369,6 +373,27 @@ namespace Phramacy_Product.Views.Sales
         {
             var newSaleReturn = new SaleReturn.SaleReturn();
             NavigationService?.Navigate(newSaleReturn);
+        }
+
+        private void FilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            DateTime? startDate = StartDatePicker.SelectedDate;
+            DateTime? endDate = EndDatePicker.SelectedDate;
+
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                LoadSalesData(startDate, endDate);
+            }
+            else
+            {
+                MessageBox.Show("Please select both a start and end date to filter.", "Missing Dates", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+        private void ClearFilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            StartDatePicker.SelectedDate = null;
+            EndDatePicker.SelectedDate = null;
+            LoadSalesData(); 
         }
     }
 

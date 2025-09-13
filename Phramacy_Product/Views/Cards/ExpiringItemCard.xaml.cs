@@ -34,7 +34,7 @@ namespace Phramacy_Product.Views.Cards
             }
         }
 
-        private int itemsPerPage = 7;
+        private int itemsPerPage = 8;
         public int ItemsPerPage
         {
             get => itemsPerPage;

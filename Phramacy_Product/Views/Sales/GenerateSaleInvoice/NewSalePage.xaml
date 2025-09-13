@@ -382,11 +382,35 @@ ValidatesOnDataErrors="True">
 
             <!-- Product Table -->
             <DataGrid x:Name="ProductGrid" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False" Margin="0,0,0,10" ColumnHeaderStyle="{StaticResource WhiteHeaderStyle}">
+                <DataGrid.RowDetailsTemplate>
+                    <DataTemplate>
+                        <Border x:Name="MedicineComposistion"  BorderBrush="Gray" BorderThickness="1" Margin="10,0,10,10" Padding="5">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock>
+                    <Run Text="Manufacturer Name: " FontWeight="Bold"/>
+                    <Run Text="{Binding CompanyName}"/>
+                    <Run Text=" | Type: " FontWeight="Bold"/>
+                    <Run Text="{Binding medicineType}"/>
+                                </TextBlock>
+                                <TextBlock Margin="0,5,0,0">
+                    <Run Text="Salt 1: " FontWeight="Bold"/>
+                    <Run Text="{Binding saltComposition1}"/>
+                    <Run Text=" | Salt 2: " FontWeight="Bold"/>
+                    <Run Text="{Binding saltComposition2}"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </DataGrid.RowDetailsTemplate>
+
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="PRODUCT NAME" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding ProductName}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding ProductName}" VerticalAlignment="Center" 
+                                           HorizontalAlignment="Center"
+                                           MouseLeftButtonDown="ProductName_MouseLeftButtonDown"
+                                           Cursor="Hand"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -415,7 +439,7 @@ ValidatesOnDataErrors="True">
                         </DataGridTemplateColumn.CellTemplate>
                         <DataGridTemplateColumn.CellEditingTemplate>
                             <DataTemplate>
-                                <TextBox Text="{Binding QtyF, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <TextBox Text="{Binding QtyF, UpdateSourceTrigger=PropertyChanged}" Background="White" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellEditingTemplate>
                     </DataGridTemplateColumn>
@@ -428,7 +452,7 @@ ValidatesOnDataErrors="True">
                         </DataGridTemplateColumn.CellTemplate>
                         <DataGridTemplateColumn.CellEditingTemplate>
                             <DataTemplate>
-                                <TextBox Text="{Binding QtyL, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <TextBox Text="{Binding QtyL, UpdateSourceTrigger=PropertyChanged}" Background="White"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellEditingTemplate>
                     </DataGridTemplateColumn>
@@ -441,7 +465,7 @@ ValidatesOnDataErrors="True">
                         </DataGridTemplateColumn.CellTemplate>
                         <DataGridTemplateColumn.CellEditingTemplate>
                             <DataTemplate>
-                                <TextBox Text="{Binding MRP, UpdateSourceTrigger=PropertyChanged, StringFormat='0.00'}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <TextBox Text="{Binding MRP, UpdateSourceTrigger=PropertyChanged, StringFormat='0.00'}" Background="White"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellEditingTemplate>
                     </DataGridTemplateColumn>
@@ -454,7 +478,7 @@ ValidatesOnDataErrors="True">
                         </DataGridTemplateColumn.CellTemplate>
                         <DataGridTemplateColumn.CellEditingTemplate>
                             <DataTemplate>
-                                <TextBox Text="{Binding Discount, UpdateSourceTrigger=PropertyChanged, StringFormat='0.00'}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <TextBox Text="{Binding Discount, UpdateSourceTrigger=PropertyChanged, StringFormat='0.00'}" Background="White"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellEditingTemplate>
                     </DataGridTemplateColumn>
@@ -467,7 +491,7 @@ ValidatesOnDataErrors="True">
                         </DataGridTemplateColumn.CellTemplate>
                         <DataGridTemplateColumn.CellEditingTemplate>
                             <DataTemplate>
-                                <TextBox Text="{Binding GST, UpdateSourceTrigger=PropertyChanged, StringFormat='0.00'}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <TextBox Text="{Binding GST, UpdateSourceTrigger=PropertyChanged, StringFormat='0.00'}" Background="White"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellEditingTemplate>
                     </DataGridTemplateColumn>
@@ -501,40 +525,49 @@ ValidatesOnDataErrors="True">
             </materialDesign:Card>
             <Grid>
                 <StackPanel x:Name="PreviousPurchasesPanel" Orientation="Vertical" Visibility="Collapsed" Margin="0,20,0,0">
-                    <TextBlock Text="Previous Purchases" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Previous Purchases" FontSize="16" FontWeight="Bold" Margin="0,0,10,10" />
+                        <ComboBox x:Name="BillCountComboBox" SelectionChanged="BillCountComboBox_SelectionChanged" SelectedIndex="0" Margin="0,0,0,10" Width="100">
+                            <ComboBoxItem Content="Last 5 Bills" Tag="5" />
+                            <ComboBoxItem Content="Last 10 Bills" Tag="10" />
+                            <ComboBoxItem Content="All Bills" Tag="0" />
+                        </ComboBox>
+                    </StackPanel>
                     <ItemsControl x:Name="PreviousPurchasesItemsControl">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Expander Header="{Binding BillNumberWithDate}" IsExpanded="False" Margin="0,5,0,0">
-                                    <DataGrid x:Name="PreviousPurchasesGrid" ItemsSource="{Binding Items}" AutoGenerateColumns="False" IsReadOnly="True" Margin="20,5,0,0">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="PRODUCT NAME" Binding="{Binding ProductName}" Width="*"/>
-                                            <DataGridTextColumn Header="BATCH NUMBER" Binding="{Binding BatchNumber}" Width="*"/>
-                                            <DataGridTextColumn Header="EXPIRY" Binding="{Binding expiryMedicine}" Width="*"/>
-                                            <DataGridTextColumn Header="QTY(F)" Binding="{Binding QtyF}" Width="*"/>
-                                            <DataGridTextColumn Header="QTY(L)" Binding="{Binding QtyL}" Width="*"/>
-                                            <DataGridTextColumn Header="M.R.P" Binding="{Binding MRP, StringFormat='₹{0:0.00}'}" Width="*"/>
-                                            <DataGridTextColumn Header="DISC%" Binding="{Binding Discount}" Width="*"/>
-                                            <DataGridTextColumn Header="GST%" Binding="{Binding GST}" Width="*"/>
-                                            <DataGridTextColumn Header="TOTAL AMOUNT" Binding="{Binding Total, StringFormat='₹{0:0.00}'}" Width="*"/>
-                                            <DataGridTemplateColumn Header="Action" Width="Auto">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <Button Content="Add" Click="AddPreviousItem_Click" />
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </Expander>
+                                <Border BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="5" Margin="5" Padding="5">
+                                    <Expander IsExpanded="False">
+                                        <Expander.Header>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="{Binding BillNumberWithDate}" FontWeight="Bold" />
+                                                <Button Grid.Column="1" Content="Add All Items" Click="AddAllPreviousBillItems_Click" Margin="10,0,0,0" />
+                                            </Grid>
+                                        </Expander.Header>
+                                        <DataGrid x:Name="PreviousPurchasesGrid" ItemsSource="{Binding Items}" AutoGenerateColumns="False" IsReadOnly="True" Margin="20,5,0,10">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="PRODUCT NAME" Binding="{Binding ProductName}" Width="*"/>
+                                                <DataGridTextColumn Header="BATCH NUMBER" Binding="{Binding BatchNumber}" Width="*"/>
+                                                <DataGridTextColumn Header="EXPIRY" Binding="{Binding expiryMedicine}" Width="*"/>
+                                                <DataGridTextColumn Header="QTY(F)" Binding="{Binding QtyF}" Width="*"/>
+                                                <DataGridTextColumn Header="QTY(L)" Binding="{Binding QtyL}" Width="*"/>
+                                                <DataGridTextColumn Header="M.R.P" Binding="{Binding MRP, StringFormat='₹{0:0.00}'}" Width="*"/>
+                                                <DataGridTextColumn Header="DISC%" Binding="{Binding Discount}" Width="*"/>
+                                                <DataGridTextColumn Header="GST%" Binding="{Binding GST}" Width="*"/>
+                                                <DataGridTextColumn Header="TOTAL AMOUNT" Binding="{Binding Total, StringFormat='₹{0:0.00}'}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Expander>
+                                </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </StackPanel>
             </Grid>
-
-           
         </StackPanel>
     </ScrollViewer>
 </Page>
-    

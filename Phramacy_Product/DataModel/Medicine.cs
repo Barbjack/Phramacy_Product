@@ -42,6 +42,9 @@ namespace Phramacy_Product.DataModel
         public int ItemId { get; set; }
         public string ProductName { get; set; }
         public string CompanyName { get; set; }
+        public string medicineType { get; set; }
+        public string saltComposition1 { get; set; }
+        public string saltComposition2 { get;set; }
         public string StripInfo { get; set; }
         public decimal mRP { get; set; }
         public int Stock { get; set; }

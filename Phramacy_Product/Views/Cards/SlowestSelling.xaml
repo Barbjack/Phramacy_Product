@@ -8,26 +8,32 @@
     <Border Margin="10" Padding="10" Background="White" CornerRadius="8"
         BorderBrush="#DDD" BorderThickness="1"
         materialDesign:ShadowAssist.ShadowDepth="Depth1">
-        <StackPanel>
-            <StackPanel.Resources>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.Resources>
                 <Style TargetType="Grid">
                     <Setter Property="Grid.IsSharedSizeScope" Value="True"/>
                 </Style>
-            </StackPanel.Resources>
+            </Grid.Resources>
 
-            <!-- Header: Need to Pay + Amount -->
-            <Grid>
+            <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="Slowest Selling" Foreground="DarkBlue" FontWeight="Bold" FontSize="16" Grid.Column="0"/>
-                <TextBlock Text="{Binding TotalSaleAmount}" Foreground="Red" FontWeight="Bold" FontSize="16" Grid.Column="1"
-                        HorizontalAlignment="Right"/>
+                <TextBlock Text="{Binding TotalSaleAmount}" FontWeight="Bold" FontSize="16" Grid.Column="1"
+                           Foreground="Red" HorizontalAlignment="Right"/>
             </Grid>
 
-            <Grid Grid.Row="1" Margin="0,10,0,8">
+            <Grid Grid.Row="0" Margin="0,30,0,8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -35,49 +41,48 @@
                 <TextBlock Text="Medicine Name" FontWeight="SemiBold" FontSize="14" Grid.Column="0"/>
                 <TextBlock Text="Amount" FontWeight="SemiBold" FontSize="14" Grid.Column="1"/>
             </Grid>
-            <!-- List Rows -->
-            <ItemsControl ItemsSource="{Binding FilteredSlowestSaleItems}">
+
+            <ItemsControl ItemsSource="{Binding FilteredSlowestSaleItems}" Grid.Row="1">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Margin="0,0">
-                            <Grid Margin="0,3">
+                            <Grid Margin="0,0">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition SharedSizeGroup="DistributorCol"/>
-                                    <ColumnDefinition SharedSizeGroup="AmountCol"/>
+                                    <ColumnDefinition Width="*" SharedSizeGroup="DistributorCol"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="auto" SharedSizeGroup="AmountCol"/>
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0">
                                     <TextBlock Text="{Binding ItemName}" FontSize="14" Padding="0,2,0,0"
-                                           Foreground="Blue" />
+                                               Foreground="Blue" />
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock>
-        <Run Foreground ="IndianRed" Text="Batch:"/>
-        <Run Text="{Binding Batch}"/>
+                                            <Run Foreground ="IndianRed" Text="Batch:"/>
+                                            <Run Text="{Binding Batch}" />
                                         </TextBlock>
                                         <TextBlock Text=" | "/>
                                         <TextBlock>
-        <Run Foreground="IndianRed" Text="MRP:"/>
-        <Run Text="{Binding MRP, StringFormat='₹{0:0.00}'}"/>
+                                            <Run Foreground="IndianRed" Text="MRP:"/>
+                                            <Run Text="{Binding MRP, StringFormat='₹{0:0.00}'}"/>
                                         </TextBlock>
                                         <TextBlock Text=" | "/>
                                         <TextBlock>
- <Run Foreground="IndianRed" Text="Qty :"/>
- <Run Text="{Binding FullQty}" />
+                                            <Run Foreground="IndianRed" Text="Qty :"/>
+                                            <Run Text="{Binding FullQty}" />
                                         </TextBlock>
                                     </StackPanel>
                                 </StackPanel>
 
-                                <TextBlock Grid.Column="1" Text="{Binding NetAmount}" FontSize="14"
-                                       Foreground="Black" HorizontalAlignment="Right" Padding="5,0"/>
+                                <TextBlock Grid.Column="2" Text="{Binding NetAmount}" FontSize="14"
+                                           Foreground="Black" HorizontalAlignment="Right" />
                             </Grid>
-
-                            <!-- Separator -->
                             <Border Height="1" Background="#EEE" Margin="0,4"/>
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <!-- Toggle Button -->
+
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
                 <Button Background="DarkBlue" Content="&lt;&lt;" Click="FirstPageClick" Margin="0,0,5,0"/>
                 <Button Background="DarkBlue" Content="&lt;" Click="PreviousPageClick" Margin="0,0,5,0"/>
@@ -87,6 +92,6 @@
                 <Button Background="DarkBlue" Content=">" Click="NextPageClick" Margin="5,0,5,0"/>
                 <Button Background="DarkBlue" Content=">>" Click="LastPageClick"/>
             </StackPanel>
-        </StackPanel>
+        </Grid>
     </Border>
 </UserControl>
