@@ -30,14 +30,13 @@ namespace Phramacy_Product.Views.Analytics
         {
             Users = new ObservableCollection<User>
         {
-            new User { Name = "Emma Watson", Role = "Admin", ImageUrl = "/Assets/ProfilePictures/image_1.png" },
-            new User { Name = "Antony Hopkins", Role = "Moderator", ImageUrl = "/Assets/ProfilePictures/image_2.png" },
-            new User { Name = "Anna Karinina", Role = "Editor", ImageUrl = "/Assets/ProfilePictures/image_3.png" },
-            new User { Name = "John Lee", Role = "Admin", ImageUrl = "/Assets/ProfilePictures/image_4.png" },
-            new User { Name = "Rowen Atkinson", Role = "Editor", ImageUrl = "/Assets/ProfilePictures/image_5.png" },
-            new User { Name = "Bucky Robert", Role = "Editor", ImageUrl = "/Assets/ProfilePictures/image_6.png" },
-            new User { Name = "Tom Hanks", Role = "Editor", ImageUrl = "/Assets/ProfilePictures/image_1.png" }
-        };
+           new User { Name = "Arjun Sharma", Role = "Admin", ImageUrl = "/Assets/ProfilePictures/image_5.png" },
+           new User { Name = "Ravi Kumar", Role = "Moderator", ImageUrl = "/Assets/ProfilePictures/image_2.png" },
+           new User { Name = "Sanjay Patel", Role = "Editor", ImageUrl = "/Assets/ProfilePictures/image_6.png" },
+           new User { Name = "Vikram Singh", Role = "Admin", ImageUrl = "/Assets/ProfilePictures/image_4.png" },
+           new User { Name = "Ajay Gupta", Role = "Editor", ImageUrl = "/Assets/ProfilePictures/image_5.png" },
+           new User { Name = "Ganesh Iyer", Role = "Editor", ImageUrl = "/Assets/ProfilePictures/image_6.png" },
+           new User { Name = "Rahul Kapoor", Role = "Editor", ImageUrl = "/Assets/ProfilePictures/image_2.png" }  };
             DataContext = this;
             InitializeComponent();
         }

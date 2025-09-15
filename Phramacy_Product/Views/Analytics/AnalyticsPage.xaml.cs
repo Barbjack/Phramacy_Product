@@ -15,9 +15,7 @@ using System.Windows.Shapes;
 
 namespace Phramacy_Product.Views.Analytics
 {
-    /// <summary>
-    /// Interaction logic for AnalyticsPage.xaml
-    /// </summary>
+   
     public partial class AnalyticsPage : Page
     {
         public AnalyticsPage()

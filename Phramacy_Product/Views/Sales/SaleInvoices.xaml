@@ -47,31 +47,41 @@
                 <Grid DockPanel.Dock="Top" Margin="0,0,0,20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Text="Sales" FontSize="28" FontWeight="SemiBold" Foreground="#2563EB" VerticalAlignment="Center" Margin="15,0"/>
-                    <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" x:Name="ActionPanel">
 
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,20,0">
-                            <DatePicker x:Name="StartDatePicker" Foreground="DarkBlue" materialDesign:HintAssist.Hint="Start Date" Width="120" Margin="0,0,5,0" />
-                            <DatePicker x:Name="EndDatePicker" Foreground="DarkBlue" materialDesign:HintAssist.Hint="End Date" Width="120" Margin="0,0,5,0" />
-                            <Button x:Name="FilterButton" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Filter by Date" Click="FilterButton_Click">
-                                <materialDesign:PackIcon Kind="Filter" Width="20" Height="20" Foreground="DarkBlue"/>
-                            </Button>
-                            <Button x:Name="ClearFilterButton" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Clear Filter" Click="ClearFilterButton_Click">
-                                <materialDesign:PackIcon Kind="FilterOff" Width="20" Height="20"  Foreground="DarkBlue"/>
-                            </Button>
-                        </StackPanel>
-
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Button x:Name="SearchButton" Width="40" Height="36" Margin="20,0,25,0" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Search" Click="SearchButton_Click">
-                                <materialDesign:PackIcon Kind="Magnify" Width="20" Height="20" Foreground="DarkBlue" />
-                            </Button>
-                            <TextBox x:Name="SearchBox" Width="200" Height="36" VerticalAlignment="Center" Visibility="Collapsed" Background="White" Foreground="DarkBlue" materialDesign:HintAssist.Hint="Search..." LostFocus="SearchBox_LostFocus" Margin="0,0,25,0" />
-                        </StackPanel>
+                    <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,25,0">
+                        <DatePicker x:Name="StartDatePicker" Foreground="DarkBlue" materialDesign:HintAssist.Hint="Start Date" Width="120" Margin="0,0,5,0" />
+                        <DatePicker  x:Name="EndDatePicker" Foreground="DarkBlue" materialDesign:HintAssist.Hint="End Date" Width="120" Margin="0,0,5,0" />
+                        <Button Margin="0,0,10,0" x:Name="FilterButton" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Filter by Date" Click="FilterButton_Click">
+                            <materialDesign:PackIcon Kind="Filter" Width="20" Height="20" Foreground="DarkBlue"/>
+                        </Button>
+                        <Button  x:Name="ClearFilterButton" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Clear Filter" Click="ClearFilterButton_Click">
+                            <materialDesign:PackIcon Kind="FilterOff" Width="20" Height="20" Foreground="DarkBlue"/>
+                        </Button>
+                           </StackPanel>
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
                         <Button Content="+ New Sale" Click="NewSaleButton_Click" Height="36" Padding="20,0" Background="#2563EB" Foreground="White" FontWeight="SemiBold" BorderThickness="1" Cursor="Hand" Margin="0,0,25,0" Style="{StaticResource NoHoverFlatButtonStyle}" />
                         <Button Content="Sale Return" Click="SaleReturn_Click" Height="36" Padding="20,0" Background="#16A34A" Foreground="White" FontWeight="SemiBold" BorderThickness="1" Cursor="Hand" Margin="0,0,25,0" Style="{StaticResource NoHoverFlatButtonStyle}" />
+
+                    </StackPanel>
+                    <StackPanel Margin="0,0,10,0" Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" x:Name="ActionPanel">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="SearchButton" Width="40" Height="36" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Search" Click="SearchButton_Click" Margin="20,0,0,0">
+                                <materialDesign:PackIcon Kind="Magnify" Width="20" Height="20" Foreground="DarkBlue" />
+                            </Button>
+                            <TextBox x:Name="SearchBox" Grid.Column="1" Width="200" Height="36" VerticalAlignment="Center" Visibility="Collapsed" Background="White" Foreground="DarkBlue" materialDesign:HintAssist.Hint="Search..." LostFocus="SearchBox_LostFocus" Margin="0,0,25,0" />
+                        </Grid>
+
+                        
                     </StackPanel>
                 </Grid>
                 <Border Background="White" CornerRadius="6" Padding="10" Margin="0" Effect="{DynamicResource MaterialDesignElevation1}">

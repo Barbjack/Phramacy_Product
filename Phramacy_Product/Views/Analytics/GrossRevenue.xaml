@@ -39,12 +39,12 @@
 
                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                     <TextBlock Text="Gross revenue" FontSize="18" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding GrossRevenueValue, StringFormat=${0:F2}}" Foreground="DarkBlue" FontSize="24" FontWeight="Bold" Margin="0,5,0,0"/>
+                    <TextBlock Text="{Binding GrossRevenueValue, StringFormat=₹{0:F2}}" Foreground="DarkBlue" FontSize="24" FontWeight="Bold" Margin="0,5,0,0"/>
                 </StackPanel>
 
                 <ComboBox Grid.Column="1" HorizontalAlignment="Right" VerticalContentAlignment="Center" SelectedIndex="0"
-              materialDesign:HintAssist.Hint="Select Month"
-              Style="{StaticResource MaterialDesignFloatingHintComboBox}">
+                          materialDesign:HintAssist.Hint="Select Month"
+                          Style="{StaticResource MaterialDesignFloatingHintComboBox}">
                     <ComboBoxItem Content="Jan"/>
                     <ComboBoxItem Content="Feb"/>
                     <ComboBoxItem Content="Mar"/>
@@ -59,7 +59,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="Point of sale" Grid.Column="0" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding PointOfSaleRevenue, StringFormat=${0:F2}}" Foreground="DarkBlue" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding PointOfSaleRevenue, StringFormat=₹{0:F2}}" Foreground="DarkBlue" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                     <StackPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Center" Margin="10,0,0,0">
                         <materialDesign:PackIcon Kind="ArrowDown" Foreground="Red" VerticalAlignment="Center"/>
                         <TextBlock Text="13%" Foreground="Red" VerticalAlignment="Center"/>
@@ -72,7 +72,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="Online Store" Grid.Column="0" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding OnlineStoreRevenue, StringFormat=${0:F2}}" Foreground="DarkBlue" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding OnlineStoreRevenue, StringFormat=₹{0:F2}}" Foreground="DarkBlue" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                     <StackPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Center" Margin="10,0,0,0">
                         <materialDesign:PackIcon Kind="ArrowUp" Foreground="Green" VerticalAlignment="Center"/>
                         <TextBlock Text="178%" Foreground="Green" VerticalAlignment="Center"/>
@@ -85,8 +85,8 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="Online Store" Grid.Column="0" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding OtherOnlineStoreRevenue, StringFormat=${0:F2}}" Foreground="DarkBlue" 
-                  HorizontalAlignment="Left" Grid.Column="1" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding OtherOnlineStoreRevenue, StringFormat=₹{0:F2}}" Foreground="DarkBlue" 
+                              HorizontalAlignment="Left" Grid.Column="1" VerticalAlignment="Center"/>
                     <TextBlock Text="—" Grid.Column="2" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 </Grid>
             </StackPanel>
@@ -120,21 +120,21 @@
                         <Polyline Stroke="#7F94FF" StrokeThickness="2">
                             <Polyline.Points>
                                 <Point X="30" Y="120"/>
-                                <Point X="90" Y="115"/>
-                                <Point X="150" Y="100"/>
-                                <Point X="210" Y="55"/>
-                                <Point X="270" Y="150"/>
-                                <Point X="330" Y="140"/>
+                                <Point X="90" Y="150"/>
+                                <Point X="150" Y="110"/>
+                                <Point X="210" Y="130"/>
+                                <Point X="270" Y="40"/>
+                                <Point X="330" Y="55"/>
                             </Polyline.Points>
                         </Polyline>
                         <Polyline Stroke="#B7D9E7" StrokeThickness="2">
                             <Polyline.Points>
-                                <Point X="30" Y="140"/>
-                                <Point X="90" Y="160"/>
+                                <Point X="30" Y="150"/>
+                                <Point X="90" Y="165"/>
                                 <Point X="150" Y="120"/>
-                                <Point X="210" Y="60"/>
-                                <Point X="270" Y="120"/>
-                                <Point X="330" Y="150"/>
+                                <Point X="210" Y="115"/>
+                                <Point X="270" Y="145"/>
+                                <Point X="330" Y="140"/>
                             </Polyline.Points>
                         </Polyline>
                     </Canvas>

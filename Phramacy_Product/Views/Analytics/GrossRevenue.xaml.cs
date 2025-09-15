@@ -20,7 +20,7 @@ namespace Phramacy_Product.Views.Analytics
             this.DataContext = this;
         }
 
-        public double GrossRevenueValue { get; } = 165.50; 
+        public double GrossRevenueValue { get; } = 165.50;
         public double PointOfSaleRevenue { get; } = 791.64;
         public double OnlineStoreRevenue { get; } = 113.86;
         public double OtherOnlineStoreRevenue { get; } = 0.00;
