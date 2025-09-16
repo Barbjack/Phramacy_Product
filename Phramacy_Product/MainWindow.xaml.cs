@@ -4,12 +4,11 @@ using System;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Net.Http;
-using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Net.NetworkInformation;
+using Phramacy_Product.DataModel.GenerateToken;
 
 
 namespace Phramacy_Product
@@ -29,8 +28,10 @@ namespace Phramacy_Product
             InvalidCredentials,
             DatabaseError,
             LicenseError,
-            InternetError
+            InternetError,
+            TokenError
         }
+
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             string mobile = MobileNumberTextBox.Text;
@@ -61,15 +62,16 @@ namespace Phramacy_Product
                     break;
                 case LoginStatus.InternetError:
                     break;
+                case LoginStatus.TokenError:
+                        break;
                 default:
                     MessageBox.Show("An unknown error occurred.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     break;
             }
         }
-
         private async Task<LoginStatus> AuthenticateUser(string mobile, string password)
         {
-            string query = "SELECT id, pharmacist_name, expiryDate, license_key, email FROM pharmacy_profile WHERE mobile = @mobile AND password = @password";
+            string query = "SELECT id, pharmacist_name, mobile FROM pharmacy_profile WHERE mobile = @mobile AND password = @password";
 
             try
             {
@@ -87,147 +89,34 @@ namespace Phramacy_Product
                         {
                             GlobalData.LoggedInUser = reader["pharmacist_name"].ToString();
                             GlobalData.userId = (int)reader["id"];
-                            string licenseKey = reader["license_key"] as string;
-                            string email = reader["email"].ToString();
-                           
-                            if (string.IsNullOrEmpty(licenseKey))
-                            {
-                                if (!await CreateAndSaveLicense(GlobalData.LoggedInUser, email))
-                                {
-                                    return LoginStatus.LicenseError;
-                                }
-                            }
-                            else
-                            {
-                                DateTime? expiryDate = reader["expiryDate"] as DateTime?;
-                                if (expiryDate == null || expiryDate.Value.Date < DateTime.Now.Date)
-                                {
-                                    if (!await ValidateLicense(licenseKey))
-                                    {
-                                        return LoginStatus.LicenseError;
-                                    }
-                                }
-                            }
+                            //string mobile = reader["mobile"].ToString();
                             reader.Close();
+
+                            var tokenManager = new TokenManager();
+                            var tokenStatus = await tokenManager.GetOrRefreshToken(mobile);
+
+                            if (tokenStatus != TokenManager.TokenStatus.Success)
+                            {
+                                return LoginStatus.TokenError;
+                            }
+
                             return LoginStatus.Success;
                         }
                         else
                         {
-                            return LoginStatus.InvalidCredentials;      }
+                            return LoginStatus.InvalidCredentials;
+                        }
                     }
                 }
             }
+
             catch (Exception ex)
             {
-                 MessageBox.Show($"Database error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Database error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return LoginStatus.DatabaseError;
             }
         }
 
-        private async Task<bool> CreateAndSaveLicense(string name, string email)
-        {
-            
-            using (var client = new HttpClient())
-            {
-                var requestBody = new
-                {
-                    name = name,
-                    email = email,
-                    plan = "yearly",
-                    duration = 365
-                };
-                var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
-
-                try
-                {
-                    HttpResponseMessage response = await client.PostAsync("https://quickrxbill.com/api/create_license.php", content);
-                    response.EnsureSuccessStatusCode();
-                    string responseBody = await response.Content.ReadAsStringAsync();
-                    dynamic jsonResponse = JsonConvert.DeserializeObject(responseBody);
-
-                    if (jsonResponse.success == true)
-                    {
-                        string newLicenseKey = jsonResponse.license_key;
-                        DateTime expiryDate = jsonResponse.expiry;
-                        UpdateLocalLicense(newLicenseKey, expiryDate);
-                         return true;
-                    }
-                    else
-                    {
-                         return false;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Please connect to internet.", "Connection Error");
-                    return false;
-                }
-            }
-        }
-        private async Task<bool> ValidateLicense(string licenseKey)
-        {
-            
-            using (var client = new HttpClient())
-            {
-                try
-                {
-                    string url = $"https://quickrxbill.com/api/validate.php?key={licenseKey}";
-                    HttpResponseMessage response = await client.GetAsync(url);
-                    response.EnsureSuccessStatusCode();
-                    string responseBody = await response.Content.ReadAsStringAsync();
-                    dynamic jsonResponse = JsonConvert.DeserializeObject(responseBody);
-
-                    if (jsonResponse.success == true && jsonResponse.message== "License valid")
-                    {
-                        DateTime expiryDate = jsonResponse.expiry;
-                        UpdateLocalLicense(licenseKey, expiryDate);
-                        MessageBox.Show("License is valid and active.", "Success");
-                        return true;
-                    }
-                    else
-                    {
-                        MessageBox.Show("License is invalid or expired. Please contact support.", "Warning");
-                        UpdateLocalLicense(null, DateTime.MinValue);
-                        return false;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Please connect to the internet: {ex.Message}", "Error");
-                    return false;
-                }
-            }
-        }
-
-        private void UpdateLocalLicense(string licenseKey, DateTime expiryDate)
-        {
-            if (!string.IsNullOrEmpty(licenseKey))
-            {
-                string query = "UPDATE pharmacy_profile SET license_key = @licenseKey, expiryDate = @expiryDate WHERE Id = @userId";
-
-                try
-                {
-                    using (SqlConnection connection = new SqlConnection(connectionString))
-                    {
-                        using (SqlCommand command = new SqlCommand(query, connection))
-                        {
-                            command.Parameters.AddWithValue("@licenseKey", licenseKey);
-                            command.Parameters.AddWithValue("@expiryDate", expiryDate);
-                            command.Parameters.AddWithValue("@userId", GlobalData.userId);
-
-                            connection.Open();
-                            command.ExecuteNonQuery();
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Failed to update local license: {ex.Message}", "Error");
-                    // Remove 'return;' as this method is void.
-                }
-            }
-        }
-        
         private void btnExit_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();

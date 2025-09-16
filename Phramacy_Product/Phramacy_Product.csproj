@@ -242,6 +242,7 @@
     <Compile Include="DataModel\CustomerDetail.cs" />
     <Compile Include="DataModel\DistributorDetail.cs" />
     <Compile Include="DataModel\DistributorItems.cs" />
+    <Compile Include="DataModel\GenerateToken\TokenManager.cs" />
     <Compile Include="DataModel\OrderQuantity.cs" />
     <Compile Include="DataModel\PurchaseDetail.cs" />
     <Compile Include="DataModel\PurchaseItemReturn.cs" />
