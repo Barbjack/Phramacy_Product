@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="700">
+             d:DesignHeight="600" d:DesignWidth="700"
+             Loaded="UserControl_Loaded">
     <UserControl.Resources>
         <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
             <Setter Property="Padding" Value="9"/>
@@ -30,7 +31,8 @@
                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                            Margin="{TemplateBinding Padding}"
-                                           IsHitTestVisible="False"/>
+                                           IsHitTestVisible="False"
+                                           Visibility="Collapsed"/>
                                 <ScrollViewer x:Name="PART_ContentHost"
                                               Focusable="False"
                                               HorizontalScrollBarVisibility="Visible"
@@ -39,19 +41,16 @@
                             </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="Text" Value=""/>
-                                    <Condition Property="IsKeyboardFocused" Value="False"/>
-                                </MultiTrigger.Conditions>
+                            <DataTrigger Binding="{Binding Text.Length, RelativeSource={RelativeSource Self}}" Value="0">
                                 <Setter TargetName="PlaceholderTextBlock" Property="Visibility" Value="Visible"/>
-                            </MultiTrigger>
+                            </DataTrigger>
+
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="border" Property="BorderBrush" Value="#B0B0B0"/>
                             </Trigger>
+
                             <Trigger Property="IsKeyboardFocused" Value="True">
                                 <Setter TargetName="border" Property="BorderBrush" Value="#4B89F2"/>
-                                <Setter TargetName="PlaceholderTextBlock" Property="Visibility" Value="Collapsed"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -59,10 +58,11 @@
             </Setter>
         </Style>
     </UserControl.Resources>
+
     <Grid>
         <StackPanel Margin="10,0">
             <Rectangle Height="1" Fill="Brown" Margin="0,0,0,20"/>
-            <TextBlock Text="Create Profile"
+            <TextBlock Text="Update Profile Details"
                        FontSize="22"
                        FontWeight="SemiBold"
                        Margin="0,0,0,5"/>
@@ -74,6 +74,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -99,41 +100,53 @@
                 </StackPanel>
                 <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,15">
                     <Label Content="Email" Foreground="#444" FontWeight="SemiBold"/>
-                    <TextBox x:Name="EmailTextBox"  Tag="Enter email" Style="{StaticResource ModernTextBoxStyle}"/>
+                    <TextBox x:Name="EmailTextBox" Tag="Enter email" Style="{StaticResource ModernTextBoxStyle}"/>
+                </StackPanel>
+                <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,0,15">
+                    <Label Content="GST" Foreground="#444" FontWeight="SemiBold"/>
+                    <TextBox x:Name="GstinTextBox" Tag="Enter Gst" Style="{StaticResource ModernTextBoxStyle}"/>
+                </StackPanel>
+                <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,15">
+                    <Label Content="DLNumber" Foreground="#444" FontWeight="SemiBold"/>
+                    <TextBox x:Name="DlnoTextBox" Tag="Enter DLNo" Style="{StaticResource ModernTextBoxStyle}"/>
+                </StackPanel>
+                <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,0,15">
+                    <Label Content="Pan No" Foreground="#444" FontWeight="SemiBold"/>
+                    <TextBox x:Name="PannoTextBox" Tag="Enter Panno" Style="{StaticResource ModernTextBoxStyle}"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,0,15">
+                <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,0,15">
                     <Label Content="Address" Foreground="#444" FontWeight="SemiBold"/>
                     <TextBox x:Name="AddressTextBox" Tag="Enter address" Style="{StaticResource ModernTextBoxStyle}"/>
                 </StackPanel>
-                <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,15">
+                <StackPanel Grid.Row="4" Grid.Column="0" Margin="0,0,0,15">
                     <Label Content="Address Line 2" Foreground="#444" FontWeight="SemiBold"/>
                     <TextBox x:Name="Address2TextBox" Tag="Enter address line 2" Style="{StaticResource ModernTextBoxStyle}"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,0,15">
+                <StackPanel Grid.Row="4" Grid.Column="2" Margin="0,0,0,15">
                     <Label Content="Area" Foreground="#444" FontWeight="SemiBold"/>
                     <TextBox x:Name="AreaTextBox" Tag="Enter area" Style="{StaticResource ModernTextBoxStyle}"/>
                 </StackPanel>
-                <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,0,15">
+                <StackPanel Grid.Row="5" Grid.Column="0" Margin="0,0,0,15">
                     <Label Content="Pincode" Foreground="#444" FontWeight="SemiBold"/>
                     <TextBox x:Name="PincodeTextBox" Tag="Enter pincode" Style="{StaticResource ModernTextBoxStyle}"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="4" Grid.Column="0" Margin="0,0,0,15">
+                <StackPanel Grid.Row="5" Grid.Column="2" Margin="0,0,0,15">
                     <Label Content="City" Foreground="#444" FontWeight="SemiBold"/>
                     <TextBox x:Name="CityTextBox" Tag="Enter city" Style="{StaticResource ModernTextBoxStyle}"/>
                 </StackPanel>
-                <StackPanel Grid.Row="4" Grid.Column="2" Margin="0,0,0,15">
+                <StackPanel Grid.Row="6" Grid.Column="0" Margin="0,0,0,15">
                     <Label Content="State" Foreground="#444" FontWeight="SemiBold"/>
                     <TextBox x:Name="StateTextBox" Tag="Enter state" Style="{StaticResource ModernTextBoxStyle}"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="5" Grid.Column="0" Margin="0,0,0,15">
+                <StackPanel Grid.Row="7" Grid.Column="0" Margin="0,0,0,15">
                     <Label Content="Company Logo" Foreground="#444" FontWeight="SemiBold"/>
-                    <Border x:Name="CompanyLogoBorder" BorderBrush="#DCDCDC" BorderThickness="1" Height="100" CornerRadius="4"  
-        Background="#F8F8F8" AllowDrop="True" Drop="CompanyLogoBorder_Drop"  
-        MouseLeftButtonDown="CompanyLogoBorder_MouseLeftButtonDown">
+                    <Border x:Name="CompanyLogoBorder" BorderBrush="#DCDCDC" BorderThickness="1" Height="100" CornerRadius="4"
+                            Background="#F8F8F8" AllowDrop="True" Drop="CompanyLogoBorder_Drop"
+                            MouseLeftButtonDown="CompanyLogoBorder_MouseLeftButtonDown">
                         <Grid>
                             <TextBlock x:Name="CompanyLogoPrompt" Text="Drag &amp; Drop or Select" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#444" FontWeight="SemiBold" FontStyle="Italic"/>
                             <Image x:Name="CompanyLogoImage" Stretch="Uniform" Visibility="Collapsed"/>
@@ -141,11 +154,11 @@
                     </Border>
                 </StackPanel>
 
-                <StackPanel Grid.Row="5" Grid.Column="2" Margin="0,0,0,15">
+                <StackPanel Grid.Row="7" Grid.Column="2" Margin="0,0,0,15">
                     <Label Content="Signature" Foreground="#444" FontWeight="SemiBold"/>
-                    <Border x:Name="SignatureBorder" BorderBrush="#DCDCDC" BorderThickness="1" Height="100" CornerRadius="4"  
-        Background="#F8F8F8" AllowDrop="True" Drop="SignatureBorder_Drop"
-        MouseLeftButtonDown="SignatureBorder_MouseLeftButtonDown">
+                    <Border x:Name="SignatureBorder" BorderBrush="#DCDCDC" BorderThickness="1" Height="100" CornerRadius="4"
+                            Background="#F8F8F8" AllowDrop="True" Drop="SignatureBorder_Drop"
+                            MouseLeftButtonDown="SignatureBorder_MouseLeftButtonDown">
                         <Grid>
                             <TextBlock x:Name="SignaturePrompt" FontWeight="SemiBold" Text="Drag &amp; Drop or Select" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#444" FontStyle="Italic"/>
                             <Image x:Name="SignatureImage" Stretch="Uniform" Visibility="Collapsed"/>
@@ -154,7 +167,7 @@
                 </StackPanel>
             </Grid>
 
-            <Button Content="Save Profile"  
+            <Button Content="Save Profile"
                     x:Name="SaveProfileButton"
                     Click="SaveProfileButton_Click"
                     HorizontalAlignment="Right"

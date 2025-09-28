@@ -1,7 +1,12 @@
 ﻿using MigraDoc.DocumentObjectModel;
 using MigraDoc.Rendering;
 using Phramacy_Product.DataModel;
+using Phramacy_Product.Views.DBMaster;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -21,36 +26,38 @@ namespace Phramacy_Product.Views.Sales
 
             Section section = doc.AddSection();
 
-            // Seller Header (Template from screenshot)
+            //Seller Header
+            PharmacyProfile pharmaProfile = getPharmaProfileDetails(GlobalData.userId);
             var sellerInfoTable = section.AddTable();
             sellerInfoTable.Borders.Width = 0;
             sellerInfoTable.AddColumn("8cm");
             sellerInfoTable.AddColumn("8cm");
 
             var sellerHeaderRow1 = sellerInfoTable.AddRow();
-            var sellerHeaderPara = sellerHeaderRow1.Cells[0].AddParagraph("Royal Pharma");
+            var sellerHeaderPara = sellerHeaderRow1.Cells[0].AddParagraph($"{pharmaProfile.pharmacy_name}");
             sellerHeaderPara.Format.Font.Size = 14;
             sellerHeaderPara.Format.Font.Bold = true;
             sellerHeaderRow1.Cells[0].MergeRight = 1;
 
             var sellerHeaderRow2 = sellerInfoTable.AddRow();
-            sellerHeaderRow2.Cells[0].AddParagraph("Engineering Chauraha, Jankipuram Extension");
+            sellerHeaderRow2.Cells[0].AddParagraph($"{pharmaProfile.address}" + "," + $"{pharmaProfile.address2}" + "," + $"{pharmaProfile.area}");
             sellerHeaderRow2.Cells[1].AddParagraph($"INV NO: {sale.BillNo}");
 
             var sellerHeaderRow3 = sellerInfoTable.AddRow();
-            sellerHeaderRow3.Cells[0].AddParagraph("Lucknow, Uttar Pradesh 226031");
+
+            sellerHeaderRow3.Cells[0].AddParagraph($"{pharmaProfile.city}" + "," + $"{pharmaProfile.state}" + " " + $"{pharmaProfile.pincode}");
             sellerHeaderRow3.Cells[1].AddParagraph($"DATE: {sale.Date:dd-MMM-yyyy}");
 
             var sellerHeaderRow4 = sellerInfoTable.AddRow();
-            sellerHeaderRow4.Cells[0].AddParagraph("Phone: 9995559998");
-            sellerHeaderRow4.Cells[1].AddParagraph($"ROUTE: UttarPradesh");
+            sellerHeaderRow4.Cells[0].AddParagraph($"Phone: {pharmaProfile.mobile}");
+            sellerHeaderRow4.Cells[1].AddParagraph($"ROUTE: {pharmaProfile.state}");
 
             var sellerHeaderRow5 = sellerInfoTable.AddRow();
-            sellerHeaderRow5.Cells[0].AddParagraph("GSTIN: 09AAEct1234f1z8");
-            sellerHeaderRow5.Cells[1].AddParagraph($"PAN NO: AAECt1234F");
+            sellerHeaderRow5.Cells[0].AddParagraph($"GSTIN: {pharmaProfile.gstin}");
+            sellerHeaderRow5.Cells[1].AddParagraph($"PAN NO: {pharmaProfile.panno}");
 
             var sellerHeaderRow6 = sellerInfoTable.AddRow();
-            sellerHeaderRow6.Cells[0].AddParagraph("DL No: UP3212024, UP3212025");
+            sellerHeaderRow6.Cells[0].AddParagraph($"DL No: {pharmaProfile.dlno}");
             sellerHeaderRow6.Cells[1].AddParagraph("");
 
             section.AddParagraph("\n");
@@ -95,7 +102,7 @@ namespace Phramacy_Product.Views.Sales
                 row.Cells[2].AddParagraph(item.BatchNumber);
                 row.Cells[3].AddParagraph(item.Expiry.ToString("MM/yy"));
                 row.Cells[4].AddParagraph(item.QtyF.ToString());
-                row.Cells[5].AddParagraph(item.QtyL.ToString());// Show QtyF or QtyL
+                row.Cells[5].AddParagraph(item.QtyL.ToString());
                 row.Cells[6].AddParagraph(item.MRP.ToString("0.00"));
                 row.Cells[7].AddParagraph(item.Discount.ToString("0.00"));
                 row.Cells[8].AddParagraph(item.Total.ToString("0.00"));
@@ -103,7 +110,8 @@ namespace Phramacy_Product.Views.Sales
 
             // Totals Section
             decimal totalAmount = billingItems.Sum(i => i.Total);
-            decimal totalGST = billingItems.Sum(i => i.GST * i.Total / 100);
+            // Corrected GST calculation for original invoice
+            decimal totalGST = billingItems.Sum(i => i.Total * (i.GST / (100 + i.GST)));
             decimal totalNet = totalAmount - totalGST;
             decimal sgst = totalGST / 2;
             decimal cgst = totalGST / 2;
@@ -148,14 +156,14 @@ namespace Phramacy_Product.Views.Sales
             string fileName = $"Invoice_{sale.BillNo}.pdf";
             string fullPath = Path.Combine(folderPath, fileName);
             renderer.PdfDocument.Save(fullPath);
-           // Process.Start(new ProcessStartInfo(fullPath) { UseShellExecute = true });
+            // Process.Start(new ProcessStartInfo(fullPath) { UseShellExecute = true });
             return fullPath;
         }
 
         [System.Obsolete]
         public static string GenerateRevisedInvoice(SalePdfInvoice sale, List<SaleItemReturn> allSaleItems, List<SaleItemReturn> returnedItems)
         {
-            // 2. If no items remain, do not generate the PDF
+            // If no items remain, do not generate the PDF
             if (!allSaleItems.Any())
             {
                 return "All items have been returned. No revised invoice generated.";
@@ -177,38 +185,37 @@ namespace Phramacy_Product.Views.Sales
             headerPara.Format.Alignment = ParagraphAlignment.Center;
             section.AddParagraph("\n");
 
-
-
-            // Seller Header (Template from screenshot)
+            // Seller Header
+            PharmacyProfile pharmaProfile = getPharmaProfileDetails(GlobalData.userId);
             var sellerInfoTable = section.AddTable();
             sellerInfoTable.Borders.Width = 0;
             sellerInfoTable.AddColumn("8cm");
             sellerInfoTable.AddColumn("8cm");
 
             var sellerHeaderRow1 = sellerInfoTable.AddRow();
-            var sellerHeaderPara = sellerHeaderRow1.Cells[0].AddParagraph("Royal Pharma");
+            var sellerHeaderPara = sellerHeaderRow1.Cells[0].AddParagraph($"{pharmaProfile.pharmacy_name}");
             sellerHeaderPara.Format.Font.Size = 14;
             sellerHeaderPara.Format.Font.Bold = true;
             sellerHeaderRow1.Cells[0].MergeRight = 1;
 
             var sellerHeaderRow2 = sellerInfoTable.AddRow();
-            sellerHeaderRow2.Cells[0].AddParagraph("Engineering Chauraha, Jankipuram Extension");
+            sellerHeaderRow2.Cells[0].AddParagraph($"{pharmaProfile.address}" + "," + $"{pharmaProfile.address2}" + "," + $"{pharmaProfile.area}");
             sellerHeaderRow2.Cells[1].AddParagraph($"INV NO: {sale.BillNo}");
 
             var sellerHeaderRow3 = sellerInfoTable.AddRow();
-            sellerHeaderRow3.Cells[0].AddParagraph("Lucknow, Uttar Pradesh 226031");
+            sellerHeaderRow3.Cells[0].AddParagraph($"{pharmaProfile.city}" + "," + $"{pharmaProfile.state}" + "," + $"{pharmaProfile.pincode}");
             sellerHeaderRow3.Cells[1].AddParagraph($"DATE: {sale.Date:dd-MMM-yyyy}");
 
             var sellerHeaderRow4 = sellerInfoTable.AddRow();
-            sellerHeaderRow4.Cells[0].AddParagraph("Phone: 9995559998");
-            sellerHeaderRow4.Cells[1].AddParagraph($"ROUTE: UttarPradesh");
+            sellerHeaderRow4.Cells[0].AddParagraph($"Phone: {pharmaProfile.mobile}");
+            sellerHeaderRow4.Cells[1].AddParagraph($"ROUTE: {pharmaProfile.state}");
 
             var sellerHeaderRow5 = sellerInfoTable.AddRow();
-            sellerHeaderRow5.Cells[0].AddParagraph("GSTIN: 09AAEct1234f1z8");
-            sellerHeaderRow5.Cells[1].AddParagraph($"PAN NO: AAECt1234F");
+            sellerHeaderRow5.Cells[0].AddParagraph($"GSTIN: {pharmaProfile.gstin}");
+            sellerHeaderRow5.Cells[1].AddParagraph($"PAN NO: {pharmaProfile.panno}");
 
             var sellerHeaderRow6 = sellerInfoTable.AddRow();
-            sellerHeaderRow6.Cells[0].AddParagraph("DL No: UP3212024, UP3212025");
+            sellerHeaderRow6.Cells[0].AddParagraph($"DL No: {pharmaProfile.dlno}");
             sellerHeaderRow6.Cells[1].AddParagraph("");
 
             section.AddParagraph("\n");
@@ -262,11 +269,10 @@ namespace Phramacy_Product.Views.Sales
 
             // Totals Section (Calculated from remainingItems)
             decimal newTotalAmount = allSaleItems.Sum(i => i.NetAmount);
-            decimal totalGST = allSaleItems.Sum(i =>
-            {
-                decimal priceAfterDiscount = i.MRP - (i.MRP * i.Discount / 100);
-                return i.FullQty * (priceAfterDiscount * i.GST / 100);
-            });
+
+            // Corrected GST calculation for revised invoice
+            decimal totalGST = allSaleItems.Sum(i => i.NetAmount * (i.GST / (100 + i.GST)));
+
             decimal totalNet = newTotalAmount - totalGST;
             decimal sgst = totalGST / 2;
             decimal cgst = totalGST / 2;
@@ -318,6 +324,48 @@ namespace Phramacy_Product.Views.Sales
             //Process.Start(new ProcessStartInfo(fullPath) { UseShellExecute = true });
 
             return fullPath;
+        }
+        private static PharmacyProfile getPharmaProfileDetails(int userId)
+        {
+            string query = $@"SELECT id, pharmacy_name, pharmacist_name, panno, dlno, gstin, mobile, email, password, address, address2, area, pincode, city, state, company_logo, signature, created_at, updated_at, is_deleted 
+    FROM pharmacy_profile WHERE id = {userId} and is_deleted = 0";
+
+            PharmacyProfile profile = null;
+
+            try
+            {
+                DataTable dt = DBMasterConnection.GD(query);
+
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    DataRow reader = dt.Rows[0];
+                    profile = new PharmacyProfile
+                    {
+                        pharmacy_name = reader["pharmacy_name"] as string ?? string.Empty,
+                        pharmacist_name = reader["pharmacist_name"] as string ?? string.Empty,
+                        mobile = reader["mobile"] as string ?? string.Empty,
+                        email = reader["email"] as string ?? string.Empty,
+                        gstin = reader["gstin"] as string ?? string.Empty,
+                        panno = reader["panno"] as string ?? string.Empty,
+                        dlno = reader["dlno"] as string ?? string.Empty,
+                        address = reader["address"] as string ?? string.Empty,
+                        address2 = reader["address2"] as string ?? string.Empty,
+                        area = reader["area"] as string ?? string.Empty,
+                        pincode = Convert.ToString(reader["pincode"]) ?? string.Empty,
+                        city = reader["city"] as string ?? string.Empty,
+                        state = reader["state"] as string ?? string.Empty,
+                        company_logo = reader["company_logo"] as byte[],
+                        signature = reader["signature"] as byte[],
+                        created_at = reader.Field<DateTime?>("created_at") ?? DateTime.MinValue,
+                        updated_at = reader.Field<DateTime?>("updated_at") ?? DateTime.MinValue
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving pharmacy profile: {ex.Message}");
+            }
+            return profile;
         }
     }
 }

@@ -30,7 +30,14 @@ namespace Phramacy_Product.Views.Profile
         {
             InitializeComponent();
         }
-
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Populate the text boxes with data from the GlobalData class
+            PharmacyNameTextBox.Text = GlobalData.pharmacyName;
+            EmailTextBox.Text = GlobalData.email;
+            PharmacistNameTextBox.Text = GlobalData.LoggedInUser; // Assuming LoggedInUser is the pharmacist's name
+            MobileTextBox.Text = GlobalData.mobile;
+        }
         private void SaveProfileButton_Click(object sender, RoutedEventArgs e)
         {
             var profile = new PharmacyProfile
@@ -39,6 +46,9 @@ namespace Phramacy_Product.Views.Profile
                 pharmacist_name = PharmacistNameTextBox.Text,
                 mobile = MobileTextBox.Text,
                 email = EmailTextBox.Text,
+                gstin = GstinTextBox.Text,
+                panno = PannoTextBox.Text,
+                dlno = DlnoTextBox.Text,
                 address = AddressTextBox.Text,
                 address2 = Address2TextBox.Text,
                 area = AreaTextBox.Text,
@@ -49,6 +59,7 @@ namespace Phramacy_Product.Views.Profile
                 signature = signatureBytes,
                 created_at = DateTime.Now,
                 updated_at = DateTime.Now,
+                profileId = GlobalData.userId
   
             };
 
@@ -63,18 +74,26 @@ namespace Phramacy_Product.Views.Profile
                 System.Windows.MessageBox.Show($"Error saving profile: {ex.Message}");
             }
         }
-
         private void SaveProfileToDatabase(PharmacyProfile profile)
         {
             string query = @"
-                INSERT INTO [dbo].[pharmacy_profile] (
-                    pharmacy_name, pharmacist_name, mobile, email, address, address2, 
-                    area, pincode, city, state, company_logo, signature, created_at, updated_at, is_deleted
-                ) VALUES (
-                    @PharmacyName, @PharmacistName, @Mobile, @Email, @Address, @Address2,
-                    @Area, @Pincode, @City, @State, @CompanyLogo, @Signature, GETDATE(), GETDATE(), 0
-                )";
-
+        UPDATE [dbo].[pharmacy_profile]
+        SET
+            pharmacy_name = @PharmacyName,
+            pharmacist_name = @PharmacistName,
+            mobile = @Mobile,
+            email = @Email,
+            address = @Address,
+            address2 = @Address2,
+            area = @Area,
+            pincode = @Pincode,
+            city = @City,
+            state = @State,
+            company_logo = @CompanyLogo,
+            signature = @Signature,
+            updated_at = GETDATE()
+        WHERE
+            id = @ProfileId"; 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = new SqlCommand(query, connection))
@@ -91,17 +110,23 @@ namespace Phramacy_Product.Views.Profile
                     command.Parameters.AddWithValue("@State", (object)profile.state ?? DBNull.Value);
                     command.Parameters.AddWithValue("@CompanyLogo", (object)profile.company_logo ?? DBNull.Value);
                     command.Parameters.AddWithValue("@Signature", (object)profile.signature ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@ProfileId", profile.profileId);
 
                     connection.Open();
-                    command.ExecuteNonQuery();
+                    int rowsAffected = command.ExecuteNonQuery();
+                    if (rowsAffected > 0)
+                    {
+                        MessageBox.Show("Profile updated successfully!");
+                    }
+                    else
+                    {
+                         MessageBox.Show("No record found with the specified ID.");
+                    }
                 }
             }
         }
-
-        // This is the corrected method to clear the form fields on the UI.
         private void Clear_Form()
-        {
-            // Clear all TextBox controls by setting their Text property to an empty string.
+        { 
             PharmacyNameTextBox.Clear();
             PharmacistNameTextBox.Clear();
             MobileTextBox.Clear();

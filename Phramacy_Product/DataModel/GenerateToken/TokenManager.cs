@@ -1,39 +1,37 @@
 ﻿using Newtonsoft.Json;
+using Phramacy_Product.Views.DBMaster;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-
 namespace Phramacy_Product.DataModel.GenerateToken
 {
     public class TokenManager
     {
         private const string ApiBaseUrl = "https://quickrxbill.com/api/";
-    private const int TokenDurationDays = 2;
+        private const int TokenDurationDays = 2;
+        public enum TokenStatus
+        {
+            Success,
+            Expired,
+            Invalid,
+            InternetError,
+            UnknownError
+        }
+        public class TokenData
+        {
+            public string Token { get; set; }
+            public DateTime ExpiryDate { get; set; }
+        }
 
-    public enum TokenStatus
-    {
-        Success,
-        Expired,
-        Invalid,
-        InternetError,
-        UnknownError
-    }
-
-    public class TokenData
-    {
-        public string Token { get; set; }
-        public DateTime ExpiryDate { get; set; }
-    }
-
-    public async Task<TokenStatus> GetOrRefreshToken(string mobile)
+        public async Task<TokenStatus> GetOrRefreshToken(string mobile)
         {
             string filePath = GetTokenFilePath(mobile);
-
             if (File.Exists(filePath))
             {
                 TokenData tokenData = ReadTokenFile(filePath);
@@ -44,6 +42,7 @@ namespace Phramacy_Product.DataModel.GenerateToken
             }
             return await CreateNewToken(mobile, filePath);
         }
+
         private string GetTokenFilePath(string mobile)
         {
             string fileName = $"{mobile.Replace("@", "_").Replace(".", "_")}.json";
@@ -54,30 +53,31 @@ namespace Phramacy_Product.DataModel.GenerateToken
         {
             try
             {
-                string json = File.ReadAllText(filePath);
-                return JsonConvert.DeserializeObject<TokenData>(json);
+                string encryptedJson = File.ReadAllText(filePath);
+                string decryptedJson = DBMasterConnection.Decrypt(encryptedJson);
+                return JsonConvert.DeserializeObject<TokenData>(decryptedJson);
             }
             catch (Exception ex)
             {
-               // MessageBox.Show($"Error reading token file: {ex.Message}", "Error");
                 return null;
             }
         }
-
         private void SaveTokenFile(string filePath, TokenData tokenData)
         {
             try
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                 string json = JsonConvert.SerializeObject(tokenData, Formatting.Indented);
-                File.WriteAllText(filePath, json);
+                string encryptedJson = DBMasterConnection.Encrypt(json);
+
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                
+                File.WriteAllText(filePath, encryptedJson);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error saving token file: {ex.Message}", "Error");
             }
         }
-
         private async Task<TokenStatus> CreateNewToken(string mobile, string filePath)
         {
             using (var client = new HttpClient())
@@ -101,6 +101,7 @@ namespace Phramacy_Product.DataModel.GenerateToken
                     if (jsonResponse.success == true)
                     {
                         string newToken = jsonResponse.token;
+                       // DateTime expiryDate = DateTime.Parse("2025-09-20");
                         DateTime expiryDate = DateTime.Now.AddDays(TokenDurationDays);
 
                         SaveTokenFile(filePath, new TokenData
@@ -108,13 +109,10 @@ namespace Phramacy_Product.DataModel.GenerateToken
                             Token = newToken,
                             ExpiryDate = expiryDate
                         });
-
-                        // MessageBox.Show("New temporary token generated and saved. You have been logged in.", "Success");
                         return TokenStatus.Success;
                     }
                     else
                     {
-                        // MessageBox.Show($"Failed to generate new token: {jsonResponse.message}", "Error");
                         return TokenStatus.Invalid;
                     }
                 }
@@ -130,6 +128,5 @@ namespace Phramacy_Product.DataModel.GenerateToken
                 }
             }
         }
-
     }
 }

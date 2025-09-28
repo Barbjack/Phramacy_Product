@@ -1,8 +1,10 @@
 ﻿using Phramacy_Product.DataModel;
+using Phramacy_Product.Views.DBMaster;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Globalization;
@@ -22,7 +24,6 @@ namespace Phramacy_Product.Views.Sales
         private int currentPage = 1;
         private int totalPages = 1;
         private readonly int pageSize = 11;
-        private readonly string connectionString = ConfigurationManager.ConnectionStrings["databaseConnection"].ConnectionString;
         private SaleDetail currentEditSale;
 
         public int CurrentPage
@@ -64,11 +65,13 @@ namespace Phramacy_Product.Views.Sales
         private void LoadSalesData(DateTime? startDate = null, DateTime? endDate = null)
         {
             allSales.Clear();
+
             string query = "SELECT BillNumber, CreatedAt, BillDate, CreatedBy, CustomerName, PatientName, " +
                            "TotalAmount, PaymentType, BillPath FROM SaleDetails";
+
             if (startDate.HasValue && endDate.HasValue)
             {
-                query += " WHERE CreatedAt >= @StartDate AND CreatedAt < @EndDate";
+                query += $" WHERE CreatedAt >= '{startDate.Value.ToString("yyyy-MM-dd")}' AND CreatedAt < '{endDate.Value.AddDays(1).ToString("yyyy-MM-dd")}'";
             }
             else
             {
@@ -76,46 +79,30 @@ namespace Phramacy_Product.Views.Sales
             }
             query += " ORDER BY CreatedAt DESC";
 
-
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-                    using (SqlCommand com = new SqlCommand(query, conn))
-                    {
-                        if (startDate.HasValue && endDate.HasValue)
-                        {
-                            com.Parameters.AddWithValue("@StartDate", startDate.Value);
-                            com.Parameters.AddWithValue("@EndDate", endDate.Value.AddDays(1)); 
-                        }
+                DataTable dt = DBMasterConnection.GD(query);
 
-                        using (SqlDataReader reader = com.ExecuteReader())
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    int srNo = 1;
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        allSales.Add(new SaleDetail
                         {
-                            int srNo = 1;
-                            while (reader.Read())
-                            {
-                                allSales.Add(new SaleDetail
-                                {
-                                    SrNo = srNo++,
-                                    BillNumber = reader["BillNumber"]?.ToString(),
-                                    CreatedAt = reader["CreatedAt"] != DBNull.Value ? Convert.ToDateTime(reader["CreatedAt"]) : (DateTime?)null,
-                                    BillDate = reader["BillDate"] != DBNull.Value ? Convert.ToDateTime(reader["BillDate"]) : (DateTime?)null,
-                                    CreatedBy = reader["CreatedBy"]?.ToString(),
-                                    CustomerName = reader["CustomerName"]?.ToString(),
-                                    PatientName = reader["PatientName"]?.ToString(),
-                                    TotalAmount = reader["TotalAmount"] != DBNull.Value ? Convert.ToDecimal(reader["TotalAmount"]) : 0,
-                                    PaymentStatus = reader["PaymentType"]?.ToString(),
-                                    BillPath = reader["BillPath"]?.ToString()
-                                });
-                            }
-                        }
+                            SrNo = srNo++,
+                            BillNumber = row["BillNumber"]?.ToString(),
+                            CreatedAt = row["CreatedAt"] != DBNull.Value ? Convert.ToDateTime(row["CreatedAt"]) : (DateTime?)null,
+                            BillDate = row["BillDate"] != DBNull.Value ? Convert.ToDateTime(row["BillDate"]) : (DateTime?)null,
+                            CreatedBy = row["CreatedBy"]?.ToString(),
+                            CustomerName = row["CustomerName"]?.ToString(),
+                            PatientName = row["PatientName"]?.ToString(),
+                            TotalAmount = row["TotalAmount"] != DBNull.Value ? Convert.ToDecimal(row["TotalAmount"]) : 0,
+                            PaymentStatus = row["PaymentType"]?.ToString(),
+                            BillPath = row["BillPath"]?.ToString()
+                        });
                     }
                 }
-            }
-            catch (SqlException ex)
-            {
-                MessageBox.Show($"Database error: {ex.Message}");
             }
             catch (Exception ex)
             {
@@ -241,7 +228,6 @@ namespace Phramacy_Product.Views.Sales
                 EditPanel.Visibility = Visibility.Visible;
             }
         }
-
         private void SaveEdit_Click(object sender, RoutedEventArgs e)
         {
             if (currentEditSale == null)
@@ -268,36 +254,24 @@ namespace Phramacy_Product.Views.Sales
 
             try
             {
-                using (SqlConnection con = new SqlConnection(connectionString))
+                string query = $@"
+            UPDATE SaleDetails
+            SET CustomerName = '{customerName.Replace("'", "''")}',
+            CreatedBy = '{entryBy.Replace("'", "''")}',
+            TotalAmount = {totalAmount},
+            PaymentType = '{paymentStatus.Replace("'", "''")}',
+            BillDate = '{billDate.ToString("yyyy-MM-dd HH:mm:ss")}',
+            CreatedAt = '{createdAt.ToString("yyyy-MM-dd HH:mm:ss")}',
+            BillPath = {(string.IsNullOrWhiteSpace(billPath) ? "NULL" : $"'{billPath.Replace("'", "''")}'")}
+            WHERE BillNumber = '{billNumber.Replace("'", "''")}'";
+
+                int rowsAffected = DBMasterConnection.IUD(query);
+
+                if (rowsAffected > 0)
                 {
-                    string query = @"
-                        UPDATE SaleDetails
-                        SET CustomerName = @CustomerName,
-                        CreatedBy = @CreatedBy,
-                        TotalAmount = @TotalAmount,
-                        PaymentType = @PaymentType,
-                        BillDate = @BillDate,
-                        CreatedAt = @CreatedAt,
-                        BillPath = @BillPath
-                        WHERE BillNumber = @BillNumber";
-                    SqlCommand cmd = new SqlCommand(query, con);
-                    cmd.Parameters.AddWithValue("@CustomerName", customerName);
-                    cmd.Parameters.AddWithValue("@CreatedBy", entryBy);
-                    cmd.Parameters.AddWithValue("@TotalAmount", totalAmount);
-                    cmd.Parameters.AddWithValue("@PaymentType", paymentStatus);
-                    cmd.Parameters.AddWithValue("@BillDate", billDate);
-                    cmd.Parameters.AddWithValue("@CreatedAt", createdAt);
-                    cmd.Parameters.AddWithValue("@BillPath", string.IsNullOrWhiteSpace(billPath) ? (object)DBNull.Value : billPath);
-                    cmd.Parameters.AddWithValue("@BillNumber", billNumber);
-
-                    con.Open();
-                    int rowsAffected = cmd.ExecuteNonQuery();
-
-                    if (rowsAffected > 0)
-                    {
-                        MessageBox.Show("Sale record updated successfully.");
-                        EditPanel.Visibility = Visibility.Collapsed;
-                        LoadSalesData();                     }
+                    MessageBox.Show("Sale record updated successfully.");
+                    EditPanel.Visibility = Visibility.Collapsed;
+                    LoadSalesData();
                 }
             }
             catch (Exception ex)
@@ -316,22 +290,36 @@ namespace Phramacy_Product.Views.Sales
 
             try
             {
-                using (SqlConnection con = new SqlConnection(connectionString))
+                string getSaleIdQuery = $"SELECT SaleID FROM SaleDetails WHERE BillNumber='{selected.BillNumber.Replace("'", "''")}'";
+                DataTable dt = DBMasterConnection.GD(getSaleIdQuery);
+
+                if (dt == null || dt.Rows.Count == 0)
                 {
-                    SqlCommand com = new SqlCommand("DELETE FROM SaleDetails WHERE BillNumber=@BillNumber", con);
-                    com.Parameters.AddWithValue("@BillNumber", selected.BillNumber);
-                    con.Open();
-                    com.ExecuteNonQuery();
+                    MessageBox.Show("Sale record not found.");
+                    return;
                 }
-                MessageBox.Show($"Record Deleted for Bill Number {selected.BillNumber}");
-                LoadSalesData();
+
+                int saleId = Convert.ToInt32(dt.Rows[0]["SaleID"]);
+                string deleteItemsQuery = $"DELETE FROM SaleItems WHERE SaleID = {saleId}";
+                DBMasterConnection.IUD(deleteItemsQuery);
+                string deleteDetailsQuery = $"DELETE FROM SaleDetails WHERE SaleID = {saleId}";
+                int rowsAffected = DBMasterConnection.IUD(deleteDetailsQuery);
+
+                if (rowsAffected > 0)
+                {
+                    MessageBox.Show($"Record Deleted for Bill Number {selected.BillNumber}");
+                    LoadSalesData();
+                }
+                else
+                {
+                    MessageBox.Show("No record was deleted.");
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error deleting record: {ex.Message}");
             }
         }
-
         private void CancelEdit_Click(object sender, RoutedEventArgs e)
         {
             EditPanel.Visibility = Visibility.Collapsed;

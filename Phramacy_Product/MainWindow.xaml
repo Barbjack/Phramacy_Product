@@ -4,9 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:local="clr-namespace:Phramacy_Product.Views"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="800">
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -17,7 +17,7 @@
             <Image Source="/Assets/EpharmaLogin.png" Stretch="Uniform" Width="1000" />
         </Border>
 
-        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="50">
+        <StackPanel Grid.Column="1" x:Name="LoginStackPanel" VerticalAlignment="Center" Margin="50">
             <TextBlock Text="Login" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,30" />
 
             <TextBlock Text="Mobile Number" Margin="0,0,0,5" />
@@ -27,21 +27,22 @@
             <PasswordBox x:Name="PasswordBox" Padding="5" />
 
             <Button x:Name="LoginButton" Height="50" Content="Login" Margin="0,30,0,10" Padding="10" Background="#3f51b5" Foreground="White" Click="LoginButton_Click" />
-            <TextBlock Text="Forgot Password?" HorizontalAlignment="Center" Foreground="#3f51b5" Margin="0,5,0,20" Cursor="Hand" />
-
+            <TextBlock Text="Forgot Password?" HorizontalAlignment="Center" Foreground="#3f51b5" Margin="0,5,0,20" Cursor="Hand" MouseLeftButtonDown="ForgotPassword_Click" />
             <TextBlock HorizontalAlignment="Center">
                 <Run Text="Do you own a Pharmacy? " />
-                <Hyperlink NavigateUri="#">
-                    <Run Text="Join as Chemist" />
+                <Hyperlink Click="RegisterChemist">
+                    <Run Text="Join as Chemist"/>
                 </Hyperlink>
             </TextBlock>
             <StackPanel Width="100">
                 <Button Margin="10 20" Style="{StaticResource MaterialDesignFloatingActionButton}" Background="{x:Null}"
-                ToolTip="Close" x:Name="btnExit" Click="btnExit_Click">
+                        ToolTip="Close" x:Name="btnExit" Click="btnExit_Click">
                     <materialDesign:PackIcon Kind="Close" Foreground="Red" Width="30" Height="30" />
                 </Button>
             </StackPanel>
         </StackPanel>
+
+        <Frame Grid.Column="1" x:Name="MainFrame" NavigationUIVisibility="Hidden" Visibility="Collapsed"/>
     </Grid>
+
 </Window>
-    

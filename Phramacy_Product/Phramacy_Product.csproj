@@ -192,6 +192,7 @@
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -257,6 +258,7 @@
     <Compile Include="Views\Analytics\ActiveUsers.xaml.cs">
       <DependentUpon>ActiveUsers.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Analytics\ActiveUserViewModel.cs" />
     <Compile Include="Views\Analytics\AnalyticsPage.xaml.cs">
       <DependentUpon>AnalyticsPage.xaml</DependentUpon>
     </Compile>
@@ -269,11 +271,17 @@
     <Compile Include="Views\Components\Dashboard.xaml.cs">
       <DependentUpon>Dashboard.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\DBMaster\DBMasterConnection.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Views\Distributors\AddNewDistributor.xaml.cs">
       <DependentUpon>AddNewDistributor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Distributors\DistributorsPage.xaml.cs">
       <DependentUpon>DistributorsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ForgotPassword\ForgotPasswordPage.xaml.cs">
+      <DependentUpon>ForgotPasswordPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Inventory\AddMedicineWindow.xaml.cs">
       <DependentUpon>AddMedicineWindow.xaml</DependentUpon>
@@ -335,6 +343,9 @@
       <DependentUpon>PurchaseReturn.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Purchase\PurchaseReturn\PurchaseReturnViewModel.cs" />
+    <Compile Include="Views\RegisterUser\RegisterNewChemist.xaml.cs">
+      <DependentUpon>RegisterNewChemist.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Sales\GenerateSaleInvoice\NewSalePage.xaml.cs">
       <DependentUpon>NewSalePage.xaml</DependentUpon>
     </Compile>
@@ -457,6 +468,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ForgotPassword\ForgotPasswordPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Inventory\AddMedicineWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -526,6 +541,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Purchase\PurchaseReturn\PurchaseReturn.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RegisterUser\RegisterNewChemist.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,27 +1,27 @@
 ﻿using Newtonsoft.Json;
+using Phramacy_Product.DataModel.GenerateToken;
 using Phramacy_Product.Views.Components;
+using Phramacy_Product.Views.DBMaster;
+using Phramacy_Product.Views.RegisterUser; 
 using System;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using Phramacy_Product.DataModel.GenerateToken;
-
+using System.Windows.Navigation;
 
 namespace Phramacy_Product
 {
     public partial class MainWindow : Window
     {
-        private readonly string connectionString = ConfigurationManager.ConnectionStrings["databaseConnection"].ConnectionString;
-
         public MainWindow()
         {
             InitializeComponent();
         }
-
         public enum LoginStatus
         {
             Success,
@@ -31,7 +31,6 @@ namespace Phramacy_Product
             InternetError,
             TokenError
         }
-
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             string mobile = MobileNumberTextBox.Text;
@@ -42,9 +41,7 @@ namespace Phramacy_Product
                 MessageBox.Show("Please enter both mobile number and password.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-
             LoginStatus status = await AuthenticateUser(mobile, password);
-
             switch (status)
             {
                 case LoginStatus.Success:
@@ -56,14 +53,14 @@ namespace Phramacy_Product
                 case LoginStatus.InvalidCredentials:
                     MessageBox.Show("Invalid mobile number or password.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     break;
-                case LoginStatus.LicenseError:
-                       break;
-                case LoginStatus.DatabaseError:
-                    break;
-                case LoginStatus.InternetError:
-                    break;
                 case LoginStatus.TokenError:
-                        break;
+                    MessageBox.Show("Failed to get or refresh token. Please try again.", "Token Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    break;
+                case LoginStatus.DatabaseError:
+                    MessageBox.Show("A database error occurred. Please try again later.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    break;
+                case LoginStatus.LicenseError: 
+                case LoginStatus.InternetError: 
                 default:
                     MessageBox.Show("An unknown error occurred.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     break;
@@ -71,45 +68,34 @@ namespace Phramacy_Product
         }
         private async Task<LoginStatus> AuthenticateUser(string mobile, string password)
         {
-            string query = "SELECT id, pharmacist_name, mobile FROM pharmacy_profile WHERE mobile = @mobile AND password = @password";
-
+            //string query = "SELECT id,pharmacy_name,pharmacist_name, mobile,email FROM pharmacy_profile WHERE mobile = @mobile AND password = @password";
+            string query = $"SELECT id,pharmacy_name,pharmacist_name, mobile,email FROM pharmacy_profile " +
+                $"WHERE mobile = '{mobile}' AND password = '{password}'";
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                DataTable dt = DBMasterConnection.GD(query);
+                if (dt != null && dt.Rows.Count > 0)
                 {
-                    using (SqlCommand command = new SqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@mobile", mobile);
-                        command.Parameters.AddWithValue("@password", password);
+                    DataRow reader = dt.Rows[0];
+                    GlobalData.LoggedInUser = reader["pharmacist_name"].ToString();
+                    GlobalData.userId = (int)reader["id"];
+                    GlobalData.pharmacyName = reader["pharmacy_name"].ToString();
+                    GlobalData.mobile = reader["mobile"].ToString();
+                    GlobalData.email = reader["email"].ToString();
 
-                        connection.Open();
-                        SqlDataReader reader = command.ExecuteReader();
-
-                        if (reader.Read())
-                        {
-                            GlobalData.LoggedInUser = reader["pharmacist_name"].ToString();
-                            GlobalData.userId = (int)reader["id"];
-                            //string mobile = reader["mobile"].ToString();
-                            reader.Close();
-
-                            var tokenManager = new TokenManager();
-                            var tokenStatus = await tokenManager.GetOrRefreshToken(mobile);
-
-                            if (tokenStatus != TokenManager.TokenStatus.Success)
-                            {
-                                return LoginStatus.TokenError;
-                            }
-
-                            return LoginStatus.Success;
-                        }
-                        else
-                        {
-                            return LoginStatus.InvalidCredentials;
-                        }
-                    }
-                }
+                    var tokenManager = new TokenManager();
+                    var tokenStatus = await tokenManager.GetOrRefreshToken(mobile);
+                   if (tokenStatus != TokenManager.TokenStatus.Success)
+                   {
+                      return LoginStatus.TokenError;
+                   }
+                    return LoginStatus.Success;
+                  }
+                  else
+                  {
+                     return LoginStatus.InvalidCredentials;
+                  }
             }
-
             catch (Exception ex)
             {
                 MessageBox.Show($"Database error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -117,11 +103,29 @@ namespace Phramacy_Product
             }
         }
 
+        private void RegisterChemist(object sender, RoutedEventArgs e)
+        {
+            LoginStackPanel.Visibility = Visibility.Collapsed;
+            MainFrame.Visibility = Visibility.Visible;
+
+            MainFrame.Navigate(new RegisterNewChemist(this)); 
+        }
+        public void GoToLoginScreen()
+        {
+            MainFrame.Visibility = Visibility.Collapsed;
+            LoginStackPanel.Visibility = Visibility.Visible;
+            Clear_Form();
+        }
         private void btnExit_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
         }
-
+        private void ForgotPassword_Click(object sender, RoutedEventArgs e)
+        {
+            LoginStackPanel.Visibility = Visibility.Collapsed;
+            MainFrame.Visibility = Visibility.Visible;
+            MainFrame.Navigate(new Views.ForgotPassword.ForgotPasswordPage(this));
+        }
         private void Clear_Form()
         {
             MobileNumberTextBox.Clear();
