@@ -13,7 +13,6 @@ namespace Phramacy_Product.DataModel.GenerateToken
 {
     public class TokenManager
     {
-        private const string ApiBaseUrl = "https://quickrxbill.com/api/";
         private const int TokenDurationDays = 2;
         public enum TokenStatus
         {
