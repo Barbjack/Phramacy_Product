@@ -21,7 +21,7 @@ namespace Phramacy_Product.DataModel
         public decimal PaidAmount { get; set; }
         public String PaymentStatus { get; set; }
         public String PaymentType { get; set; }
-
+        public bool IsDeleted { get; set; }
         public String BillPath { get; set; }
        
         public event PropertyChangedEventHandler PropertyChanged;

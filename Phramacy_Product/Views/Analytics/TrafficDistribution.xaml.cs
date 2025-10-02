@@ -1,45 +1,45 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.ComponentModel; // Keep if using for the ViewModel
+using System.Runtime.CompilerServices; // Keep if using for the ViewModel
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Configuration; // Required for ConfigurationManager
+using System.Data.SqlClient; // Required for database access
+
 namespace Phramacy_Product.Views.Analytics
 {
+    // Ensure your TrafficDistributionViewModel class is correctly defined as provided earlier,
+    // including the LoadPaymentData method.
     public class TrafficDistributionViewModel : INotifyPropertyChanged
     {
-        private double _organicPercentage = 50.0;
-        private double _directPercentage = 20.0;
-        private double _paidPercentage = 30.0;
+        private readonly string connectionString = ConfigurationManager.ConnectionStrings["databaseConnection"].ConnectionString;
+
+        private double _cashPercentage;
+        private double _onlinePercentage;
         private double _increaseValue = 10.57;
-        public double OrganicPercentage
+
+        public double CashPercentage
         {
-            get => _organicPercentage;
+            get => _cashPercentage;
             set
             {
-                _organicPercentage = value;
+                _cashPercentage = value;
                 OnPropertyChanged();
             }
         }
-        public double DirectPercentage
+
+        public double OnlinePercentage
         {
-            get => _directPercentage;
+            get => _onlinePercentage;
             set
             {
-                _directPercentage = value;
+                _onlinePercentage = value;
                 OnPropertyChanged();
             }
         }
-        public double PaidPercentage
-        {
-            get => _paidPercentage;
-            set
-            {
-                _paidPercentage = value;
-                OnPropertyChanged();
-            }
-        }
+
         public double IncreaseValue
         {
             get => _increaseValue;
@@ -55,16 +55,68 @@ namespace Phramacy_Product.Views.Analytics
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public void LoadPaymentData()
+        {
+            string query = @"SELECT 
+                SUM(CASE WHEN PaymentType = 'Cash' THEN 1 ELSE 0 END) AS CashCount,
+                SUM(CASE WHEN PaymentType = 'Online' THEN 1 ELSE 0 END) AS OnlineCount,
+                COUNT(*) AS TotalSales
+            FROM SaleDetails
+            WHERE IsDeleted = 0 AND Status = 'Completed';";
+
+            int cashCount = 0;
+            int onlineCount = 0;
+            int totalSales = 0;
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            cashCount = reader.GetInt32(reader.GetOrdinal("CashCount"));
+                            onlineCount = reader.GetInt32(reader.GetOrdinal("OnlineCount"));
+                            totalSales = reader.GetInt32(reader.GetOrdinal("TotalSales"));
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Database Error: {ex.Message}");
+            }
+
+            if (totalSales > 0)
+            {
+                this.CashPercentage = Math.Round((double)cashCount / totalSales * 100, 2);
+                this.OnlinePercentage = Math.Round((double)onlineCount / totalSales * 100, 2);
+            }
+            else
+            {
+                this.CashPercentage = 0;
+                this.OnlinePercentage = 0;
+            }
+        }
     }
+
+
     public partial class TrafficDistribution : UserControl
     {
         public TrafficDistribution()
         {
             InitializeComponent();
             var viewModel = new TrafficDistributionViewModel();
+            viewModel.LoadPaymentData();
             this.DataContext = viewModel;
             Loaded += (s, e) => UpdateChart();
         }
+
         private void UpdateChart()
         {
             var viewModel = this.DataContext as TrafficDistributionViewModel;
@@ -74,30 +126,43 @@ namespace Phramacy_Product.Views.Analytics
             if (canvas == null) return;
             canvas.Children.Clear();
 
-            double total = viewModel.OrganicPercentage + viewModel.DirectPercentage + viewModel.PaidPercentage;
+            double total = viewModel.CashPercentage + viewModel.OnlinePercentage;
             if (total == 0) return;
 
             double radius = 125;
             double center = 125;
-            double currentAngle = 0;  
-            DrawSegment(canvas, viewModel.PaidPercentage / total * 360, currentAngle, radius, center, "#42A5F5");
-            currentAngle += viewModel.PaidPercentage / total * 360;
-            DrawSegment(canvas, viewModel.DirectPercentage / total * 360, currentAngle, radius, center, "#66BB6A");
-            currentAngle += viewModel.DirectPercentage / total * 360;
-            DrawSegment(canvas, viewModel.OrganicPercentage / total * 360, currentAngle, radius, center, "#E57373");
+            double innerRadius = 50; // Radius for the inner circle of the donut
+            double labelRadius = (radius + innerRadius) / 2; // Mid-point for labels
+            double currentAngle = 0;
+
+            // Define colors
+            string onlineColorHex = "#42A5F5"; // Blue for Online
+            string cashColorHex = "#66BB6A";   // Green for Cash
+
+            // 1. Draw Online Segment
+            double onlineAngle = viewModel.OnlinePercentage / total * 360;
+            DrawSegment(canvas, onlineAngle, currentAngle, radius, center, onlineColorHex);
+            // Add label for Online
+            AddLabel(canvas, "Online", viewModel.OnlinePercentage, currentAngle + (onlineAngle / 2), labelRadius, center, onlineColorHex);
+            currentAngle += onlineAngle;
+
+            // 2. Draw Cash Segment
+            double cashAngle = viewModel.CashPercentage / total * 360;
+            DrawSegment(canvas, cashAngle, currentAngle, radius, center, cashColorHex);
+            // Add label for Cash
+            AddLabel(canvas, "Cash", viewModel.CashPercentage, currentAngle + (cashAngle / 2), labelRadius, center, cashColorHex);
+            // currentAngle += cashAngle; // Not strictly necessary after the last segment
+
+            // Draw Inner Circle for Donut effect
             var innerCircle = new Ellipse
             {
-                Width = 100,
-                Height = 100,
+                Width = innerRadius * 2, // Diameter
+                Height = innerRadius * 2, // Diameter
                 Fill = Brushes.White
             };
-            Canvas.SetLeft(innerCircle, center - 50);
-            Canvas.SetTop(innerCircle, center - 50);
+            Canvas.SetLeft(innerCircle, center - innerRadius);
+            Canvas.SetTop(innerCircle, center - innerRadius);
             canvas.Children.Add(innerCircle);
-
-            AddLabel(canvas, "Paid", viewModel.PaidPercentage, 150, 175, "white");
-            AddLabel(canvas, "Direct", viewModel.DirectPercentage, 170, 65, "white");
-            AddLabel(canvas, "Organic", viewModel.OrganicPercentage, 30, 120, "white");
         }
 
         private void DrawSegment(Canvas canvas, double angle, double startAngle, double radius, double center, string colorHex)
@@ -135,17 +200,28 @@ namespace Phramacy_Product.Views.Analytics
             canvas.Children.Add(path);
         }
 
-        private void AddLabel(Canvas canvas, string name, double percentage, double left, double top, string colorHex)
+        // MODIFIED: AddLabel to take angle, labelRadius, and center for positioning
+        private void AddLabel(Canvas canvas, string name, double percentage, double midAngle, double labelRadius, double center, string colorHex)
         {
             var textBlock = new TextBlock
             {
-                Text = $"{percentage}%",
+                Text = $"{name} {percentage:F0}%", // Format: "Cash 65%"
                 FontWeight = FontWeights.Bold,
-                FontSize = 18,
-                Foreground = (SolidColorBrush)new BrushConverter().ConvertFromString(colorHex)
+                FontSize = 14,
+                Foreground = Brushes.White // Labels inside segments usually look better in white or black
             };
-            Canvas.SetLeft(textBlock, left);
-            Canvas.SetTop(textBlock, top);
+
+            // Measure text block to center it
+            textBlock.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            Size textSize = textBlock.DesiredSize;
+
+            // Calculate label position
+            double angleRad = midAngle * Math.PI / 180;
+            double x = center + labelRadius * Math.Sin(angleRad) - (textSize.Width / 2);
+            double y = center - labelRadius * Math.Cos(angleRad) - (textSize.Height / 2);
+
+            Canvas.SetLeft(textBlock, x);
+            Canvas.SetTop(textBlock, y);
             canvas.Children.Add(textBlock);
         }
     }

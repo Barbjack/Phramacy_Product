@@ -25,8 +25,8 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Organic vs Paid Search" FontSize="16" Foreground="Black" FontWeight="SemiBold"/>
-                    <TextBlock Text="Traffic Distribution" FontSize="20" Foreground="DarkBlue" FontWeight="Bold"/>
+                    <TextBlock Text="Cash vs Online" FontSize="16" Foreground="Black" FontWeight="SemiBold"/>
+                    <TextBlock Text="Payment Distribution" FontSize="20" Foreground="DarkBlue" FontWeight="Bold"/>
                     <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                         <materialDesign:PackIcon Kind="ArrowUp" Foreground="Green" VerticalAlignment="Center" Margin="0,0,2,0"/>
                         <TextBlock Text="{Binding IncreaseValue, StringFormat=₹{0:F2}}" Foreground="Green" VerticalAlignment="Center"/>
@@ -35,16 +35,12 @@
 
                 <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top">
                     <StackPanel Orientation="Horizontal" Margin="0,2">
-                        <Ellipse Fill="#E57373" Width="12" Height="12" VerticalAlignment="Center"/>
-                        <TextBlock Text="Organic" Margin="8,0"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,2">
                         <Ellipse Fill="#66BB6A" Width="12" Height="12" VerticalAlignment="Center"/>
-                        <TextBlock Text="Direct" Margin="8,0"/>
+                        <TextBlock Text="Cash" Margin="8,0"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,2">
                         <Ellipse Fill="#42A5F5" Width="12" Height="12" VerticalAlignment="Center"/>
-                        <TextBlock Text="Paid" Margin="8,0"/>
+                        <TextBlock Text="Online" Margin="8,0"/>
                     </StackPanel>
                 </StackPanel>
             </Grid>

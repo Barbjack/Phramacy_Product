@@ -32,7 +32,7 @@
                 <TextBlock Text="Amount Due" FontWeight="SemiBold" FontSize="14" Grid.Column="1"/>
             </Grid>
 
-            <ItemsControl Grid.Row="1" ItemsSource="{Binding FilleteredDueAmounts}">
+            <ItemsControl Grid.Row="1" ItemsSource="{Binding FilleteredDueAmounts}" MinHeight="420" >
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>

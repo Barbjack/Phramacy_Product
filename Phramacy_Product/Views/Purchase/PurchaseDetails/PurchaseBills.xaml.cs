@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Data.SqlClient;
-using System.Diagnostics; 
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -12,7 +12,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-
+using System.Windows.Navigation; 
 namespace Phramacy_Product.Views.Purchase.PurchaseDetails
 {
     public partial class PurchaseBills : Page, INotifyPropertyChanged
@@ -61,11 +61,21 @@ namespace Phramacy_Product.Views.Purchase.PurchaseDetails
             LoadPurchaseData();
         }
 
-        private void LoadPurchaseData()
+        private void LoadPurchaseData(DateTime? startDate = null, DateTime? endDate = null)
         {
             allPurchases.Clear();
-            string query = @"select * from PurchaseDetails where isDeleted=0;";
-                //"SELECT BillNumber, CreatedAt, BillDate, CreatedBy, DistributorName, PaidAmount, PendingAmount, ReturnAmount, PaymentType FROM PurchaseDetails WHERE IsDeleted = 0";
+
+            string dateFilter = string.Empty;
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                DateTime effectiveEndDate = endDate.Value.Date.AddDays(1);
+                dateFilter = $" AND CreatedAt >= '{startDate.Value.ToString("yyyy-MM-dd")}' AND CreatedAt < '{effectiveEndDate.ToString("yyyy-MM-dd")}'";
+            }
+                string query = $@"
+                SELECT BillNumber, CreatedAt, BillDate, CreatedBy, DistributorName, PaidAmount, PendingAmount, ReturnAmount, PaymentType 
+                FROM PurchaseDetails 
+                WHERE IsDeleted = 0 {dateFilter} 
+                ORDER BY CreatedAt DESC;";
 
             try
             {
@@ -98,17 +108,43 @@ namespace Phramacy_Product.Views.Purchase.PurchaseDetails
             catch (SqlException ex)
             {
                 MessageBox.Show($"Database error: {ex.Message}");
-                Trace.WriteLine($"SQL Error: {ex.Message}"); // Use Trace.WriteLine for detailed logging
+                Trace.WriteLine($"SQL Error: {ex.Message}");
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"An error occurred while loading data: {ex.Message}");
                 Trace.WriteLine($"General Error: {ex.Message}");
             }
-
-            // After loading all data, apply the current search filter
             SearchBox_TextChanged(null, null);
-            //DisplayCurrentPage(); // This is called inside SearchBox_TextChanged
+        }
+
+        private void FilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            DateTime? startDate = StartDatePicker.SelectedDate;
+            DateTime? endDate = EndDatePicker.SelectedDate;
+
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                if (startDate.Value.Date > endDate.Value.Date)
+                {
+                    MessageBox.Show("Start Date cannot be after End Date.", "Date Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                SearchBox.Text = string.Empty;
+                LoadPurchaseData(startDate, endDate);
+            }
+            else
+            {
+                MessageBox.Show("Please select both a start and end date to filter.", "Missing Dates", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void ClearFilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            StartDatePicker.SelectedDate = null;
+            EndDatePicker.SelectedDate = null;
+            SearchBox.Text = string.Empty; 
+            LoadPurchaseData(); 
         }
 
         private void FirstPageClick(object sender, RoutedEventArgs e)
@@ -126,7 +162,6 @@ namespace Phramacy_Product.Views.Purchase.PurchaseDetails
                 CurrentPage--;
             }
         }
-
         private void NextPageClick(object sender, RoutedEventArgs e)
         {
             if (currentPage < TotalPages)
@@ -142,13 +177,6 @@ namespace Phramacy_Product.Views.Purchase.PurchaseDetails
                 CurrentPage = TotalPages;
             }
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             string filter = SearchBox.Text.Trim().ToLower();
@@ -161,12 +189,12 @@ namespace Phramacy_Product.Views.Purchase.PurchaseDetails
             {
                 filteredPurchases = allPurchases
                     .Where(x => x.DistributorName?.ToLower().Contains(filter) == true ||
-                                x.BillNumber?.ToLower().Contains(filter) == true)
+                                 x.BillNumber?.ToLower().Contains(filter) == true)
                     .ToList();
             }
 
             TotalPages = (int)Math.Ceiling(filteredPurchases.Count / (double)pageSize);
-            currentPage = 1; // Reset to the first page for the new search results
+            currentPage = 1; 
             DisplayCurrentPage();
         }
 
@@ -175,6 +203,8 @@ namespace Phramacy_Product.Views.Purchase.PurchaseDetails
             if (filteredPurchases.Count == 0)
             {
                 PurchasesDataGrid.ItemsSource = null;
+                TotalPages = 1;
+                CurrentPage = 1;
                 return;
             }
 
@@ -272,7 +302,14 @@ namespace Phramacy_Product.Views.Purchase.PurchaseDetails
                     {
                         MessageBox.Show("Purchase record updated successfully.");
                         EditPanel.Visibility = Visibility.Collapsed;
-                        LoadPurchaseData(); // Refresh the DataGrid
+                        if (StartDatePicker.SelectedDate.HasValue && EndDatePicker.SelectedDate.HasValue)
+                        {
+                            LoadPurchaseData(StartDatePicker.SelectedDate, EndDatePicker.SelectedDate);
+                        }
+                        else
+                        {
+                            LoadPurchaseData();
+                        }
                     }
                 }
             }
@@ -293,7 +330,7 @@ namespace Phramacy_Product.Views.Purchase.PurchaseDetails
             }
 
             MessageBoxResult result = MessageBox.Show($"Are you sure you want to delete the purchase bill with number {selected.BillNumber}?",
-                                      "Confirm Deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                                                      "Confirm Deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
             if (result == MessageBoxResult.Yes)
             {
@@ -301,15 +338,24 @@ namespace Phramacy_Product.Views.Purchase.PurchaseDetails
                 {
                     using (SqlConnection con = new SqlConnection(connectionString))
                     {
-                        // Using a soft delete (updating IsDeleted to 1) is generally safer than a hard delete.
+                        // Using a soft delete (updating IsDeleted to 1)
                         string query = "UPDATE PurchaseDetails SET IsDeleted = 1 WHERE BillNumber = @BillNumber";
                         SqlCommand com = new SqlCommand(query, con);
-                        com.Parameters.AddWithValue("@BillNumber", selected.BillNumber);
+                        com.Parameters.AddWithValue("@BillNumber", selected.BillNumber); // Use parameter for safety
                         con.Open();
                         com.ExecuteNonQuery();
                     }
                     MessageBox.Show($"Record for Bill Number {selected.BillNumber} has been deleted.");
-                    LoadPurchaseData();
+
+                    // Reload data, maintaining the current filter/search context
+                    if (StartDatePicker.SelectedDate.HasValue && EndDatePicker.SelectedDate.HasValue)
+                    {
+                        LoadPurchaseData(StartDatePicker.SelectedDate, EndDatePicker.SelectedDate);
+                    }
+                    else
+                    {
+                        LoadPurchaseData();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -341,23 +387,32 @@ namespace Phramacy_Product.Views.Purchase.PurchaseDetails
 
         private void Page_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (SearchBox.Visibility == Visibility.Visible && !SearchBox.IsKeyboardFocusWithin && !SearchButton.IsMouseOver)
+           
+            if (SearchBox.Visibility == Visibility.Visible &&
+                !SearchBox.IsKeyboardFocusWithin &&
+                !(SearchButton.IsMouseOver) && 
+                !(e.OriginalSource is TextBox)) 
             {
                 SearchBox.Visibility = Visibility.Collapsed;
             }
         }
 
-        // Navigation methods
         private void NewPurchaseButton_Click(object sender, RoutedEventArgs e)
         {
-          NavigationService?.Navigate(new PurchaseGenerate.NewPurchaseGenerate());
+            NavigationService?.Navigate(new PurchaseGenerate.NewPurchaseGenerate());
         }
 
         private void PurchaseReturn_Click(object sender, RoutedEventArgs e)
         {
-          NavigationService?.Navigate(new PurchaseReturn.PurchaseReturn());
+            NavigationService?.Navigate(new PurchaseReturn.PurchaseReturn());
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
+
     public class NullToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:Phramacy_Product.Views.Analytics"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="root">
     <UserControl.Resources>
         <Style TargetType="TextBlock" x:Key="MetricValueStyle">
             <Setter Property="FontSize" Value="14"/>
@@ -17,6 +18,13 @@
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="Foreground" Value="#555"/>
         </Style>
+        <local:IndexToXConverter x:Key="IndexToXConverter"/>
+        <local:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
+        <local:PointCollectionConverter x:Key="PointCollectionConverter"/>
+        <local:AxisPositionConverter x:Key="AxisPositionConverter"/>
+        <local:YAxisLabelConverter x:Key="YAxisLabelConverter"/>
+        <local:NanToHiddenConverter x:Key="NanToHiddenConverter"/>
+       
     </UserControl.Resources>
 
     <Border Margin="10" Padding="20" Background="White" CornerRadius="8"
@@ -38,16 +46,15 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                    <TextBlock Text="Gross revenue" FontSize="18" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding GrossRevenueValue, StringFormat=₹{0:F2}}" Foreground="DarkBlue" FontSize="24" FontWeight="Bold" Margin="0,5,0,0"/>
+                    <TextBlock Text="Total Revenue" FontSize="18" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding TotalRevenueValue, StringFormat=₹{0:F2}}" Foreground="DarkBlue" FontSize="24" FontWeight="Bold" Margin="0,5,0,0"/>
                 </StackPanel>
 
-                <ComboBox Grid.Column="1" HorizontalAlignment="Right" VerticalContentAlignment="Center" SelectedIndex="0"
+                <ComboBox Grid.Column="1" HorizontalAlignment="Right" VerticalContentAlignment="Center" 
+                          ItemsSource="{Binding AvailableMonths}"
+                          SelectedIndex="{Binding SelectedMonthIndex, Mode=TwoWay}"
                           materialDesign:HintAssist.Hint="Select Month"
                           Style="{StaticResource MaterialDesignFloatingHintComboBox}">
-                    <ComboBoxItem Content="Jan"/>
-                    <ComboBoxItem Content="Feb"/>
-                    <ComboBoxItem Content="Mar"/>
                 </ComboBox>
             </Grid>
 
@@ -58,36 +65,18 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Point of sale" Grid.Column="0" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding PointOfSaleRevenue, StringFormat=₹{0:F2}}" Foreground="DarkBlue" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                    <StackPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Center" Margin="10,0,0,0">
-                        <materialDesign:PackIcon Kind="ArrowDown" Foreground="Red" VerticalAlignment="Center"/>
-                        <TextBlock Text="13%" Foreground="Red" VerticalAlignment="Center"/>
-                    </StackPanel>
+                    <TextBlock Text="Payment in Cash" Grid.Column="0" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding CashRevenue, StringFormat=₹{0:F2}}" Foreground="DarkBlue" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 </Grid>
+
                 <Grid Margin="0,5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Online Store" Grid.Column="0" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding OnlineStoreRevenue, StringFormat=₹{0:F2}}" Foreground="DarkBlue" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                    <StackPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Center" Margin="10,0,0,0">
-                        <materialDesign:PackIcon Kind="ArrowUp" Foreground="Green" VerticalAlignment="Center"/>
-                        <TextBlock Text="178%" Foreground="Green" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Grid>
-                <Grid Margin="0,5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Online Store" Grid.Column="0" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding OtherOnlineStoreRevenue, StringFormat=₹{0:F2}}" Foreground="DarkBlue" 
-                              HorizontalAlignment="Left" Grid.Column="1" VerticalAlignment="Center"/>
-                    <TextBlock Text="—" Grid.Column="2" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                    <TextBlock Text="Payment Online" Grid.Column="0" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding OnlineRevenue, StringFormat=₹{0:F2}}" Foreground="DarkBlue" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 </Grid>
             </StackPanel>
 
@@ -103,38 +92,55 @@
                         <Line X1="30" Y1="180" X2="380" Y2="180" Stroke="#CCC" StrokeThickness="1"/>
                         <Line X1="30" Y1="20" X2="30" Y2="180" Stroke="#CCC" StrokeThickness="1"/>
 
-                        <TextBlock Text="0" Canvas.Left="10" Canvas.Top="170" FontSize="10"/>
-                        <TextBlock Text="30" Canvas.Left="10" Canvas.Top="140" FontSize="10"/>
-                        <TextBlock Text="60" Canvas.Left="10" Canvas.Top="110" FontSize="10"/>
-                        <TextBlock Text="90" Canvas.Left="10" Canvas.Top="80" FontSize="10"/>
-                        <TextBlock Text="120" Canvas.Left="5" Canvas.Top="50" FontSize="10"/>
-                        <TextBlock Text="150" Canvas.Left="5" Canvas.Top="20" FontSize="10"/>
+                        <ItemsControl ItemsSource="{Binding SalesChartData, Converter={StaticResource YAxisLabelConverter}}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Canvas/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <TextBlock Text="{Binding Text}" FontSize="10" Foreground="#666" 
+                                   Canvas.Left="5" 
+                                   Canvas.Top="{Binding YPos, Converter={StaticResource AxisPositionConverter}, ConverterParameter=YLabelOffset}"/>
 
-                        <TextBlock Text="Jan 1" Canvas.Left="30" Canvas.Top="185" FontSize="10"/>
-                        <TextBlock Text="Jan 7" Canvas.Left="85" Canvas.Top="185" FontSize="10"/>
-                        <TextBlock Text="Jan 13" Canvas.Left="140" Canvas.Top="185" FontSize="10"/>
-                        <TextBlock Text="Jan 19" Canvas.Left="195" Canvas.Top="185" FontSize="10"/>
-                        <TextBlock Text="Jan 25" Canvas.Left="250" Canvas.Top="185" FontSize="10"/>
-                        <TextBlock Text="Jan 31" Canvas.Left="305" Canvas.Top="185" FontSize="10"/>
+                                        <Line X1="30" X2="380" 
+                              Stroke="#EEE" StrokeThickness="1" StrokeDashArray="2 2"
+                              Visibility="{Binding Text, Converter={StaticResource ZeroToVisibilityConverter}}"
+                              Canvas.Top="{Binding YPos, Converter={StaticResource AxisPositionConverter}, ConverterParameter=YLineOffset}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <ItemsControl x:Name="XAxisLabels" ItemsSource="{Binding SalesChartData}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock  FontSize="10" 
+                       HorizontalAlignment="Center"
+
+                       Canvas.Left="{Binding 
+                                         RelativeSource={RelativeSource AncestorType=ItemsControl}, 
+                                         Path=ItemContainerGenerator.Items.IndexOf(.), 
+                                         Converter={StaticResource IndexToXConverter}
+                                     }" Canvas.Top="185"
+
+                       Visibility="{Binding RelativeSource={RelativeSource Self}, 
+                                            Path=Canvas.Left, 
+                                            Converter={StaticResource NanToHiddenConverter}}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
 
                         <Polyline Stroke="#7F94FF" StrokeThickness="2">
                             <Polyline.Points>
-                                <Point X="30" Y="120"/>
-                                <Point X="90" Y="150"/>
-                                <Point X="150" Y="110"/>
-                                <Point X="210" Y="130"/>
-                                <Point X="270" Y="40"/>
-                                <Point X="330" Y="55"/>
+                                <Binding Path="SalesChartData" Converter="{StaticResource PointCollectionConverter}" ConverterParameter="CurrentMonth"/>
                             </Polyline.Points>
                         </Polyline>
+
                         <Polyline Stroke="#B7D9E7" StrokeThickness="2">
                             <Polyline.Points>
-                                <Point X="30" Y="150"/>
-                                <Point X="90" Y="165"/>
-                                <Point X="150" Y="120"/>
-                                <Point X="210" Y="115"/>
-                                <Point X="270" Y="145"/>
-                                <Point X="330" Y="140"/>
+                                <Binding Path="SalesChartData" Converter="{StaticResource PointCollectionConverter}" ConverterParameter="PreviousMonth"/>
                             </Polyline.Points>
                         </Polyline>
                     </Canvas>
@@ -143,10 +149,10 @@
 
             <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,0">
                 <materialDesign:PackIcon Kind="Circle" Foreground="#7F94FF" VerticalAlignment="Center"/>
-                <TextBlock Text="Jan" Margin="5,0,20,0" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding CurrentMonthName}" Margin="5,0,20,0" VerticalAlignment="Center"/>
+
                 <materialDesign:PackIcon Kind="Circle" Foreground="#B7D9E7" VerticalAlignment="Center"/>
-                <TextBlock Text="Dec" Margin="5,0,20,0" VerticalAlignment="Center"/>
-                <TextBlock Text="View report >" Foreground="#555" TextDecorations="Underline" VerticalAlignment="Center" Cursor="Hand"/>
+                <TextBlock Text="{Binding PreviousMonthName}" Margin="5,0,20,0" VerticalAlignment="Center"/>
             </StackPanel>
         </Grid>
     </Border>

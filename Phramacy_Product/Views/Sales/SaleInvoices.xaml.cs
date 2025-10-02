@@ -14,7 +14,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-
 namespace Phramacy_Product.Views.Sales
 {
     public partial class SaleInvoices : Page, INotifyPropertyChanged
@@ -25,7 +24,6 @@ namespace Phramacy_Product.Views.Sales
         private int totalPages = 1;
         private readonly int pageSize = 11;
         private SaleDetail currentEditSale;
-
         public int CurrentPage
         {
             get => currentPage;

@@ -247,6 +247,7 @@
     <Compile Include="DataModel\OrderQuantity.cs" />
     <Compile Include="DataModel\PurchaseDetail.cs" />
     <Compile Include="DataModel\PurchaseItemReturn.cs" />
+    <Compile Include="DataModel\PurchaseMedicine.cs" />
     <Compile Include="DataModel\SaleItems.cs" />
     <Compile Include="DataModel\SalePdfInvoice.cs" />
     <Compile Include="DataModel\ShortBookItem.cs" />

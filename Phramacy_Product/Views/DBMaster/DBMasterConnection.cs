@@ -1,20 +1,22 @@
-﻿using System;
+﻿using Phramacy_Product.DataModel;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.Configuration;
-using System.Net.Mail;
-using System.Net;
 using System.IO;
-using System.Text;
+using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Security.Cryptography;
-using System.Windows.Controls;
+using System.Text;
+using System.Web;
 using System.Web.UI.WebControls;
-using ListBox = System.Windows.Controls.ListBox;
-using GridView = System.Windows.Controls.GridView;
+using System.Windows;
+using System.Windows.Controls;
 using DataGrid = System.Windows.Controls.DataGrid;
+using GridView = System.Windows.Controls.GridView;
+using ListBox = System.Windows.Controls.ListBox;
 namespace Phramacy_Product.Views.DBMaster
 { 
     public class DBMasterConnection : System.Web.UI.Page
@@ -24,6 +26,46 @@ namespace Phramacy_Product.Views.DBMaster
             return "Data Source=localhost; Initial Catalog=ReactDB; User ID=sa;Password='Ygkpa@457';";
         }
 
+        public List<Medicine> GetMedicines(string input)
+        {
+            var results = new List<Medicine>();
+            string query = $"sp_getPharmaData '{input}'";
+
+            try
+            {
+                DataTable dt = GD(query);
+
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    foreach (DataRow reader in dt.Rows)
+                    {
+                        results.Add(new Medicine
+                        {
+                            ProductName = reader["name"].ToString(),
+                            CompanyName = reader["manufacturer_name"].ToString(),
+                            StripInfo = reader["pack_size_label"].ToString(),
+                            BatchNumber = reader["Batch"].ToString(),
+                            ItemId = Convert.ToInt32(reader["id"]),
+                            MRP = Convert.ToDecimal(reader["price"]),
+                            PTR = Convert.ToDecimal(reader["PTR"]),
+                            Stock = Convert.ToInt32(reader["Quantity"]),
+                            Expiry = reader["Expiry"] != DBNull.Value ? Convert.ToDateTime(reader["Expiry"]) : DateTime.MinValue,
+                            medicineType = reader["type"].ToString(),
+                            gST = reader["GST"] != DBNull.Value ? Convert.ToDecimal(reader["GST"]) : 0,
+                            Discount = reader["discount"] != DBNull.Value ? Convert.ToDecimal(reader["discount"]) : 0,
+                            saltComposition1 = reader["short_composition1"].ToString(),
+                            saltComposition2 = reader["short_composition2"].ToString()
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Database error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return results;
+        }
         public static string Encrypt(string clearText)
         {
             string EncryptionKey = "MAKV2SPBNI99212";

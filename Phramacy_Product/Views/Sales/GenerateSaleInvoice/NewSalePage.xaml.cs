@@ -110,7 +110,7 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 return;
             }
 
-            List<Medicine> medicineList = GetMedicines(productName);
+            List<Medicine> medicineList = new DBMasterConnection().GetMedicines(productName);
             Medicine foundMedicine = medicineList.FirstOrDefault(m => m.ProductName == productName);
 
             if (foundMedicine != null)
@@ -510,7 +510,7 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 return;
             }
 
-            List<Medicine> medicines = await Task.Run(() => GetMedicines(input));
+            List<Medicine> medicines = await Task.Run(() => new DBMasterConnection().GetMedicines(input));
             if (medicines.Count > 0)
             {
                 SuggestionList.ItemsSource = medicines;
@@ -532,45 +532,7 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 SuggestionList.SelectedItem = null;
             }
         }
-        private List<Medicine> GetMedicines(string input)
-        {
-            var results = new List<Medicine>();
-            string query = $"sp_getPharmaData '{input}'";
-
-            try
-            {
-                DataTable dt = DBMasterConnection.GD(query);
-
-                if (dt != null && dt.Rows.Count > 0)
-                {
-                    foreach (DataRow reader in dt.Rows)
-                    {
-                        results.Add(new Medicine
-                        {
-                            ProductName = reader["name"].ToString(),
-                            CompanyName = reader["manufacturer_name"].ToString(),
-                            StripInfo = reader["pack_size_label"].ToString(),
-                            BatchNumber = reader["Batch"].ToString(),
-                            ItemId = Convert.ToInt32(reader["id"]),
-                            MRP = Convert.ToDecimal(reader["price"]),
-                            Stock = Convert.ToInt32(reader["Quantity"]),
-                            Expiry = reader["Expiry"] != DBNull.Value ? Convert.ToDateTime(reader["Expiry"]) : DateTime.MinValue,
-                            medicineType = reader["type"].ToString(),
-                            gST = reader["GST"] != DBNull.Value ? Convert.ToDecimal(reader["GST"]) : 0,
-                            Discount = reader["discount"] != DBNull.Value ? Convert.ToDecimal(reader["discount"]) : 0,
-                            saltComposition1 = reader["short_composition1"].ToString(),
-                            saltComposition2 = reader["short_composition2"].ToString()
-                        });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Database error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-
-            return results;
-        }
+       
         private void FormPaymentType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (formPaymentType.SelectedItem is ComboBoxItem selectedItem)

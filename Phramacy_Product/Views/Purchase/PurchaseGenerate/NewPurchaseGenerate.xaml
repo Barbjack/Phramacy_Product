@@ -10,37 +10,40 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="NewPurchaseGenerate">
     <Page.Resources>
-            <Style x:Key="ValidationErrorTextBox" TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
-                <Style.Triggers>
-                    <Trigger Property="Validation.HasError" Value="True">
-                        <Setter Property="BorderBrush" Value="Red"/>
-                        <Setter Property="ToolTip"
+        <Style x:Key="ValidationErrorTextBox" TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="BorderBrush" Value="Red"/>
+                    <Setter Property="ToolTip"
                     Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
-            <Style x:Key="ValidationErrorComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
-                <Style.Triggers>
-                    <Trigger Property="Validation.HasError" Value="True">
-                        <Setter Property="BorderBrush" Value="Red"/>
-                        <Setter Property="ToolTip"
+        <Style x:Key="ValidationErrorComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="BorderBrush" Value="Red"/>
+                    <Setter Property="ToolTip"
                     Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
-            <Style x:Key="WhiteHeaderStyle" TargetType="DataGridColumnHeader">
-                <Setter Property="Foreground" Value="White"/>
-                <Setter Property="FontWeight" Value="Bold"/>
-                <Setter Property="Background" Value="#2563EB"/>
-                <Setter Property="Height" Value="38"/>
-                <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            </Style>
-        </Page.Resources>
+        <Style x:Key="WhiteHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Background" Value="#2563EB"/>
+            <Setter Property="Height" Value="38"/>
+            <!-- Optional: Blue background -->
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+    </Page.Resources>
 
-        <ScrollViewer>
-            <StackPanel Margin="20">
+    <ScrollViewer>
+        <StackPanel Margin="20">
+            <!-- Dropdowns Row (Owner, Payment, GST) with Gear Icon -->
+
             <materialDesign:DialogHost  x:Name="RootDialogHost" Margin="0,0,0,20" Padding="10"
                      Background="White"
                      HorizontalAlignment="Right">
@@ -51,6 +54,8 @@
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
+
+                    <!-- Owner Dropdown -->
                     <TextBox Grid.Column="0" Margin="5" x:Name="formCreatedBy"
          materialDesign:HintAssist.Hint="Created By"
          Style="{StaticResource MaterialDesignOutlinedTextBox}"
@@ -61,12 +66,13 @@
                     <ComboBox Grid.Column="1" Margin="5" x:Name="formPaymentType"
                          materialDesign:HintAssist.Hint="Select Payment"
                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                        
+                         IsEnabled="False"
                          SelectionChanged="FormPaymentType_SelectionChanged">
                         <ComboBoxItem Content="Cash" />
                         <ComboBoxItem Content="Online"/>
-                        <ComboBoxItem Content="Credit" />
                     </ComboBox>
+
+                    <!-- With GST Dropdown -->
                     <ComboBox Grid.Column="2" Margin="5" x:Name="formGSTOption"
                   materialDesign:HintAssist.Hint="With GST"
                   Style="{StaticResource MaterialDesignOutlinedComboBox}">
@@ -107,7 +113,7 @@
                             <TextBlock Text="Paid Amount" FontWeight="SemiBold" Margin="0,0,0,5"/>
 
                             <Border BorderBrush="#C4C4C4" BorderThickness="1" CornerRadius="3">
-                                <Grid>
+                               <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
@@ -143,6 +149,7 @@
                     </StackPanel>
                 </materialDesign:DialogHost.DialogContent>
             </materialDesign:DialogHost>
+            <!-- Top Form -->
             <materialDesign:Card Margin="0,0,0,20" Padding="20" Background="White" >
                 <StackPanel>
                     <Grid Margin="0,0,0,20">
@@ -151,42 +158,131 @@
                             <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="2*"/>
-                            <!--ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="2*"/-->
                         </Grid.ColumnDefinitions>
+
+                        <!-- Patient/Customer Number -->
                         <StackPanel Grid.Column="0" Margin="5">
-                                <TextBlock>
+                            <TextBlock>
             <Run Text=" *" Foreground="Red"/>
-                                </TextBlock>
-                                <TextBox x:Name="SearchNumberBox"
+                            </TextBlock>
+                            <TextBox x:Name="SearchNumberBox"
                  Style="{StaticResource ValidationErrorTextBox}"
                  materialDesign:HintAssist.Hint="Distributor Number"
                  TextChanged="SearchTextBox_NumberChanged">
-                                    <TextBox.Text>
-                                        <Binding ElementName="SearchNumberBox"
+                                <TextBox.Text>
+                                    <Binding ElementName="SearchNumberBox"
                      Path="."
                      UpdateSourceTrigger="PropertyChanged"
                      ValidatesOnDataErrors="True">
-                                            <Binding.ValidationRules>
-                                                <local:RequiredFieldValidationRule/>
-                                            </Binding.ValidationRules>
-                                        </Binding>
-                                    </TextBox.Text>
-                                </TextBox>
-                            </StackPanel>
+                                        <Binding.ValidationRules>
+                                            <local:RequiredFieldValidationRule/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </StackPanel>
 
-                            <Popup x:Name="NumberPopup" PlacementTarget="{Binding ElementName=SearchNumberBox}" Placement="Bottom" StaysOpen="False" 
+                        <Popup x:Name="NumberPopup" PlacementTarget="{Binding ElementName=SearchNumberBox}" Placement="Bottom" StaysOpen="False" 
                            AllowsTransparency="True" PopupAnimation="Slide" IsOpen="False">
-                                <Border Background="White" BorderBrush="Gray" BorderThickness="1" MaxHeight="200" Width="{Binding ElementName=SearchNumberBox, 
+                            <Border Background="White" BorderBrush="Gray" BorderThickness="1" MaxHeight="200" Width="{Binding ElementName=SearchNumberBox, 
                                 Path=ActualWidth}">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <ListBox x:Name="NumberList" SelectionChanged="NumberList_SelectionChanged" Background="White" BorderThickness="0">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Margin="5">
+                                                    <TextBlock Text="{Binding DistributorNumber}" FontWeight="SemiBold" FontSize="14"/>
+                                                    <TextBlock>
+                                                      <Run Text="{Binding DistributorName}"/>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+
+                        <StackPanel Grid.Column="1" Margin="5">
+                            <TextBlock>
+            
+            <Run Text=" *" Foreground="Red"/>
+                            </TextBlock>
+                            <TextBox x:Name="formDistributorName"
+                 Style="{StaticResource ValidationErrorTextBox}"
+                 materialDesign:HintAssist.Hint="Distributor Name">
+                                <TextBox.Text>
+                                    <Binding ElementName="formDistributorName" Path="." UpdateSourceTrigger="PropertyChanged"
+                                             ValidatesOnDataErrors="True">
+                                        <Binding.ValidationRules>
+                                            <local:RequiredFieldValidationRule/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </StackPanel>
+
+                        <!-- Bill Date -->
+                        <StackPanel Grid.Column="2" Margin="5">
+                            <TextBlock>
+            
+            <Run Text=" *" Foreground="Red"/>
+                            </TextBlock>
+                            <DatePicker x:Name="formBillDate"
+                    Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                    materialDesign:HintAssist.Hint="Bill Date"
+                    SelectedDate="{Binding Path=CurrentDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+/>
+                        </StackPanel>
+
+                        <!-- Payment Date -->
+                        <StackPanel Grid.Column="3" Margin="5">
+                            <TextBlock>
+            
+            <Run Text=" *" Foreground="Red"/>
+                            </TextBlock>
+                            <DatePicker x:Name="formCreateAt"
+                    Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                    materialDesign:HintAssist.Hint="Payment Date"
+                    SelectedDate="{Binding Path=CurrentDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="1.5*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <!-- Search TextBox -->
+                            <TextBox x:Name="SearchTextBox" Margin="5" 
+                 Style="{StaticResource MaterialDesignOutlinedTextBox}" 
+                 materialDesign:HintAssist.Hint="Search medicine (min 3 characters)"
+                 TextChanged="SearchTextBox_TextChanged"/>
+
+                            <!-- Suggestion Popup -->
+                            <Popup x:Name="SuggestionPopup" PlacementTarget="{Binding ElementName=SearchTextBox}" Placement="Bottom" StaysOpen="False" 
+                     AllowsTransparency="True" PopupAnimation="Slide" IsOpen="False">
+                                <Border Background="White" BorderBrush="Gray" BorderThickness="1" MaxHeight="200" Width="{Binding ElementName=SearchTextBox, Path=ActualWidth}">
                                     <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                        <ListBox x:Name="NumberList" SelectionChanged="NumberList_SelectionChanged" Background="White" BorderThickness="0">
+                                        <ListBox x:Name="SuggestionList" SelectionChanged="SuggestionList_SelectionChanged" Background="White" BorderThickness="0">
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Margin="5">
-                                                        <TextBlock Text="{Binding DistributorNumber}" FontWeight="SemiBold" FontSize="14"/>
+                                                        <TextBlock Text="{Binding ProductName}" FontWeight="Bold" FontSize="14"/>
                                                         <TextBlock>
-                                                      <Run Text="{Binding DistributorName}"/>
+                                        <Run Text="{Binding CompanyName}"/>
+                                        <Run Text=" | "/>
+                                        <Run Text="{Binding StripInfo}"/>
+                                                        </TextBlock>
+                                                        <TextBlock>
+                                        <Run Text="MRP ₹"/>
+                                        <Run Text="{Binding MRP}"/>
+                                        <Run Text=" | Stock: "/>
+                                        <Run Text="{Binding Stock}"/>
                                                         </TextBlock>
                                                     </StackPanel>
                                                 </DataTemplate>
@@ -195,220 +291,286 @@
                                     </ScrollViewer>
                                 </Border>
                             </Popup>
-
-                            <StackPanel Grid.Column="1" Margin="5">
-                                <TextBlock>
-            
-            <Run Text=" *" Foreground="Red"/>
-                                </TextBlock>
-                                <TextBox x:Name="formDistributorName"
-                 Style="{StaticResource ValidationErrorTextBox}"
-                 materialDesign:HintAssist.Hint="Distributor Name">
-                                    <TextBox.Text>
-                                        <Binding ElementName="formDistributorName" Path="." UpdateSourceTrigger="PropertyChanged"
-                                             ValidatesOnDataErrors="True">
-                                            <Binding.ValidationRules>
-                                                <local:RequiredFieldValidationRule/>
-                                            </Binding.ValidationRules>
-                                        </Binding>
-                                    </TextBox.Text>
-                                </TextBox>
-                            </StackPanel>
-
-                            <!--StackPanel Grid.Column="2" Margin="5">
-                                <TextBlock>
-            
-            <Run Text=" *" Foreground="Red"/>
-                                </TextBlock>
-                                <TextBox x:Name="formPatientName"
-                 Style="{StaticResource ValidationErrorTextBox}"
-                 materialDesign:HintAssist.Hint="Patient Name">
-                                    <TextBox.Text>
-                                        <Binding ElementName="formPatientName"
-Path="."
-UpdateSourceTrigger="PropertyChanged"
-ValidatesOnDataErrors="True">
-                                            <Binding.ValidationRules>
-                                                <local:RequiredFieldValidationRule/>
-                                            </Binding.ValidationRules>
-                                        </Binding>
-                                    </TextBox.Text>
-                                </TextBox>
-                            </StackPanel-->
-
-                            <!-- Doctor Name -->
-                            <!--StackPanel Grid.Column="3" Margin="5">
-                                <TextBlock>
-           
-            <Run Text=" *" Foreground="Red"/>
-                                </TextBlock>
-                                <TextBox x:Name="formDocName"
-                 Style="{StaticResource ValidationErrorTextBox}"
-                 materialDesign:HintAssist.Hint="Doctor/Prescriber Name">
-                                    <TextBox.Text>
-                                        <Binding ElementName="formDocName"
-Path="."
-UpdateSourceTrigger="PropertyChanged"
-ValidatesOnDataErrors="True">
-                                            <Binding.ValidationRules>
-                                                <local:RequiredFieldValidationRule/>
-                                            </Binding.ValidationRules>
-                                        </Binding>
-                                    </TextBox.Text>
-                                </TextBox>
-                            </StackPanel-->
-
-                            <!-- Bill Date -->
-                            <StackPanel Grid.Column="2" Margin="5">
-                                <TextBlock>
-            
-            <Run Text=" *" Foreground="Red"/>
-                                </TextBlock>
-                                <DatePicker x:Name="formBillDate"
-                    Style="{StaticResource MaterialDesignOutlinedDatePicker}"
-                    materialDesign:HintAssist.Hint="Bill Date"
-                    SelectedDate="{Binding Path=CurrentDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-/>
-                            </StackPanel>
-
-                            <!-- Payment Date -->
-                            <StackPanel Grid.Column="3" Margin="5">
-                                <TextBlock>
-            
-            <Run Text=" *" Foreground="Red"/>
-                                </TextBlock>
-                                <DatePicker x:Name="formCreateAt"
-                    Style="{StaticResource MaterialDesignOutlinedDatePicker}"
-                    materialDesign:HintAssist.Hint="Payment Date"
-                    SelectedDate="{Binding Path=CurrentDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-/>
-                            </StackPanel>
                         </Grid>
-
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="3*"/>
-                                <ColumnDefinition Width="1.5*"/>
-                                <ColumnDefinition Width="1.5*"/>
-                                <ColumnDefinition Width="1.5*"/>
-                            </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="0">
-                            <TextBox x:Name="SearchTextBox" Margin="5" 
-                 Style="{StaticResource MaterialDesignOutlinedTextBox}" 
-                 materialDesign:HintAssist.Hint="Search medicine (min 3 characters)"
-                 TextChanged="SearchTextBox_TextChanged"/>
-
-                                <!-- Suggestion Popup -->
-                                <Popup x:Name="SuggestionPopup" PlacementTarget="{Binding ElementName=SearchTextBox}" Placement="Bottom" StaysOpen="False" 
-                     AllowsTransparency="True" PopupAnimation="Slide" IsOpen="False">
-                                    <Border Background="White" BorderBrush="Gray" BorderThickness="1" MaxHeight="200" Width="{Binding ElementName=SearchTextBox, Path=ActualWidth}">
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                            <ListBox x:Name="SuggestionList" SelectionChanged="SuggestionList_SelectionChanged" Background="White" BorderThickness="0">
-                                                <ListBox.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel Margin="5">
-                                                            <TextBlock Text="{Binding ProductName}" FontWeight="Bold" FontSize="14"/>
-                                                            <TextBlock>
-                                        <Run Text="{Binding CompanyName}"/>
-                                        <Run Text=" | "/>
-                                        <Run Text="{Binding StripInfo}"/>
-                                                            </TextBlock>
-                                                            <TextBlock>
-                                        <Run Text="MRP ₹"/>
-                                        <Run Text="{Binding MRP}"/>
-                                        <Run Text=" | Stock: "/>
-                                        <Run Text="{Binding Stock}"/>
-                                                            </TextBlock>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </ListBox.ItemTemplate>
-                                            </ListBox>
-                                        </ScrollViewer>
-                                    </Border>
-                                </Popup>
-                            </Grid>
-                            <ComboBox x:Name="qtyType" Grid.Column="1" Margin="5" 
+                        <ComboBox x:Name="qtyType" Grid.Column="1" Margin="5" 
                                   materialDesign:HintAssist.Hint="Select Sale Type"
                             Style="{StaticResource MaterialDesignOutlinedComboBox}">
-                                <ComboBoxItem Content="QTY(F)"/>
-                                <ComboBoxItem Content="QTY(L)"/>
-                            </ComboBox>
+                            <ComboBoxItem Content="QTY(F)"/>
+                            <ComboBoxItem Content="QTY(L)"/>
+                        </ComboBox>
 
-                            <TextBox Grid.Column="2" Margin="5" x:Name="quantity"
+                        <TextBox Grid.Column="2" Margin="5" x:Name="quantity"
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"
                      materialDesign:HintAssist.Hint="Quantity"/>
-                            <Button Grid.Column="3" Margin="5" Content="Add to Customer Bill" Click="AddBill_CustomerDetails" Foreground="White" Background="Gray">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Padding" Value="10,4"/>
-                                        <Setter Property="FontSize" Value="14"/>
-                                        <Setter Property="FontWeight" Value="SemiBold"/>
-                                        <Setter Property="Cursor" Value="Hand"/>
-                                        <Setter Property="Background" Value="Gray"/>
-                                        <Setter Property="Foreground" Value="White"/>
-                                        <Setter Property="BorderBrush" Value="Gray"/>
-                                        <Setter Property="BorderThickness" Value="1"/>
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="Button">
-                                                    <Border Background="{TemplateBinding Background}"
+                        <Button Grid.Column="3" Margin="5" Content="Add to Customer Bill" Click="AddBill_CustomerDetails" Foreground="White" Background="Gray">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Padding" Value="10,4"/>
+                                    <Setter Property="FontSize" Value="14"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                    <Setter Property="Background" Value="Gray"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="BorderBrush" Value="Gray"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="4"
                                 SnapsToDevicePixels="True">
-                                                        <ContentPresenter HorizontalAlignment="Center"
+                                                    <ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center"
                                               RecognizesAccessKey="True"/>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
-                        </Grid>
-                    </StackPanel>
-                </materialDesign:Card>
-
-                <!-- Product Table -->
-                <DataGrid x:Name="ProductGrid" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False" Margin="0,0,0,10" 
-          ColumnHeaderStyle="{StaticResource WhiteHeaderStyle}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Item Name" Binding="{Binding ProductName}" Width="*"/>
-                    <DataGridTextColumn Header="Unit/Pack" Binding="{Binding unitPack}" Width="*"/>
-                    <DataGridTextColumn Header="Batch" Binding="{Binding BatchNumber}" Width="*"/>
-                    <DataGridTextColumn Header="Expiry" Binding="{Binding Expiry}" Width="*"/>
-                    <DataGridTextColumn Header="M.R.P" Binding="{Binding MRP,StringFormat='₹{0}'}" Width="*"/>
-                    <DataGridTextColumn Header="PTR" Binding="{Binding PTR,StringFormat='₹{0}'}" Width="*"/>
-                    <DataGridTextColumn Header="Qty" Binding="{Binding QtyF}" Width="*"/>
-                    <DataGridTextColumn Header="Free" Binding="{Binding QtyL}" Width="*"/>
-                    <DataGridTextColumn Header="Sch. Amt" Binding="{Binding schAmount,StringFormat='₹{0}'}" Width="*"/>
-                    <DataGridTextColumn Header="DISC%" Binding="{Binding Discount}" Width="*"/>
-                    <DataGridTextColumn Header="Base" Binding="{Binding baseAmount,StringFormat='₹{0}'}" Width="*"/>
-                    <DataGridTextColumn Header="GST%" Binding="{Binding GST}" Width="*"/>
-                    <!--DataGridTextColumn Header="PAID AMOUNT" Binding="{Binding PaidAmount}" Width="*"/-->
-                        <DataGridTextColumn Header="Net Amount" Binding="{Binding Total, StringFormat='₹{0}'}" Width="*"/>
-                        <DataGridTemplateColumn Header="DELETE ITEM" Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button Content="❌" Click="DeleteRow_Click" Foreground="Red"/>
-
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-
-                <materialDesign:Card Margin="0,40,0,20" Background="White">
-                    <Grid Margin="10,20">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="Total_Amount" Text="Total Amount: " FontWeight="Bold" VerticalAlignment="Center" Grid.Column="0"/>
-                        <Button Content="Save" Click="AddTo_SaleItemDetailPharmaCustomer" Width="100" Background="#2563EB" Foreground="White" Margin="0,0,0,0" VerticalAlignment="Center" Grid.Column="1"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </Grid>
-                </materialDesign:Card>
-            </StackPanel>
-        </ScrollViewer>
-    </Page>
+                </StackPanel>
+            </materialDesign:Card>
+
+            <!-- Product Table -->
+            <DataGrid x:Name="ProductGrid" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False" Margin="0,0,0,10" ColumnHeaderStyle="{StaticResource WhiteHeaderStyle}">
+                <DataGrid.RowDetailsTemplate>
+                    <DataTemplate>
+                        <Border x:Name="MedicineComposistion"  BorderBrush="Gray" BorderThickness="1" Margin="10,0,10,10" Padding="5">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock>
+                    <Run Text="Manufacturer Name: " FontWeight="Bold"/>
+                    <Run Text="{Binding CompanyName}"/>
+                    <Run Text=" | Type: " FontWeight="Bold"/>
+                    <Run Text="{Binding medicineType}"/>
+                                </TextBlock>
+                                <TextBlock Margin="0,5,0,0">
+                    <Run Text="Salt 1: " FontWeight="Bold"/>
+                    <Run Text="{Binding saltComposition1}"/>
+                    <Run Text=" | Salt 2: " FontWeight="Bold"/>
+                    <Run Text="{Binding saltComposition2}"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </DataGrid.RowDetailsTemplate>
+
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Item NAME" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ProductName}" VerticalAlignment="Center" 
+                                           HorizontalAlignment="Center"
+                                           MouseLeftButtonDown="ProductName_MouseLeftButtonDown"
+                                           Cursor="Hand"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Unit/Pack" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding StripInfo}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    
+                    <DataGridTemplateColumn Header="BATCH NUMBER" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding BatchNumber}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="EXPIRY" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Expiry}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="QTY(F)" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding QtyF}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding QtyF, UpdateSourceTrigger=PropertyChanged}" Background="White" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Free" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding QtyL}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding QtyL, UpdateSourceTrigger=PropertyChanged}" Background="White"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="M.R.P" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding MRP, StringFormat='₹{0:0.00}'}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding MRP, UpdateSourceTrigger=PropertyChanged, StringFormat='0.00'}" Background="White"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="P.T.R" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding PTR, StringFormat='₹{0:0.00}'}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding PTR, UpdateSourceTrigger=PropertyChanged, StringFormat='0.00'}" Background="White"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+                    
+                    <DataGridTemplateColumn Header="Sch. Amt" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding schAmt, StringFormat='₹{0:0.00}'}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding schAmount, UpdateSourceTrigger=PropertyChanged, StringFormat='0.00'}" Background="White"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Base" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding baseAmt, StringFormat='₹{0:0.00}'}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="DISC%" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Discount, StringFormat='0.00'}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Discount, UpdateSourceTrigger=PropertyChanged, StringFormat='0.00'}" Background="White"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="GST%" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding GST, StringFormat='0.00'}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding GST, UpdateSourceTrigger=PropertyChanged, StringFormat='0.00'}" Background="White"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Net Amount" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Total, StringFormat='₹{0:0.00}'}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="DELETE ITEM" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="❌" Click="DeleteRow_Click" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <materialDesign:Card Margin="0,40,0,20" Background="White">
+                <Grid Margin="10,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="Total_Amount" Text="Grand Total: " FontWeight="Bold" VerticalAlignment="Center" Grid.Column="0"/>
+                    <Button Content="Save Purchase" Click="AddTo_SaleItemDetailPharmaCustomer" Width="130" Background="#2563EB" Foreground="White" Margin="0,0,0,0" VerticalAlignment="Center" Grid.Column="1"/>
+                </Grid>
+            </materialDesign:Card>
+            <Grid>
+                <StackPanel x:Name="PreviousPurchasesPanel" Orientation="Vertical" Visibility="Collapsed" Margin="0,20,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Previous Purchases" FontSize="16" FontWeight="Bold" Margin="0,0,10,10" />
+                        <ComboBox x:Name="BillCountComboBox" SelectionChanged="BillCountComboBox_SelectionChanged" SelectedIndex="0" Margin="0,0,0,10" Width="100">
+                            <ComboBoxItem Content="Last 5 Bills" Tag="5" />
+                            <ComboBoxItem Content="Last 10 Bills" Tag="10" />
+                            <ComboBoxItem Content="All Bills" Tag="0" />
+                        </ComboBox>
+                    </StackPanel>
+
+                    <ItemsControl x:Name="PreviousPurchasesItemsControl">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="5" Margin="5" Padding="5">
+                                    <Expander IsExpanded="False">
+                                        <Expander.Header>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="{Binding BillNumberWithDate}" FontWeight="Bold" />
+                                                <Button Grid.Column="1" Content="Add All Items" Click="AddAllPreviousBillItems_Click" Margin="10,0,0,0" />
+                                            </Grid>
+                                        </Expander.Header>
+
+                                        <DataGrid x:Name="PreviousPurchasesGrid" ItemsSource="{Binding Items}" AutoGenerateColumns="False" IsReadOnly="True" Margin="20,5,0,10">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="PRODUCT NAME" Binding="{Binding ProductName}" Width="*"/>
+                                                <DataGridTextColumn Header="BATCH NUMBER" Binding="{Binding BatchNumber}" Width="*"/>
+                                                <DataGridTextColumn Header="EXPIRY" Binding="{Binding expiryMedicine}" Width="*"/>
+
+                                                <DataGridTextColumn Header="P.T.R" Binding="{Binding PTR, StringFormat='₹{0:0.00}'}" Width="Auto"/>
+
+                                                <DataGridTextColumn Header="M.R.P" Binding="{Binding MRP, StringFormat='₹{0:0.00}'}" Width="Auto"/>
+
+                                                <DataGridTextColumn Header="QTY(F)" Binding="{Binding QtyF}" Width="Auto"/>
+                                                <DataGridTextColumn Header="QTY(L)" Binding="{Binding QtyL}" Width="Auto"/>
+                                                <DataGridTextColumn Header="DISC%" Binding="{Binding Discount}" Width="Auto"/>
+                                                <DataGridTextColumn Header="GST%" Binding="{Binding GST}" Width="Auto"/>
+                                                <DataGridTextColumn Header="NET AMOUNT" Binding="{Binding Total, StringFormat='₹{0:0.00}'}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Expander>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

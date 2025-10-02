@@ -7,7 +7,6 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    
     <Border Margin="10" Padding="15" Background="White" CornerRadius="8"
             BorderBrush="#DDD" BorderThickness="1"
             materialDesign:ShadowAssist.ShadowDepth="Depth1">
@@ -17,51 +16,55 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
+             <DockPanel Grid.Row="0" Margin="0,0,0,10">
+                <TextBlock Text="Active Users" FontWeight="Bold" FontSize="18" DockPanel.Dock="Left"/>
+                <materialDesign:PackIcon Kind="DotsHorizontal" Grid.Column="1" HorizontalAlignment="Right" DockPanel.Dock="Right" VerticalAlignment="Top" Foreground="#AAA"/>
+            </DockPanel>
 
-            <Grid Grid.Row="0" Margin="0,0,0,15">
+            <Grid Grid.Row="0" Margin="0,40,0,8">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="Active Users" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
-                <materialDesign:PackIcon Kind="DotsHorizontal" Grid.Column="1" VerticalAlignment="Center" Foreground="#AAA"/>
+                <TextBlock Text="User" FontWeight="SemiBold" FontSize="14" Grid.Column="0"/>
+                <TextBlock Text="No Of Bills" FontWeight="SemiBold" FontSize="14" Grid.Column="1"/>
             </Grid>
 
-            <ListBox Grid.Row="1" ItemsSource="{Binding Users}" BorderBrush="Transparent" Background="Transparent" Padding="0">
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="Padding" Value="0,10"/>
-                    </Style>
-                </ListBox.ItemContainerStyle>
-                <ListBox.ItemTemplate>
+            <ItemsControl Grid.Row="1" ItemsSource="{Binding Users}" MinHeight="420" >
+                <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <Grid Margin="0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
 
-                            <Grid Grid.Column="0" Margin="0,0,10,0" VerticalAlignment="Center">
-                                <Ellipse Width="40" Height="40" StrokeThickness="2">
-                                    <Ellipse.Fill>
-                                        <ImageBrush ImageSource="{Binding ImageUrl}"/>
-                                    </Ellipse.Fill>
-                                </Ellipse>
-                                <Ellipse Width="10" Height="10" HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                                         Margin="-2,-2,0,0" Fill="Green" Stroke="White" StrokeThickness="2"/>
+                                <Border Width="35" Height="35" CornerRadius="100" 
+                                 Background="{Binding AvatarColor}" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Initial}" 
+                                    Foreground="White" FontWeight="Bold"
+                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+
+                                <StackPanel Grid.Column="1" Margin="10,0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding CustomerName}" FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBlock Text="{Binding MobileNumber}" FontSize="12" Foreground="Gray"/>
+                                </StackPanel>
+
+                                <TextBlock Grid.Column="2" Text="{Binding noOfbills}" 
+                                Foreground="Red" FontWeight="SemiBold" FontSize="14"
+                                VerticalAlignment="Center"/>
                             </Grid>
-
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14"/>
-                                <TextBlock Text="{Binding Role}" Foreground="#888" FontSize="12"/>
-                            </StackPanel>
-                        </Grid>
+                            <Border Height="1" Background="#EEE" Margin="0,4"/>
+                        </StackPanel>
                     </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
-            <TextBlock Grid.Row="2" Text="All active users >" HorizontalAlignment="Center" Margin="0,15,0,0"
-                       Foreground="#7C92FF" Cursor="Hand" TextDecorations="Underline"/>
+            <TextBlock Grid.Row="2" Text="No of Bills of each customer within Month." HorizontalAlignment="Center" Margin="0,15,0,0"
+                       Foreground="Red" FontSize="15"/>
         </Grid>
     </Border>
 </UserControl>

@@ -6,7 +6,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 namespace Phramacy_Product.DataModel
 {
     public class Medicine : INotifyPropertyChanged
@@ -40,6 +39,8 @@ namespace Phramacy_Product.DataModel
             }
         }
         public int ItemId { get; set; }
+        public decimal pTR {  get; set; }
+        public decimal baseAmt {get;set;}
         public string ProductName { get; set; }
         public string CompanyName { get; set; }
         public string medicineType { get; set; }
@@ -63,6 +64,7 @@ namespace Phramacy_Product.DataModel
         public  decimal SchAmt { get; set; }
         public bool IsLoose { get; set; }
         public string TransactionNumber { get; set; }
+        public string DistributorName { get; set; }
 
         public int QtyF
         {
@@ -91,7 +93,19 @@ namespace Phramacy_Product.DataModel
                 }
             }
         }
-
+        public decimal PTR
+        {
+            get=> pTR;
+            set
+            {
+                if(pTR != value)
+                {
+                    pTR = value;
+                    OnPropertyChanged();
+                    RecalculateTotal();
+                }
+            }
+        }
         public decimal MRP
         {
             get => mRP;

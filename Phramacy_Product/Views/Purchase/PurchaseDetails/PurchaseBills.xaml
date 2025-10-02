@@ -7,9 +7,7 @@
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d"
       Title="PurchaseBills">
-
     <Page.Resources>
-        <!-- The style for a flat button with no hover effect, for a consistent design. -->
         <Style x:Key="NoHoverFlatButtonStyle" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
             <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource Self}}" />
             <Setter Property="Foreground" Value="White" />
@@ -33,16 +31,15 @@
             </Setter>
         </Style>
 
-        <!-- A style for the DataGrid column headers to match the design. -->
         <Style x:Key="BlueHeaderStyle" TargetType="DataGridColumnHeader">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Background" Value="OrangeRed"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Padding" Value="5,0"/>
         </Style>
+
     </Page.Resources>
 
-    <!-- Main background grid. -->
     <Grid Background="#F5F6F8">
         <Border Background="White"
                 CornerRadius="8"
@@ -52,26 +49,43 @@
 
             <DockPanel LastChildFill="True">
 
-                <!-- Header Section with title and action buttons. -->
                 <Grid DockPanel.Dock="Top" Margin="0,0,0,20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Text="Purchases" FontSize="28" FontWeight="SemiBold" Foreground="OrangeRed" VerticalAlignment="Center" Margin="10,0"/>
 
+                    <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,25,0">
+                        <DatePicker x:Name="StartDatePicker" Foreground="OrangeRed" materialDesign:HintAssist.Hint="Start Date" Width="120" Margin="0,0,5,0" />
+                        <DatePicker x:Name="EndDatePicker" Foreground="OrangeRed" materialDesign:HintAssist.Hint="End Date" Width="120" Margin="0,0,10,0" />
+                        <Button Margin="0,0,0,0" x:Name="FilterButton" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Filter by Date" Click="FilterButton_Click">
+                            <materialDesign:PackIcon Kind="Filter" Width="20" Height="20" Foreground="OrangeRed"/>
+                        </Button>
+                        <Button Margin="0,0,15,0" x:Name="ClearFilterButton" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Clear Filter" Click="ClearFilterButton_Click">
+                            <materialDesign:PackIcon Kind="FilterOff" Width="20" Height="20" Foreground="OrangeRed"/>
+                        </Button>
+                        <Button Content="+ New Purchase" Click="NewPurchaseButton_Click" Height="36" Padding="20,0" Background="OrangeRed" Foreground="White" FontWeight="SemiBold" BorderThickness="1" Cursor="Hand" Margin="0,0,15,0" Style="{StaticResource NoHoverFlatButtonStyle}" />
+                        <Button Content="Purchase Return" Click="PurchaseReturn_Click" Height="36" Padding="20,0" Background="#16A34A" Foreground="White" FontWeight="SemiBold" BorderThickness="1" Cursor="Hand" Margin="0,0,15,0" Style="{StaticResource NoHoverFlatButtonStyle}" />
+                    </StackPanel>
+
                     <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" x:Name="ActionPanel">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Button x:Name="SearchButton" Width="40" Height="36" Margin="20,0,25,0" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Search" Click="SearchButton_Click">
-                                <materialDesign:PackIcon Kind="Magnify" Width="20" Height="20" Foreground="OrangeRed"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="SearchButton" Grid.Column="0" Width="40" Height="36" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Search" Click="SearchButton_Click" Margin="20,0,0,0">
+                                <materialDesign:PackIcon Kind="Magnify" Width="20" Height="20" Foreground="OrangeRed" />
                             </Button>
-                            <TextBox x:Name="SearchBox" Width="200" Height="36" VerticalAlignment="Center" Visibility="Collapsed" Background="White" Foreground="Black" materialDesign:HintAssist.Hint="Search..." LostFocus="SearchBox_LostFocus" Margin="0,0,25,0" />
-                        </StackPanel>
-                        <Button Content="+ New Purchase" Click="NewPurchaseButton_Click" Height="36" Padding="20,0" Background="OrangeRed" Foreground="White" FontWeight="SemiBold" BorderThickness="1" Cursor="Hand" Margin="0,0,25,0" Style="{StaticResource NoHoverFlatButtonStyle}" />
-                        <Button Content="Purchase Return" Click="PurchaseReturn_Click" Height="36" Padding="20,0" Background="#16A34A" Foreground="White" FontWeight="SemiBold" BorderThickness="1" Cursor="Hand" Margin="0,0,25,0" Style="{StaticResource NoHoverFlatButtonStyle}" />
+                            <TextBox x:Name="SearchBox" Grid.Column="1" Width="200" Height="36" VerticalAlignment="Center" Visibility="Collapsed" Background="White" Foreground="Black" materialDesign:HintAssist.Hint="Search..." LostFocus="SearchBox_LostFocus" Margin="0,0,25,0" />
+                        </Grid>
+                       
                     </StackPanel>
                 </Grid>
+
                 <Border Background="White" CornerRadius="6" Padding="10" Margin="0" Effect="{DynamicResource MaterialDesignElevation1}">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -88,16 +102,15 @@
                                 </Style>
                             </DataGrid.RowStyle>
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Sr No." Binding="{Binding SrNo}" Width="*"/>
+                                <DataGridTextColumn Header="Sr No." Binding="{Binding SrNo}" Width="60"/>
                                 <DataGridTextColumn Header="Distributor Name" Binding="{Binding DistributorName}" Width="*"/>
                                 <DataGridTextColumn Header="Bill No." Binding="{Binding BillNumber}" Width="*"/>
                                 <DataGridTextColumn Header="Entry Date" Binding="{Binding CreatedAt, StringFormat='d'}" Width="*"/>
                                 <DataGridTextColumn Header="Bill Date" Binding="{Binding BillDate, StringFormat='d'}" Width="*"/>
                                 <DataGridTextColumn Header="Entry By" Binding="{Binding CreatedBy}" Width="*"/>
-                                <DataGridTextColumn Header="Paid Amount" Binding="{Binding PaidAmount}" Width="*"/>
-                                <DataGridTextColumn Header="Pending Amount" Binding="{Binding PendingAmount}" Width="*"/>
-                                <DataGridTextColumn Header="Return Amount" Binding="{Binding ReturnAmount}" Width="*"/>
-                                <!-- Action buttons for each row. -->
+                                <DataGridTextColumn Header="Paid Amount" Binding="{Binding PaidAmount, StringFormat='₹{0:0.00}'}" Width="*"/>
+                                <DataGridTextColumn Header="Pending Amount" Binding="{Binding PendingAmount,StringFormat='₹{0:0.00}'}" Width="*"/>
+                                <DataGridTextColumn Header="Return Amount" Binding="{Binding ReturnAmount,StringFormat='₹{0:0.00}'}" Width="*"/>
                                 <DataGridTemplateColumn Header="Action" Width="100">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
@@ -114,9 +127,8 @@
                                 </DataGridTemplateColumn>
                             </DataGrid.Columns>
                         </DataGrid>
-                        <!-- Pagination controls. -->
-                        <Grid Margin="0,8,0,0" VerticalAlignment="Bottom">
-                            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                        <Grid Grid.Row="1" Margin="0,8,0,0" VerticalAlignment="Bottom">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
                                 <Button Background="OrangeRed" Content="&lt;&lt;" Click="FirstPageClick" Margin="0,0,5,0"/>
                                 <Button Background="OrangeRed" Content="&lt;" Click="PreviousPageClick" Margin="0,0,5,0"/>
                                 <TextBlock Text="{Binding CurrentPage}" VerticalAlignment="Center" Margin="5,0"/>
@@ -127,14 +139,12 @@
                             </StackPanel>
                         </Grid>
 
-                        <!-- Edit Panel (Popup). -->
                         <Rectangle Fill="#80000000" Visibility="{Binding Visibility, ElementName=EditPanel}" Panel.ZIndex="99"/>
                         <Border x:Name="EditPanel" Background="White" CornerRadius="8" Padding="20" Margin="40" Visibility="Collapsed" VerticalAlignment="Center"
                                 HorizontalAlignment="Center" Width="400" Panel.ZIndex="100" Effect="{DynamicResource MaterialDesignElevation3}">
                             <StackPanel>
                                 <TextBlock Text="Purchase Details" FontSize="20" HorizontalAlignment="Center" FontWeight="Bold" Margin="0,0,0,10"/>
 
-                                <!-- Bindings for editing data. -->
                                 <StackPanel Orientation="Horizontal" Margin="0,5">
                                     <TextBlock Text="Bill No." Width="120"/>
                                     <TextBlock x:Name="editBillNumber" Width="200"/>
@@ -151,7 +161,7 @@
                                     <TextBlock Text="Bill Date" Width="120"/>
                                     <DatePicker x:Name="editBillDate" Width="200"/>
                                 </StackPanel>
-                                
+
                                 <StackPanel Orientation="Horizontal" Margin="0,5">
                                     <TextBlock Text="Entry By" Width="120"/>
                                     <TextBox x:Name="editCreatedBy" Width="200"/>
