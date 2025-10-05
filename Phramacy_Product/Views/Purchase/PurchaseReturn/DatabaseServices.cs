@@ -113,7 +113,7 @@ namespace Phramacy_Product.Views.Purchase.PurchaseReturn
 
                         if (item.ReturnQty == item.FullQty)
                         {
-                            string updatePurchaseItemQuery = "UPDATE PurchaseItems SET Is_Returned = 1, ModifiedAt = GETDATE() WHERE ItemID = @ItemId;";
+                            string updatePurchaseItemQuery = "UPDATE PurchaseItems SET Is_Returned = 1, UpdatedAt = GETDATE() WHERE ItemID = @ItemId;";
                             var saleItemCommand = new SqlCommand(updatePurchaseItemQuery, connection, transaction);
                             saleItemCommand.Parameters.AddWithValue("@ItemId", item.ItemID);
                             saleItemCommand.ExecuteNonQuery();
@@ -125,7 +125,7 @@ namespace Phramacy_Product.Views.Purchase.PurchaseReturn
 
                             decimal newNetAmount = (item.FullQty - item.ReturnQty) * netAmountPerUnit;
 
-                            string updatePurchaseItemQuery = "UPDATE PurchaseItems SET Quantity = @remainingQty, NetAmount = @newNetAmount, ModifiedAt = GETDATE() WHERE ItemID = @ItemId;";
+                            string updatePurchaseItemQuery = "UPDATE PurchaseItems SET Quantity = @remainingQty, NetAmount = @newNetAmount, UpdatedAt = GETDATE() WHERE ItemID = @ItemId;";
                             var saleItemCommand = new SqlCommand(updatePurchaseItemQuery, connection, transaction);
                             saleItemCommand.Parameters.AddWithValue("@remainingQty", item.FullQty - item.ReturnQty);
                             saleItemCommand.Parameters.AddWithValue("@newNetAmount", newNetAmount);

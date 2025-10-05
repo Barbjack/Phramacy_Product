@@ -399,7 +399,15 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                     itemCmd.Parameters.AddWithValue("@ItemId", med.ItemId);
                     itemCmd.Parameters.AddWithValue("@ItemName", med.ProductName);
                     itemCmd.Parameters.AddWithValue("@Batch", med.BatchNumber);
-                    itemCmd.Parameters.AddWithValue("@Expiry", med.Expiry);
+                   // itemCmd.Parameters.AddWithValue("@Expiry", med.Expiry);
+                    if (med.Expiry == DateTime.MinValue)
+                    {
+                        itemCmd.Parameters.AddWithValue("@Expiry", DBNull.Value);
+                    }
+                    else
+                    {
+                        itemCmd.Parameters.AddWithValue("@Expiry", med.Expiry);
+                    }
                     itemCmd.Parameters.AddWithValue("@Pack", med.StripInfo);
                     itemCmd.Parameters.AddWithValue("@MRP", med.MRP);
                     itemCmd.Parameters.AddWithValue("@Quantity", med.QtyF);

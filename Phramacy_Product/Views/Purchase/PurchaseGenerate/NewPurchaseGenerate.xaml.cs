@@ -1,11 +1,20 @@
-﻿using Phramacy_Product.DataModel;
+﻿using Microsoft.Win32;
+using Phramacy_Product.DataModel;
+using Phramacy_Product.Views.DBMaster;
+using Phramacy_Product.Views.Sales;
+using Phramacy_Product.Views.Sales.GenerateSaleInvoice;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -14,18 +23,15 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.ComponentModel;
-using Phramacy_Product.Views.Sales.GenerateSaleInvoice;
-using System.Collections.ObjectModel;
-using Phramacy_Product.Views.DBMaster;
-using System.Data;
-using Phramacy_Product.Views.Sales;
-
+using Button = System.Windows.Controls.Button;
+using MessageBox = System.Windows.MessageBox;
+using TextBox = System.Windows.Controls.TextBox;
 namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
 {
     public partial class NewPurchaseGenerate : Page
@@ -93,6 +99,258 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
                 Total_Amount.Text = "Grand Total: " + totalAmount.ToString("C", CultureInfo.GetCultureInfo("en-IN"));
                 dialogPaidAmount.Text = totalAmount.ToString("F2");
             }), System.Windows.Threading.DispatcherPriority.Background); 
+        }
+        private void DownloadSample_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog
+            {
+                FileName = "PurchaseSample.csv",
+                DefaultExt = ".csv",
+                Filter = "CSV files (*.csv)|*.csv"
+            };
+
+            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    string resourcePath = "Phramacy_Product.Resources.PurchaseSample.csv";
+                    Assembly assembly = Assembly.GetExecutingAssembly();
+
+                    using (Stream stream = assembly.GetManifestResourceStream(resourcePath))
+                    {
+                        if (stream == null)
+                        {
+                            MessageBox.Show("Error: Sample file resource not found. Check the file's 'Build Action'.", "Download Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                        using (FileStream fileStream = File.Create(saveFileDialog.FileName))
+                        {
+                            stream.CopyTo(fileStream);
+                        }
+                    }
+
+                    MessageBox.Show($"Sample file saved successfully to:\n{saveFileDialog.FileName}", "Download Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred during download: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        private void ImportFile_Click(object sender, RoutedEventArgs e)
+        {
+            
+            System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog
+            {
+                Filter = "CSV Files (*.csv)|*.csv",
+                Title = "Select Purchase File to Import"
+            };
+
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                {
+                    try
+                    {
+                        medicineBilling.Clear();
+                        Total_Amount.Text = "Grand Amount: ";
+                        List<PurchaseMedicine> importedItems = ReadAndMapCsvFile(openFileDialog.FileName);
+
+                        if (importedItems.Any())
+                        {
+                            var currentItems = ProductGrid.ItemsSource as ObservableCollection<PurchaseMedicine>;
+                            if (currentItems != null)
+                            {
+                                foreach (var item in importedItems)
+                                {
+                                    
+                                    item.RecalculateTotal();
+                                    currentItems.Add(item);
+                                }
+                                decimal totalAmount = medicineBilling.Sum(m => m.Total);
+                                Total_Amount.Text = "Grand Total: " + totalAmount.ToString("C", CultureInfo.GetCultureInfo("en-IN"));
+                                dialogPaidAmount.Text = totalAmount.ToString("F2");
+                                formPaymentType.IsEnabled = true;
+                            }
+                            else
+                            {
+                                // Initialize new collection if it's null
+                                ProductGrid.ItemsSource = new ObservableCollection<PurchaseMedicine>(importedItems.Select(item => { item.RecalculateTotal(); return item; }).ToList());
+                            }
+
+                            MessageBox.Show($"Successfully imported {importedItems.Count} items.", "Import Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("No valid purchase items were found in the file or the file is empty/invalid.", "Import Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"An error occurred during import: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+        }
+
+        private List<PurchaseMedicine> ReadAndMapCsvFile(string filePath)
+        {
+            var purchaseItems = new List<PurchaseMedicine>();
+            var targetColumns = new Dictionary<string, Type>
+            {
+                { "ProductName", typeof(string) },
+                { "StripInfo", typeof(string) },
+                { "BatchNumber", typeof(string) },
+
+                { "Expiry", typeof(DateTime) },
+                { "QtyF", typeof(int) },
+                { "QtyL", typeof(int) },
+                { "MRP", typeof(decimal) },
+                { "PTR", typeof(decimal) },
+                { "SchAmt", typeof(decimal) },
+                { "BaseAmt", typeof(decimal) },
+                { "Discount", typeof(decimal) },
+                { "GST", typeof(decimal) },
+                { "Total", typeof(decimal) }
+            };
+
+            var headerMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "Item Name", "ProductName" },
+                { "Unit/Pack", "StripInfo" },
+                { "BATCH NUMBER", "BatchNumber" },
+                { "EXPIRY", "Expiry" },
+                { "QTY(F)", "QtyF" },
+                { "Free", "QtyL" },
+                { "M.R.P", "MRP" },
+                { "P.T.R", "PTR" },
+                { "Sch. Amt", "SchAmt" },
+                { "Base", "BaseAmt" },
+                { "DISC%", "Discount" },
+                { "GST%", "GST" },
+                { "Net Amount", "Total" }
+            };
+
+
+            using (var reader = new StreamReader(filePath))
+            {
+                if (reader.EndOfStream)
+                    throw new InvalidDataException("The selected file is empty.");
+
+                string headerLine = reader.ReadLine();
+                var fileHeaders = headerLine.Split(',').Select(h => h.Trim()).ToList();
+                var columnIndexMap = new Dictionary<string, int>();
+                foreach (var header in fileHeaders)
+                {
+                    string cleanHeader = header.Replace(" ", "").Replace(".", "").Replace("%", "");
+
+                    var matchingEntry = headerMap.FirstOrDefault(hm =>
+                        hm.Key.Replace(" ", "").Replace(".", "").Replace("%", "").Equals(cleanHeader, StringComparison.OrdinalIgnoreCase));
+
+                    if (!matchingEntry.Equals(default(KeyValuePair<string, string>)))
+                    {
+                        string modelPropertyName = matchingEntry.Value;
+                        int index = fileHeaders.IndexOf(header);
+                        if (targetColumns.ContainsKey(modelPropertyName) && !columnIndexMap.ContainsKey(modelPropertyName))
+                        {
+                            columnIndexMap.Add(modelPropertyName, index);
+                        }
+                    }
+                }
+
+
+                if (!columnIndexMap.ContainsKey("ProductName"))
+                {
+
+                    throw new InvalidDataException("The file must contain a valid column that maps to 'ProductName' (e.g., 'Item Name').");
+                }
+
+                int rowNumber = 1;
+                while (!reader.EndOfStream)
+                {
+                    rowNumber++;
+                    string dataLine = reader.ReadLine();
+                    if (string.IsNullOrWhiteSpace(dataLine)) continue;
+
+                    var fields = dataLine.Split(',').Select(f => f.Trim()).ToList();
+                    if (fields.Count < columnIndexMap.Values.DefaultIfEmpty(0).Max() + 1)
+                    {
+                        MessageBox.Show($"Row {rowNumber} is malformed and was skipped.", "Data Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        continue;
+                    }
+
+                    var item = new PurchaseMedicine();
+                    bool rowSkipped = false;
+                    foreach (var map in columnIndexMap)
+                    {
+                        string propertyName = map.Key;
+                        int columnIndex = map.Value;
+                        string value = fields[columnIndex];
+
+                        if (string.IsNullOrWhiteSpace(value)) continue;
+
+                        try
+                        {
+                            Type propertyType = targetColumns[propertyName];
+                            var propertyInfo = typeof(PurchaseMedicine).GetProperty(propertyName);
+
+                            if (propertyType == typeof(string))
+                            {
+                                propertyInfo.SetValue(item, value);
+                            }
+
+                            else if (propertyType == typeof(int))
+                            {
+                                if (int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out int intValue))
+                                {
+                                    propertyInfo.SetValue(item, intValue);
+                                }
+                                else
+                                {
+                                    MessageBox.Show($"Row {rowNumber}: Invalid whole number format for '{propertyName}'. Value skipped.", "Data Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                }
+                            }
+                            else if (propertyType == typeof(DateTime))
+                            {
+                                if (DateTime.TryParseExact(value, new[] { "MMM-yy", "MMMM-yy", "MM/yy", "MM/yyyy", "dd-MM-yyyy", "yyyy-MM-dd" }, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateValue))
+                                  {
+                                    propertyInfo.SetValue(item, dateValue);
+                                }
+                                else
+                                {
+                                    MessageBox.Show($"Row {rowNumber}: Invalid date format for '{propertyName}'. Expected MM/yy or MM/yyyy. Value skipped.", "Data Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                }
+                            }
+                            else if (propertyType == typeof(decimal))
+                            {
+                                if (decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal decimalValue))
+                                {
+                                    propertyInfo.SetValue(item, decimalValue);
+                                }
+                                else
+                                {
+                                    MessageBox.Show($"Row {rowNumber}: Invalid currency/decimal format for '{propertyName}'. Value skipped.", "Data Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                }
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Row {rowNumber}: Failed to process value for '{propertyName}'. Error: {ex.Message}. Row skipped.", "Data Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            rowSkipped = true;
+                            break;
+                        }
+                    }
+
+                    if (!rowSkipped)
+                    {
+                        if (!string.IsNullOrWhiteSpace(item.ProductName))
+                        {
+                            purchaseItems.Add(item);
+                        }
+                    }
+                }
+            }
+            return purchaseItems;
         }
         private void AddBill_CustomerDetails(object sender, RoutedEventArgs e)
         {
@@ -170,7 +428,6 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
                         MRP = foundMedicine.MRP,
                         PTR = foundMedicine.PTR,
                         ItemId = foundMedicine.ItemId,
-                        QtyL = foundMedicine.QtyL,
                         CompanyName = foundMedicine.CompanyName,
                         medicineType = foundMedicine.medicineType,
                         saltComposition1 = foundMedicine.saltComposition1,
@@ -244,9 +501,9 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
             {
                 NumberPopup.IsOpen = false;
                 formDistributorName.Clear();
-                //PreviousPurchasesItemsControl.ItemsSource = null;
-                //PreviousPurchasesPanel.Visibility = Visibility.Collapsed;
-                //BillCountComboBox.SelectedItem = null;
+                PreviousPurchasesItemsControl.ItemsSource = null;
+                PreviousPurchasesPanel.Visibility = Visibility.Collapsed;
+                BillCountComboBox.SelectedItem = null;
             }
         }
        
@@ -349,19 +606,14 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
 
             string inputNumber = SearchNumberBox.Text;
             decimal totalAmount = medicineBilling.Sum(m => m.Total);
-
-            //decimal paidAmount = medicineBilling.Sum(m => m.PaidAmount);
-
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
-               //bool customerExists = saleDBManager.checkCustomerExist(inputNumber);
                 String mobile = SearchNumberBox.Text;
                 String distributorName = formDistributorName.Text;
                 //purchaseDBManager.updatePharmaCustomer(customerName, mobile, totalAmount, totalPaidAmount, customerExists);
                 string billNumber = new SalesDBManager().GenerateBillNumber();
-                String billPath = SaveButton_Click(sender, e, billNumber);
-                UpdateSaleItemDetails(conn, billNumber, billPath, totalAmount, totalPaidAmount);
-                MessageBox.Show("Invoice is saved to the file : " + billPath, "Invoice Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+                UpdatePurchaseItemDetails(conn, billNumber, totalAmount, totalPaidAmount);
+                //MessageBox.Show("Purchase Detail Saved", MessageBoxButton.OK, MessageBoxImage.Information);
 
             }
         }
@@ -413,103 +665,113 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
                 }
             }
         }
-
-        private void UpdateSaleItemDetails(SqlConnection conn, String billNumber, String billPath, decimal totalAmount, decimal paidAmount)
+        private void UpdatePurchaseItemDetails(SqlConnection conn, String billNumber, decimal totalAmount, decimal paidAmount)
         {
+            decimal pendingAmount = totalAmount - paidAmount;
+            string paymentStatus = paidAmount < totalAmount ? "Pending" : "Completed";
+
             conn.Open();
             SqlTransaction transaction = conn.BeginTransaction();
 
             try
             {
-                string saleDetailsQuery = @"
-                INSERT INTO SaleDetails 
-               (CustomerName, DoctorName, BillNumber, BillDate,PaidAmount,TotalAmount, CreatedBy,BillPath, PaymentType,Status,PayAppName,TsNum, CreatedAt, PatientName) 
-               OUTPUT INSERTED.SaleID 
-               VALUES(@CustomerName, @DoctorName, @BillNumber, @BillDate, @PaidAmount,@TotalAmount, @CreatedBy,@BillPath, @PaymentType,@Status,@PayAppName,@TsNum, @CreatedAt, @PatientName)";
-                SqlCommand saleCmd = new SqlCommand(saleDetailsQuery, conn, transaction);
+                string purchaseDetailsQuery = @"
+        INSERT INTO PurchaseDetails 
+       (DistributorName, BillNumber, BillDate, PaidAmount, PendingAmount, TotalAmount, CreatedBy, PaymentType, PaymentStatus, PayName, TsNum, CreatedAt) 
+       OUTPUT INSERTED.PurchaseID 
+       VALUES(@DistributorName, @BillNumber, @BillDate, @PaidAmount, @PendingAmount, @TotalAmount, @CreatedBy, @PaymentType, @PaymentStatus, @PayName, @TsNum, @CreatedAt)";
 
-                saleCmd.Parameters.AddWithValue("@CustomerName", formDistributorName.Text);
-                saleCmd.Parameters.AddWithValue("@BillNumber", billNumber);
-                saleCmd.Parameters.AddWithValue("@BillPath", billPath);
+                SqlCommand purchaseCmd = new SqlCommand(purchaseDetailsQuery, conn, transaction);
+
+                purchaseCmd.Parameters.AddWithValue("@DistributorName", formDistributorName.Text); // Maps to CustomerName/DistributorName
+                purchaseCmd.Parameters.AddWithValue("@BillNumber", billNumber);
                 if (formBillDate.SelectedDate.HasValue)
                 {
-                    saleCmd.Parameters.AddWithValue("@BillDate", formBillDate.SelectedDate.Value);
+                    purchaseCmd.Parameters.AddWithValue("@BillDate", formBillDate.SelectedDate.Value);
                 }
                 else
                 {
-                    saleCmd.Parameters.AddWithValue("@BillDate", DBNull.Value);
+                    purchaseCmd.Parameters.AddWithValue("@BillDate", DBNull.Value);
                 }
+
                 string createdBy = formCreatedBy.Text;
                 string paymentType = formPaymentType.SelectedItem is ComboBoxItem item2 ? item2.Content.ToString() : string.Empty;
-                string gstOption = formGSTOption.SelectedItem is ComboBoxItem item3 ? item3.Content.ToString() : string.Empty;
 
-                saleCmd.Parameters.AddWithValue("@TotalAmount", totalAmount);
-                saleCmd.Parameters.AddWithValue("@PaidAmount", paidAmount);
-                saleCmd.Parameters.AddWithValue("@Status", paidAmount < totalAmount ? "Pending" : "Completed");
-                saleCmd.Parameters.AddWithValue("@PaymentType", paymentType);
-                // For PayAppName (Payment App)
+                purchaseCmd.Parameters.AddWithValue("@TotalAmount", totalAmount);
+                purchaseCmd.Parameters.AddWithValue("@PaidAmount", paidAmount);
+                purchaseCmd.Parameters.AddWithValue("@PendingAmount", pendingAmount); 
+                purchaseCmd.Parameters.AddWithValue("@PaymentStatus", paymentStatus); 
+                purchaseCmd.Parameters.AddWithValue("@PaymentType", paymentType);
+
                 if (!string.IsNullOrWhiteSpace(dialogPaymentApp.Text))
                 {
-                    saleCmd.Parameters.AddWithValue("@PayAppName", dialogPaymentApp.Text.Trim());
+                    purchaseCmd.Parameters.AddWithValue("@PayName", dialogPaymentApp.Text.Trim()); 
                 }
                 else
                 {
-                    saleCmd.Parameters.AddWithValue("@PayAppName", DBNull.Value);
+                    purchaseCmd.Parameters.AddWithValue("@PayName", DBNull.Value);
                 }
-                // For TsNum (Transaction Number / UTR No)
+
                 if (!string.IsNullOrWhiteSpace(dialogTransactionNumber.Text))
                 {
-                    saleCmd.Parameters.AddWithValue("@TsNum", dialogTransactionNumber.Text.Trim());
+                    purchaseCmd.Parameters.AddWithValue("@TsNum", dialogTransactionNumber.Text.Trim());
                 }
                 else
                 {
-                    saleCmd.Parameters.AddWithValue("@TsNum", DBNull.Value);
+                    purchaseCmd.Parameters.AddWithValue("@TsNum", DBNull.Value);
                 }
-                saleCmd.Parameters.AddWithValue("@CreatedBy", createdBy);
-                saleCmd.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
-                //saleCmd.Parameters.AddWithValue("@PatientName", formPatientName.Text);
-                // Get the newly inserted SaleID
-                int saleID = (int)saleCmd.ExecuteScalar();
 
-                // 2. Insert into SaleItem for each item
+                purchaseCmd.Parameters.AddWithValue("@CreatedBy", createdBy);
+                purchaseCmd.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
+                int purchaseID = (int)purchaseCmd.ExecuteScalar();
                 string insertItemQuery = @"
-                        INSERT INTO SaleItems (SaleID,ItemId,ItemName,Batch,Expiry,Pack,MRP,Quantity,QtyLoose,Discount,GST,CreatedAt,Is_Loose,NetAmount)
-                        VALUES (@SaleID,@ItemId,@ItemName,@Batch,@Expiry,@Pack,@MRP,@Quantity,@QtyLoose,@Discount,@GST,@CreatedAt,@Is_Loose,@NetAmount)";
+                INSERT INTO PurchaseItems (PurchaseID, MedId, ItemName, Batch, Expiry, Pack, MRP, PTR, Quantity, Free, SchAmt, Discount, GST, Base, NetAmount, CreatedAt, Is_Loose)
+                VALUES (@PurchaseID, @MedId, @ItemName, @Batch, @Expiry, @Pack, @MRP, @PTR, @Quantity, @Free, @SchAmt, @Discount, @GST, @Base, @NetAmount, @CreatedAt, @Is_Loose)";
 
                 SqlCommand itemCmd = new SqlCommand(insertItemQuery, conn, transaction);
                 foreach (var med in medicineBilling)
                 {
                     itemCmd.Parameters.Clear();
-                    itemCmd.Parameters.AddWithValue("@SaleID", saleID);
-                    itemCmd.Parameters.AddWithValue("@ItemId", med.ItemId);
+
+                    itemCmd.Parameters.AddWithValue("@PurchaseID", purchaseID); 
+                    itemCmd.Parameters.AddWithValue("@MedId", med.ItemId);      
                     itemCmd.Parameters.AddWithValue("@ItemName", med.ProductName);
                     itemCmd.Parameters.AddWithValue("@Batch", med.BatchNumber);
-                    itemCmd.Parameters.AddWithValue("@Expiry", med.Expiry);
-                    itemCmd.Parameters.AddWithValue("@Pack", med.StripInfo);
+                    //itemCmd.Parameters.AddWithValue("@Expiry", med.Expiry);
+                    if (med.Expiry == DateTime.MinValue)
+                    {
+                        itemCmd.Parameters.AddWithValue("@Expiry", DBNull.Value);
+                    }
+                    else
+                    {
+                        itemCmd.Parameters.AddWithValue("@Expiry", med.Expiry);
+                    }
+                    itemCmd.Parameters.AddWithValue("@Pack", med.StripInfo);    
                     itemCmd.Parameters.AddWithValue("@MRP", med.MRP);
+                    itemCmd.Parameters.AddWithValue("@PTR", med.PTR);           
                     itemCmd.Parameters.AddWithValue("@Quantity", med.QtyF);
-                    itemCmd.Parameters.AddWithValue("@QtyLoose", med.QtyL);
+                    itemCmd.Parameters.AddWithValue("@Free", med.QtyL);         
+                    itemCmd.Parameters.AddWithValue("@SchAmt", med.SchAmt);     
                     itemCmd.Parameters.AddWithValue("@Discount", med.Discount);
                     itemCmd.Parameters.AddWithValue("@GST", med.GST);
+                    itemCmd.Parameters.AddWithValue("@Base", med.BaseAmt);      
+                    itemCmd.Parameters.AddWithValue("@NetAmount", med.Total);
                     itemCmd.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
                     itemCmd.Parameters.AddWithValue("@Is_Loose", med.QtyL > 0);
-                    itemCmd.Parameters.AddWithValue("@NetAmount", med.Total);
+
                     itemCmd.ExecuteNonQuery();
                 }
                 UpdateMedicineQuantity(conn, transaction);
-
                 transaction.Commit();
                 conn.Close();
                 ClearForm();
-
             }
             catch (Exception ex)
             {
                 transaction.Rollback();
-                MessageBox.Show("Error: " + ex.Message);
+                MessageBox.Show($"Database Error during Purchase Save: {ex.Message}");
             }
         }
-       
         private void FormPaymentType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (formPaymentType.SelectedItem is ComboBoxItem selectedItem)
@@ -837,24 +1099,7 @@ ORDER BY pd.BillDate DESC, pd.BillNumber DESC";
             InitializeComponent();
         }
 
-        [Obsolete]
-        public String SaveButton_Click(object sender, RoutedEventArgs e, string billNo)
-        {
-            var sale = new SalePdfInvoice
-            {
-                CustomerName = formDistributorName.Text,
-                Mobile = SearchNumberBox.Text,
-                BillNo = billNo,
-                Date = formBillDate.SelectedDate ?? DateTime.Now,
-                PaymentType = formPaymentType.SelectedItem is ComboBoxItem item2 ? item2.Content.ToString() : "Cash",
-            };
-            List<PurchaseMedicine> medicineList = medicineBilling.ToList();
-            return "Path is not decided yet";
-            //return new PdfInvoiceGenerator.GenerateInvoice(sale, medicineList);
-            //ShowPdfViewer(pdfPath);
-            //pdfViewerControl.OpenFile(pdfPath);
-
-        }
+        
 
     }
     public class PreviousBill

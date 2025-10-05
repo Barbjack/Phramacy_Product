@@ -57,7 +57,6 @@ namespace Phramacy_Product.Views.Sales.SaleReturn
                 catch (System.Exception ex)
                 {
                     MessageBox.Show($"An error occurred while processing the return: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    // The exception message is already handled in the DatabaseService, but you can add a generic message here
                 }
             }
             else

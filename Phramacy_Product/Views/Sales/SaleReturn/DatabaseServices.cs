@@ -115,7 +115,7 @@ namespace Phramacy_Product.Views.Sales.SaleReturn
                         // 2. Update SaleItems: Adjust quantity and mark as fully returned if applicable
                         if (item.ReturnQty == item.FullQty)
                         {
-                            string updateSaleItemQuery = "UPDATE SaleItems SET Quantity = Quantity-@returnQty,NetAmount =NetAmount-@returnAmount Is_Returned = 1, ModifiedAt = GETDATE() WHERE SaleItemID = @saleItemId;";
+                            string updateSaleItemQuery = "UPDATE SaleItems SET Quantity = Quantity-@returnQty,NetAmount =NetAmount-@returnAmount, Is_Returned = 1, ModifiedAt = GETDATE() WHERE SaleItemID = @saleItemId;";
                             var saleItemCommand = new SqlCommand(updateSaleItemQuery, connection, transaction);
                             saleItemCommand.Parameters.AddWithValue("@saleItemId", item.SaleItemID);
                             saleItemCommand.Parameters.AddWithValue("@returnQty", item.ReturnQty);

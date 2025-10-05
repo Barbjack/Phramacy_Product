@@ -42,8 +42,20 @@ namespace Phramacy_Product.DataModel
             public int ItemId { get; set; }
             public decimal pTR { get; set; }
             public decimal baseAmt { get; set; }
-            
-            public string ProductName { get; set; }
+        public decimal BaseAmt
+        {
+            get => baseAmt;
+            set
+            {
+                if (baseAmt != value)
+                {
+                    baseAmt = value;
+                    OnPropertyChanged();
+                    RecalculateTotal(); 
+                }
+            }
+        }
+        public string ProductName { get; set; }
             public string CompanyName { get; set; }
             public string medicineType { get; set; }
             public string saltComposition1 { get; set; }

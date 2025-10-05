@@ -200,22 +200,18 @@ namespace Phramacy_Product.Views.Analytics
             canvas.Children.Add(path);
         }
 
-        // MODIFIED: AddLabel to take angle, labelRadius, and center for positioning
         private void AddLabel(Canvas canvas, string name, double percentage, double midAngle, double labelRadius, double center, string colorHex)
         {
             var textBlock = new TextBlock
             {
-                Text = $"{name} {percentage:F0}%", // Format: "Cash 65%"
+                Text = $"{name} {percentage:F0}%", 
                 FontWeight = FontWeights.Bold,
                 FontSize = 14,
-                Foreground = Brushes.White // Labels inside segments usually look better in white or black
+                Foreground = Brushes.White 
             };
 
-            // Measure text block to center it
             textBlock.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             Size textSize = textBlock.DesiredSize;
-
-            // Calculate label position
             double angleRad = midAngle * Math.PI / 180;
             double x = center + labelRadius * Math.Sin(angleRad) - (textSize.Width / 2);
             double y = center - labelRadius * Math.Cos(angleRad) - (textSize.Height / 2);
