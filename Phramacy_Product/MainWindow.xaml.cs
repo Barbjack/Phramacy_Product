@@ -9,9 +9,11 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Navigation;
 
 namespace Phramacy_Product
@@ -21,7 +23,29 @@ namespace Phramacy_Product
         public MainWindow()
         {
             InitializeComponent();
+            if (Properties.Settings.Default.IsLoggedInBefore &&
+            !string.IsNullOrEmpty(Properties.Settings.Default.LastMobileNumber) &&
+            !string.IsNullOrEmpty(Properties.Settings.Default.EncryptedPassword))
+            {
+                MobileNumberTextBox.Text = Properties.Settings.Default.LastMobileNumber;
+                RememberMeCheckBox.IsChecked = true;
+                string decryptedPassword = DBMasterConnection.Decrypt(Properties.Settings.Default.EncryptedPassword);
+
+                if (!string.IsNullOrEmpty(decryptedPassword))
+                {
+                    PasswordBox.Password = decryptedPassword;
+                }
+            }
         }
+        
+        private void Clear_Saved_Credentials()
+        {
+            Properties.Settings.Default.LastMobileNumber = string.Empty;
+            Properties.Settings.Default.EncryptedPassword = string.Empty;
+            Properties.Settings.Default.IsLoggedInBefore = false;
+            Properties.Settings.Default.Save();
+        }
+
         public enum LoginStatus
         {
             Success,
@@ -31,6 +55,7 @@ namespace Phramacy_Product
             InternetError,
             TokenError
         }
+
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             string mobile = MobileNumberTextBox.Text;
@@ -41,10 +66,25 @@ namespace Phramacy_Product
                 MessageBox.Show("Please enter both mobile number and password.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+
+            LoginButton.IsEnabled = false;
             LoginStatus status = await AuthenticateUser(mobile, password);
+            LoginButton.IsEnabled = true;
+
             switch (status)
             {
                 case LoginStatus.Success:
+                    if (RememberMeCheckBox.IsChecked == true)
+                    {
+                        Properties.Settings.Default.LastMobileNumber = mobile;
+                        Properties.Settings.Default.EncryptedPassword = DBMasterConnection.Encrypt(password);
+                        Properties.Settings.Default.IsLoggedInBefore = true;
+                    }
+                    else
+                    {
+                        Clear_Saved_Credentials();
+                    }
+                    Properties.Settings.Default.Save();
                     Dashboard dashboardWindow = new Dashboard();
                     this.Close();
                     dashboardWindow.Show();
@@ -130,6 +170,11 @@ namespace Phramacy_Product
         {
             MobileNumberTextBox.Clear();
             PasswordBox.Clear();
+        }
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
         }
     }
 }

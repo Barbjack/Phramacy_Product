@@ -22,5 +22,41 @@ namespace Phramacy_Product.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastMobileNumber {
+            get {
+                return ((string)(this["LastMobileNumber"]));
+            }
+            set {
+                this["LastMobileNumber"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IsLoggedInBefore {
+            get {
+                return ((bool)(this["IsLoggedInBefore"]));
+            }
+            set {
+                this["IsLoggedInBefore"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string EncryptedPassword {
+            get {
+                return ((string)(this["EncryptedPassword"]));
+            }
+            set {
+                this["EncryptedPassword"] = value;
+            }
+        }
     }
 }

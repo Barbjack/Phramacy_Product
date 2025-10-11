@@ -171,14 +171,24 @@
                     </MenuItem.Header>
                     <MenuItem Header="No new notifications" Style="{StaticResource SubMenuItemStyle}"/>
                 </MenuItem>
-                <MenuItem Style="{StaticResource TopLevelMenuItemStyle}" VerticalAlignment="Center" Margin="0,7,20,0">
-                    <MenuItem.Header>
-                        <materialDesign:PackIcon Kind="AccountCircle" Width="24" Height="24" Foreground="White"/>
-                    </MenuItem.Header>
-                    <MenuItem Header="Profile"  Click="NavigateToUserProfile" Style="{StaticResource SubMenuItemStyle}"/>
-                    <MenuItem Header="Settings" Style="{StaticResource SubMenuItemStyle}"/>
-                    <MenuItem Header="Logout" Click="Logout_Profile" Style="{StaticResource SubMenuItemStyle}"/>
-                </MenuItem>
+               
+                    <MenuItem Style="{StaticResource TopLevelMenuItemStyle}" VerticalAlignment="Center" Margin="0,7,20,0">
+                        <MenuItem.Header>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding CurrentUserName}" 
+                                       Foreground="White" 
+                                       FontWeight="Bold" 
+                                       VerticalAlignment="Center" 
+                                       Margin="0,0,8,0"/>
+
+                                <materialDesign:PackIcon Kind="AccountCircle" Width="24" Height="24" Foreground="White"/>
+                            </StackPanel>
+                        </MenuItem.Header>
+                        <MenuItem Header="Profile" Click="NavigateToUserProfile" Style="{StaticResource SubMenuItemStyle}"/>
+                        <MenuItem Header="Settings" Style="{StaticResource SubMenuItemStyle}"/>
+                        <MenuItem Header="Logout" Click="Logout_Profile" Style="{StaticResource SubMenuItemStyle}"/>
+                    </MenuItem>
+              
             </Menu>
         </DockPanel>
     </materialDesign:ColorZone>

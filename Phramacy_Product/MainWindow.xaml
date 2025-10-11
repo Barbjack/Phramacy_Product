@@ -21,17 +21,21 @@
             <TextBlock Text="Login" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,30" />
 
             <TextBlock Text="Mobile Number" Margin="0,0,0,5" />
-            <TextBox x:Name="MobileNumberTextBox" Padding="5" />
+            <TextBox x:Name="MobileNumberTextBox" Padding="5" InputScope="Number"
+PreviewTextInput="NumberValidationTextBox"/>
 
             <TextBlock Text="Password" Margin="0,15,0,5" />
             <PasswordBox x:Name="PasswordBox" Padding="5" />
-
+            <CheckBox x:Name="RememberMeCheckBox" 
+                  Content="Remember me" 
+                  Margin="0,10,0,10" 
+                  HorizontalAlignment="Left"/>
             <Button x:Name="LoginButton" Height="50" Content="Login" Margin="0,30,0,10" Padding="10" Background="#3f51b5" Foreground="White" Click="LoginButton_Click" />
             <TextBlock Text="Forgot Password?" HorizontalAlignment="Center" Foreground="#3f51b5" Margin="0,5,0,20" Cursor="Hand" MouseLeftButtonDown="ForgotPassword_Click" />
             <TextBlock HorizontalAlignment="Center">
                 <Run Text="Do you own a Pharmacy? " />
                 <Hyperlink Click="RegisterChemist">
-                    <Run Text="Join as Chemist"/>
+                    <Run Text="Register as a new user"/>
                 </Hyperlink>
             </TextBlock>
             <StackPanel Width="100">

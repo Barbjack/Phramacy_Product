@@ -20,10 +20,25 @@ namespace Phramacy_Product.Views.Components
 {
     public partial class Header : UserControl
     {
+        public static readonly DependencyProperty CurrentUserNameProperty =
+            DependencyProperty.Register("CurrentUserName", typeof(string), typeof(Header), new PropertyMetadata("User"));
+
+        public string CurrentUserName
+        {
+            get { return (string)GetValue(CurrentUserNameProperty); }
+            set { SetValue(CurrentUserNameProperty, value); }
+        }
+
         public Header()
         {
             InitializeComponent();
+            this.DataContext = this;
+            if (GlobalData.LoggedInUser != null)
+            {
+                this.CurrentUserName = GlobalData.LoggedInUser;
+            }
         }
+        
         private void NavigateToBusinessAnalytics(object sender, RoutedEventArgs e)
         {
             NavigateToPage(new Views.Analytics.AnalyticsPage());
