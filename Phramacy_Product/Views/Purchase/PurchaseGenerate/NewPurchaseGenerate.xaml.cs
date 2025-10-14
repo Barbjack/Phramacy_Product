@@ -552,6 +552,34 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
 
             }
         }
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+        private void StringValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^a-zA-Z\\s]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void TextBox_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string pastedText = (string)e.DataObject.GetData(typeof(string));
+                Regex regex = new Regex("[^a-zA-Z\\s]+");
+
+                if (regex.IsMatch(pastedText))
+                {
+                    e.CancelCommand();
+                }
+            }
+            else
+            {
+                e.CancelCommand();
+            }
+        }
         private void SuggestionList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (SuggestionList.SelectedItem is Medicine selected)

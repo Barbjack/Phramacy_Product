@@ -164,21 +164,30 @@
                                     <TextBlock Text="Bill Date" Width="120"/>
                                     <DatePicker x:Name="editBillDate" Width="200"/>
                                 </StackPanel>
+
                                 <StackPanel Orientation="Horizontal" Margin="0,5">
                                     <TextBlock Text="Customer" Width="120"/>
-                                    <TextBox x:Name="editCustomerName" Width="200"/>
+                                    <TextBox x:Name="editCustomerName" Width="200"
+                                       PreviewTextInput="StringValidationTextBox"
+                                       DataObject.Pasting="TextBox_Pasting"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,5">
                                     <TextBlock Text="Entry By" Width="120"/>
-                                    <TextBox x:Name="editEntryBy" Width="200"/>
+                                    <TextBox x:Name="editEntryBy" Width="200"
+                                       PreviewTextInput="StringValidationTextBox"
+                                       DataObject.Pasting="TextBox_Pasting"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,5">
                                     <TextBlock Text="Bill Amount" Width="120"/>
-                                    <TextBox x:Name="editBillAmount" Width="200"/>
+                                    <TextBox x:Name="editBillAmount" Width="200"
+                                      PreviewTextInput="NumberValidationTextBox"
+                                      DataObject.Pasting="TextBox_Pasting"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,5">
                                     <TextBlock Text="Payment Mode" Width="120"/>
-                                    <TextBox x:Name="editPayMode" Width="200"/>
+                                    <TextBox x:Name="editPayMode" Width="200"
+                                     PreviewTextInput="StringValidationTextBox"
+                                    DataObject.Pasting="TextBox_Pasting"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,5">
                                     <TextBlock Text="Bill PDF" Width="120"/>

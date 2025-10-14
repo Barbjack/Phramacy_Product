@@ -165,19 +165,19 @@
                         <!-- Patient/Customer Number -->
                         <StackPanel Grid.Column="0" Margin="5">
                             <TextBlock>
-            <Run Text=" *" Foreground="Red"/>
+        <Run Text=" *" Foreground="Red"/>
                             </TextBlock>
                             <TextBox x:Name="SearchNumberBox"
-                 Style="{StaticResource ValidationErrorTextBox}"
-                 materialDesign:HintAssist.Hint="Patient/Customer Number"
-                 TextChanged="SearchTextBox_NumberChanged"
-                 InputScope="Number"
-                 PreviewTextInput="NumberValidationTextBox">
+        Style="{StaticResource ValidationErrorTextBox}"
+        materialDesign:HintAssist.Hint="Patient/Customer Number"
+        TextChanged="SearchTextBox_NumberChanged"
+        PreviewKeyDown="SearchNumberBox_PreviewKeyDown" InputScope="Number"
+        PreviewTextInput="NumberValidationTextBox">
                                 <TextBox.Text>
                                     <Binding ElementName="SearchNumberBox"
-                     Path="."
-                     UpdateSourceTrigger="PropertyChanged"
-                     ValidatesOnDataErrors="True">
+                Path="."
+                UpdateSourceTrigger="PropertyChanged"
+                ValidatesOnDataErrors="True">
                                         <Binding.ValidationRules>
                                             <local:RequiredFieldValidationRule/>
                                         </Binding.ValidationRules>
@@ -187,17 +187,21 @@
                         </StackPanel>
 
                         <Popup x:Name="NumberPopup" PlacementTarget="{Binding ElementName=SearchNumberBox}" Placement="Bottom" StaysOpen="False" 
-                           AllowsTransparency="True" PopupAnimation="Slide" IsOpen="False">
-                            <Border Background="White" BorderBrush="Gray" BorderThickness="1" MaxHeight="200" Width="{Binding ElementName=SearchNumberBox, 
-                                Path=ActualWidth}">
+    AllowsTransparency="True" PopupAnimation="Slide" IsOpen="False">
+                            <Border Background="White" BorderBrush="Gray" BorderThickness="1" MaxHeight="200" Width="{Binding ElementName=SearchNumberBox, Path=ActualWidth}">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                    <ListBox x:Name="NumberList" SelectionChanged="NumberList_SelectionChanged" Background="White" BorderThickness="0">
+                                    <ListBox x:Name="NumberList" 
+                     SelectionChanged="NumberList_SelectionChanged" 
+                     Background="White" 
+                     BorderThickness="0"
+                     PreviewKeyDown="NumberList_PreviewKeyDown" KeyboardNavigation.TabNavigation="Once"
+                     Focusable="True">
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
                                                 <StackPanel Margin="5">
                                                     <TextBlock Text="{Binding CustomerNumber}" FontWeight="SemiBold" FontSize="14"/>
                                                     <TextBlock>
-                                                      <Run Text="{Binding CustomerName}"/>
+                                <Run Text="{Binding CustomerName}"/>
                                                     </TextBlock>
                                                 </StackPanel>
                                             </DataTemplate>
@@ -206,7 +210,6 @@
                                 </ScrollViewer>
                             </Border>
                         </Popup>
-
                         <StackPanel Grid.Column="1" Margin="5">
                             <TextBlock>
             
@@ -214,7 +217,8 @@
                             </TextBlock>
                             <TextBox x:Name="formCustomerName"
                  Style="{StaticResource ValidationErrorTextBox}"
-                 materialDesign:HintAssist.Hint="Customer Name">
+                 materialDesign:HintAssist.Hint="Customer Name"
+                 PreviewTextInput="StringValidationTextBox"  DataObject.Pasting="TextBox_Pasting">
                                 <TextBox.Text>
                                     <Binding ElementName="formCustomerName" Path="." UpdateSourceTrigger="PropertyChanged"
                                              ValidatesOnDataErrors="True">
@@ -233,7 +237,9 @@
                             </TextBlock>
                             <TextBox x:Name="formPatientName"
                  Style="{StaticResource ValidationErrorTextBox}"
-                 materialDesign:HintAssist.Hint="Patient Name">
+                 materialDesign:HintAssist.Hint="Patient Name"
+                  
+             PreviewTextInput="StringValidationTextBox"  DataObject.Pasting="TextBox_Pasting">
                                 <TextBox.Text>
                                     <Binding ElementName="formPatientName"
 Path="."
@@ -250,17 +256,17 @@ ValidatesOnDataErrors="True">
                         <!-- Doctor Name -->
                         <StackPanel Grid.Column="3" Margin="5">
                             <TextBlock>
-           
-            <Run Text=" *" Foreground="Red"/>
+        <Run Text=" *" Foreground="Red"/>
                             </TextBlock>
+
                             <TextBox x:Name="formDocName"
-                 Style="{StaticResource ValidationErrorTextBox}"
-                 materialDesign:HintAssist.Hint="Doctor/Prescriber Name">
+             Style="{StaticResource ValidationErrorTextBox}"
+             materialDesign:HintAssist.Hint="Doctor/Prescriber Name"
+             
+             PreviewTextInput="StringValidationTextBox"  DataObject.Pasting="TextBox_Pasting">
                                 <TextBox.Text>
-                                    <Binding ElementName="formDocName"
-Path="."
-UpdateSourceTrigger="PropertyChanged"
-ValidatesOnDataErrors="True">
+                                    <Binding Path="DoctorName"  UpdateSourceTrigger="PropertyChanged"
+                     ValidatesOnDataErrors="True">
                                         <Binding.ValidationRules>
                                             <local:RequiredFieldValidationRule/>
                                         </Binding.ValidationRules>
@@ -304,32 +310,38 @@ ValidatesOnDataErrors="True">
                             <ColumnDefinition Width="1.5*"/>
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Column="0">
-                            <!-- Search TextBox -->
-                            <TextBox x:Name="SearchTextBox" Margin="5" 
-                 Style="{StaticResource MaterialDesignOutlinedTextBox}" 
-                 materialDesign:HintAssist.Hint="Search medicine (min 3 characters)"
-                 TextChanged="SearchTextBox_TextChanged"/>
-
-                            <!-- Suggestion Popup -->
+                            <TextBox x:Name="SearchTextBox" Margin="5"  
+             Style="{StaticResource MaterialDesignOutlinedTextBox}"  
+             materialDesign:HintAssist.Hint="Search medicine (min 3 characters)"
+             PreviewTextInput="StringValidationTextBox"  
+             DataObject.Pasting="TextBox_Pasting"
+             TextChanged="SearchTextBox_TextChanged"
+             PreviewKeyDown="SearchTextBox_PreviewKeyDown"/>
                             <Popup x:Name="SuggestionPopup" PlacementTarget="{Binding ElementName=SearchTextBox}" Placement="Bottom" StaysOpen="False" 
-                     AllowsTransparency="True" PopupAnimation="Slide" IsOpen="False">
+           AllowsTransparency="True" PopupAnimation="Slide" IsOpen="False">
                                 <Border Background="White" BorderBrush="Gray" BorderThickness="1" MaxHeight="200" Width="{Binding ElementName=SearchTextBox, Path=ActualWidth}">
                                     <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                        <ListBox x:Name="SuggestionList" SelectionChanged="SuggestionList_SelectionChanged" Background="White" BorderThickness="0">
+                                        <ListBox x:Name="SuggestionList" 
+                         SelectionChanged="SuggestionList_SelectionChanged"  
+                         Background="White" 
+                         BorderThickness="0" 
+                         PreviewKeyDown="SuggestionList_PreviewKeyDown"
+                         KeyboardNavigation.TabNavigation="Once"
+                         Focusable="True">
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <StackPanel Margin="5">
                                                         <TextBlock Text="{Binding ProductName}" FontWeight="Bold" FontSize="14"/>
                                                         <TextBlock>
-                                        <Run Text="{Binding CompanyName}"/>
-                                        <Run Text=" | "/>
-                                        <Run Text="{Binding StripInfo}"/>
+                                    <Run Text="{Binding CompanyName}"/>
+                                    <Run Text=" | "/>
+                                    <Run Text="{Binding StripInfo}"/>
                                                         </TextBlock>
                                                         <TextBlock>
-                                        <Run Text="MRP ₹"/>
-                                        <Run Text="{Binding MRP}"/>
-                                        <Run Text=" | Stock: "/>
-                                        <Run Text="{Binding Stock}"/>
+                                    <Run Text="MRP ₹"/>
+                                    <Run Text="{Binding MRP}"/>
+                                    <Run Text=" | Stock: "/>
+                                    <Run Text="{Binding Stock}"/>
                                                         </TextBlock>
                                                     </StackPanel>
                                                 </DataTemplate>

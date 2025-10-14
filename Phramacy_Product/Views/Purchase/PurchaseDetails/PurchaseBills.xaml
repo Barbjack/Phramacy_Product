@@ -151,7 +151,9 @@
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,5">
                                     <TextBlock Text="Distributor Name" Width="120"/>
-                                    <TextBox x:Name="editDistributorName" Width="200"/>
+                                    <TextBox x:Name="editDistributorName" Width="200"
+                                             PreviewTextInput="StringValidationTextBox"  
+                                             DataObject.Pasting="TextBox_Pasting"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,5">
                                     <TextBlock Text="Entry Date" Width="120"/>
@@ -164,23 +166,33 @@
 
                                 <StackPanel Orientation="Horizontal" Margin="0,5">
                                     <TextBlock Text="Entry By" Width="120"/>
-                                    <TextBox x:Name="editCreatedBy" Width="200"/>
+                                    <TextBox x:Name="editCreatedBy" Width="200"
+                                             PreviewTextInput="StringValidationTextBox"  
+                                             DataObject.Pasting="TextBox_Pasting"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,5">
                                     <TextBlock Text="Paid Amount" Width="120"/>
-                                    <TextBox x:Name="editPaidAmount" Width="200"/>
+                                    <TextBox x:Name="editPaidAmount" Width="200"
+                                                PreviewTextInput="NumberValidationTextBox"
+                                                DataObject.Pasting="TextBox_Pasting"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,5">
                                     <TextBlock Text="Payment Type" Width="120"/>
-                                    <TextBox x:Name="editPaymentType" Width="200"/>
+                                    <TextBox x:Name="editPaymentType" Width="200"
+                                             PreviewTextInput="StringValidationTextBox"  
+                                             DataObject.Pasting="TextBox_Pasting"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,5">
                                     <TextBlock Text="Pending Amount" Width="120"/>
-                                    <TextBox x:Name="editPendingAmount" Width="200"/>
+                                    <TextBox x:Name="editPendingAmount" Width="200"
+                                             PreviewTextInput="NumberValidationTextBox"
+                                             DataObject.Pasting="TextBox_Pasting"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,5">
                                     <TextBlock Text="Return Amount" Width="120"/>
-                                    <TextBox x:Name="editReturnAmount" Width="200"/>
+                                    <TextBox x:Name="editReturnAmount" Width="200"
+                                             PreviewTextInput="NumberValidationTextBox"
+                                             DataObject.Pasting="TextBox_Pasting"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15">
                                     <Button Content="Update" Width="100" Click="SaveEdit_Click" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,10,0"/>

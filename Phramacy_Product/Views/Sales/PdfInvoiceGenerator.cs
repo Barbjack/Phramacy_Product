@@ -150,7 +150,7 @@ namespace Phramacy_Product.Views.Sales
 
             var renderer = new PdfDocumentRenderer(true) { Document = doc };
             renderer.RenderDocument();
-            string folderPath = @"C:\Users\Developer\Desktop\SaleInvoices";
+            string folderPath =(string) pharmaProfile.billPath;
             if (!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);
             string fileName = $"Invoice_{sale.BillNo}.pdf";
@@ -314,7 +314,7 @@ namespace Phramacy_Product.Views.Sales
             // PDF rendering and saving
             var renderer = new PdfDocumentRenderer(true) { Document = doc };
             renderer.RenderDocument();
-            string folderPath = @"C:\Users\Developer\Desktop\SaleInvoices";
+            string folderPath =(string) pharmaProfile.billPath;
 
 
             if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
@@ -327,7 +327,7 @@ namespace Phramacy_Product.Views.Sales
         }
         private static PharmacyProfile getPharmaProfileDetails(int userId)
         {
-            string query = $@"SELECT id, pharmacy_name, pharmacist_name, panno, dlno, gstin, mobile, email, password, address, address2, area, pincode, city, state, company_logo, signature, created_at, updated_at, is_deleted 
+            string query = $@"SELECT id,billPath, pharmacy_name, pharmacist_name, panno, dlno, gstin, mobile, email, password, address, address2, area, pincode, city, state, company_logo, signature, created_at, updated_at, is_deleted 
     FROM pharmacy_profile WHERE id = {userId} and is_deleted = 0";
 
             PharmacyProfile profile = null;
@@ -354,6 +354,7 @@ namespace Phramacy_Product.Views.Sales
                         pincode = Convert.ToString(reader["pincode"]) ?? string.Empty,
                         city = reader["city"] as string ?? string.Empty,
                         state = reader["state"] as string ?? string.Empty,
+                        billPath = reader["billPath"] as string?? string.Empty,
                         company_logo = reader["company_logo"] as byte[],
                         signature = reader["signature"] as byte[],
                         created_at = reader.Field<DateTime?>("created_at") ?? DateTime.MinValue,

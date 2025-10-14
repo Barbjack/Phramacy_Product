@@ -87,16 +87,19 @@
 
                 <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,15">
                     <Label Content="Pharmacy Name" Foreground="#444" FontWeight="SemiBold"/>
-                    <TextBox x:Name="PharmacyNameTextBox" Tag="Enter pharmacy name" Style="{StaticResource ModernTextBoxStyle}"/>
+                    <TextBox x:Name="PharmacyNameTextBox" Tag="Enter pharmacy name" Style="{StaticResource ModernTextBoxStyle}"
+                             PreviewTextInput="StringValidationTextBox" DataObject.Pasting="TextBox_Pasting"/>
                 </StackPanel>
                 <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,15">
                     <Label Content="Pharmacist Name" Foreground="#444" FontWeight="SemiBold"/>
-                    <TextBox x:Name="PharmacistNameTextBox" Tag="Enter pharmacist name" Style="{StaticResource ModernTextBoxStyle}"/>
+                    <TextBox x:Name="PharmacistNameTextBox" Tag="Enter pharmacist name" Style="{StaticResource ModernTextBoxStyle}"
+                             PreviewTextInput="StringValidationTextBox" DataObject.Pasting="TextBox_Pasting"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,15">
                     <Label Content="Mobile Number" Foreground="#444" FontWeight="SemiBold"/>
-                    <TextBox x:Name="MobileTextBox" Tag="Enter mobile number" Style="{StaticResource ModernTextBoxStyle}"/>
+                    <TextBox x:Name="MobileTextBox" Tag="Enter mobile number" Style="{StaticResource ModernTextBoxStyle}" 
+                             InputScope="Number" PreviewTextInput="NumberValidationTextBox"/>
                 </StackPanel>
                 <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,15">
                     <Label Content="Email" Foreground="#444" FontWeight="SemiBold"/>
@@ -140,6 +143,10 @@
                 <StackPanel Grid.Row="6" Grid.Column="0" Margin="0,0,0,15">
                     <Label Content="State" Foreground="#444" FontWeight="SemiBold"/>
                     <TextBox x:Name="StateTextBox" Tag="Enter state" Style="{StaticResource ModernTextBoxStyle}"/>
+                </StackPanel>
+                <StackPanel Grid.Row="6" Grid.Column="2" Margin="0,0,0,15">
+                    <Label Content="BillPath" Foreground="#444" FontWeight="SemiBold"/>
+                    <TextBox x:Name="BillPathTextBox" Tag="Enter Path for Bill" Style="{StaticResource ModernTextBoxStyle}"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="7" Grid.Column="0" Margin="0,0,0,15">

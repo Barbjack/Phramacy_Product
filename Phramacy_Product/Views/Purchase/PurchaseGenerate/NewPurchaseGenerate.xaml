@@ -188,6 +188,8 @@
                             <TextBox x:Name="SearchNumberBox"
                  Style="{StaticResource ValidationErrorTextBox}"
                  materialDesign:HintAssist.Hint="Distributor Number"
+                 InputScope="Number"
+                 PreviewTextInput="NumberValidationTextBox"
                  TextChanged="SearchTextBox_NumberChanged">
                                 <TextBox.Text>
                                     <Binding ElementName="SearchNumberBox"
@@ -230,7 +232,9 @@
                             </TextBlock>
                             <TextBox x:Name="formDistributorName"
                  Style="{StaticResource ValidationErrorTextBox}"
-                 materialDesign:HintAssist.Hint="Distributor Name">
+                 materialDesign:HintAssist.Hint="Distributor Name"
+                 PreviewTextInput="StringValidationTextBox"
+                 DataObject.Pasting="TextBox_Pasting">
                                 <TextBox.Text>
                                     <Binding ElementName="formDistributorName" Path="." UpdateSourceTrigger="PropertyChanged"
                                              ValidatesOnDataErrors="True">
@@ -281,6 +285,8 @@
                             <TextBox x:Name="SearchTextBox" Margin="5" 
                  Style="{StaticResource MaterialDesignOutlinedTextBox}" 
                  materialDesign:HintAssist.Hint="Search medicine (min 3 characters)"
+                 PreviewTextInput="StringValidationTextBox"
+                 DataObject.Pasting="TextBox_Pasting"
                  TextChanged="SearchTextBox_TextChanged"/>
 
                             <!-- Suggestion Popup -->
@@ -321,7 +327,9 @@
 
                         <TextBox Grid.Column="2" Margin="5" x:Name="quantity"
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                     materialDesign:HintAssist.Hint="Quantity"/>
+                     materialDesign:HintAssist.Hint="Quantity"
+                     InputScope="Number"
+                     PreviewTextInput="NumberValidationTextBox"/>
                         <Button Grid.Column="3" Margin="5" Content="Add to Customer Bill" Click="AddBill_CustomerDetails" Foreground="White" Background="Gray">
                             <Button.Style>
                                 <Style TargetType="Button">

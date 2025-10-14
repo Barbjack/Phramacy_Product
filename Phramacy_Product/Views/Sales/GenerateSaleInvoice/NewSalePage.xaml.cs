@@ -241,6 +241,30 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
             Regex regex = new Regex("[^0-9]+");
             e.Handled = regex.IsMatch(e.Text);
         }
+        private void StringValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^a-zA-Z\\s]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void TextBox_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string pastedText = (string)e.DataObject.GetData(typeof(string));
+                Regex regex = new Regex("[^a-zA-Z\\s]+");
+
+                if (regex.IsMatch(pastedText))
+                {
+                     e.CancelCommand();
+                }
+            }
+            else
+            {
+                e.CancelCommand();
+            }
+        }
+
         [Obsolete]
         private void AddTo_SaleItemDetailPharmaCustomer(Object sender, RoutedEventArgs e)
         {
@@ -436,31 +460,6 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 MessageBox.Show("Error: " + ex.Message);
             }
         }
-        private async void SearchTextBox_NumberChanged(object sender, EventArgs e)
-        {
-            String input = SearchNumberBox.Text;
-            if (input.Length < 1)
-            {
-                NumberPopup.IsOpen = false;
-                return;
-            }
-            List<CustomerDetail> customerDetails = await Task.Run(() => GetCustomerDetails(input));
-            if (customerDetails.Count > 0)
-            {
-                NumberList.ItemsSource = customerDetails;
-                NumberPopup.IsOpen = true;
-            }
-            else
-            {
-                formCustomerName.Clear();
-                PreviousPurchasesItemsControl.ItemsSource = null;
-                PreviousPurchasesPanel.Visibility = Visibility.Collapsed;
-                BillCountComboBox.SelectedItem = null;
-                NumberPopup.IsOpen = false;
-
-            }
-        }
-
         private List<CustomerDetail> GetCustomerDetails(String input)
         {
             String query = @"select CustomerName,Mobile from PharmaCustomers where Mobile Like @search + '%'";
@@ -487,32 +486,143 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
             }
             return newCustomerList;
         }
-        private void NumberList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void SearchTextBox_NumberChanged(object sender, EventArgs e)
         {
-            if (NumberList.SelectedItem is CustomerDetail selectedItem)
+            String input = SearchNumberBox.Text;
+            if (input.Length < 1)
             {
-                SearchNumberBox.Text = selectedItem.CustomerNumber;
-                formCustomerName.Text = selectedItem.CustomerName;
                 NumberPopup.IsOpen = false;
-                NumberList.SelectedItem = null;
+                return;
+            }
 
-                if (BillCountComboBox.SelectedItem is ComboBoxItem selectedItemBox)
-                {
-                    int billsToLoad = Convert.ToInt32(selectedItemBox.Tag);
+            List<CustomerDetail> customerDetails = await Task.Run(() => GetCustomerDetails(input));
 
-                    if (!string.IsNullOrWhiteSpace(selectedItem.CustomerName))
-                    {
-                        LoadPreviousPurchases(selectedItem.CustomerName, billsToLoad);
-                    }
-                }
-                else
-                {
-                    LoadPreviousPurchases(selectedItem.CustomerName, 5);
-                }
-
+            if (customerDetails.Count > 0)
+            {
+                NumberList.ItemsSource = customerDetails;
+                NumberPopup.IsOpen = true;
+                NumberList.SelectedIndex = -1; 
+            }
+            else
+            {
+                formCustomerName.Clear();
+                PreviousPurchasesItemsControl.ItemsSource = null; // Assuming these controls exist
+                PreviousPurchasesPanel.Visibility = Visibility.Collapsed;
+                BillCountComboBox.SelectedItem = null;
+                NumberPopup.IsOpen = false;
             }
         }
 
+
+        private void NumberList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (NumberList.SelectedItem == null || e.RemovedItems.Count == 0)
+                return;
+
+            if (Mouse.LeftButton == MouseButtonState.Pressed)
+            {
+                if (NumberList.SelectedItem is CustomerDetail selectedItem)
+                {
+                    ProcessSelection(selectedItem); 
+                    NumberPopup.IsOpen = false; 
+                    SearchNumberBox.Focus();
+                }
+            }
+        }
+        private void SearchNumberBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (NumberPopup.IsOpen && NumberList.Items.Count > 0)
+            {
+                switch (e.Key)
+                {
+                    case Key.Down:
+                        if (NumberList.SelectedIndex == -1 || NumberList.SelectedIndex == NumberList.Items.Count - 1)
+                        {
+                            NumberList.SelectedIndex = 0;
+                        }
+                        else
+                        {
+                            NumberList.SelectedIndex++;
+                        }
+
+                        NumberList.ScrollIntoView(NumberList.SelectedItem);
+                        e.Handled = true; 
+                        break;
+
+                    case Key.Up:
+                        if (NumberList.SelectedIndex == -1 || NumberList.SelectedIndex == 0)
+                        {
+                            NumberList.SelectedIndex = NumberList.Items.Count - 1;
+                        }
+                        else
+                        {
+                            NumberList.SelectedIndex--;
+                        }
+
+                        NumberList.ScrollIntoView(NumberList.SelectedItem);
+                        e.Handled = true; // Block the key from the TextBox
+                        break;
+
+                    case Key.Enter:
+                        if (NumberList.SelectedItem != null)
+                        {
+                            // Call selection logic
+                            if (NumberList.SelectedItem is CustomerDetail selectedDetail)
+                            {
+                                ProcessSelection(selectedDetail);
+                            }
+
+                            NumberPopup.IsOpen = false;
+                            e.Handled = true;
+
+                            // Return focus
+                            this.Dispatcher.BeginInvoke(new Action(() =>
+                            {
+                                SearchNumberBox.Focus();
+                            }), System.Windows.Threading.DispatcherPriority.Background);
+                        }
+                        break;
+                }
+            }
+        }
+
+        private void NumberList_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                e.Handled = true;
+
+                if (NumberList.SelectedItem is CustomerDetail selectedDetail)
+                {
+                    ProcessSelection(selectedDetail);
+                }
+
+                NumberPopup.IsOpen = false;
+
+                // Return focus
+                this.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    SearchNumberBox.Focus();
+                }), System.Windows.Threading.DispatcherPriority.Background);
+            }
+        }
+        
+        private void ProcessSelection(CustomerDetail selectedItem)
+        {
+            SearchNumberBox.Text = selectedItem.CustomerNumber;
+            formCustomerName.Text = selectedItem.CustomerName;
+            NumberList.SelectedItem = null; 
+            int billsToLoad = 5; 
+            if (BillCountComboBox.SelectedItem is ComboBoxItem selectedItemBox)
+            {
+                billsToLoad = Convert.ToInt32(selectedItemBox.Tag);
+            }
+
+            if (!string.IsNullOrWhiteSpace(selectedItem.CustomerName))
+            {
+                LoadPreviousPurchases(selectedItem.CustomerName, billsToLoad);
+            }
+        }
         private async void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             string input = SearchTextBox.Text;
@@ -522,29 +632,108 @@ namespace Phramacy_Product.Views.Sales.GenerateSaleInvoice
                 return;
             }
 
+            // Replace with your actual data fetching logic
             List<Medicine> medicines = await Task.Run(() => new DBMasterConnection().GetMedicines(input));
+
             if (medicines.Count > 0)
             {
                 SuggestionList.ItemsSource = medicines;
                 SuggestionPopup.IsOpen = true;
+                 SuggestionList.SelectedIndex = -1; 
             }
             else
             {
-
                 SuggestionPopup.IsOpen = false;
-
             }
         }
+
+        private void SearchTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (SuggestionPopup.IsOpen && SuggestionList.Items.Count > 0)
+            {
+                switch (e.Key)
+                {
+                    case Key.Down:
+                        if (SuggestionList.SelectedIndex == -1 || SuggestionList.SelectedIndex == SuggestionList.Items.Count - 1)
+                        {
+                            SuggestionList.SelectedIndex = 0;
+                        }
+                        else
+                        {
+                            SuggestionList.SelectedIndex++;
+                        }
+                        SuggestionList.ScrollIntoView(SuggestionList.SelectedItem);
+                        e.Handled = true; 
+                        break;
+
+                    case Key.Up:
+                        if (SuggestionList.SelectedIndex == -1 || SuggestionList.SelectedIndex == 0)
+                        {
+                            SuggestionList.SelectedIndex = SuggestionList.Items.Count - 1;
+                        }
+                        else
+                        {
+                            SuggestionList.SelectedIndex--;
+                        }
+
+                        SuggestionList.ScrollIntoView(SuggestionList.SelectedItem);
+                        e.Handled = true; 
+                        break;
+
+                    case Key.Enter:
+                        if (SuggestionList.SelectedItem != null)
+                        {
+                            if (SuggestionList.SelectedItem is Medicine selected)
+                            {
+                                SearchTextBox.Text = selected.ProductName;
+                            }
+                            SuggestionPopup.IsOpen = false;
+                            e.Handled = true;
+                            SuggestionList.SelectedItem = null;
+                            this.Dispatcher.BeginInvoke(new Action(() =>
+                            {
+                                SearchTextBox.Focus();
+                            }), System.Windows.Threading.DispatcherPriority.Background);
+                        }
+                        break;
+                }
+            }
+        }
+
         private void SuggestionList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (SuggestionList.SelectedItem is Medicine selected)
+            if (SuggestionList.SelectedItem == null)
+                return;
+
+            if (SuggestionPopup.IsOpen && Mouse.LeftButton == MouseButtonState.Pressed)
             {
-                SearchTextBox.Text = selected.ProductName;
-                SuggestionPopup.IsOpen = false;
-                SuggestionList.SelectedItem = null;
+                if (SuggestionList.SelectedItem is Medicine selected)
+                {
+                    SearchTextBox.Text = selected.ProductName;
+                    SuggestionPopup.IsOpen = false;
+                    SuggestionList.SelectedItem = null; // Clear selection after processing
+                    SearchTextBox.Focus();
+                }
             }
         }
-       
+        private void SuggestionList_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                e.Handled = true;
+                if (SuggestionList.SelectedItem is Medicine selected)
+                {
+                    SearchTextBox.Text = selected.ProductName;
+                }
+
+                SuggestionPopup.IsOpen = false;
+                SuggestionList.SelectedItem = null;
+                this.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    SearchTextBox.Focus();
+                }), System.Windows.Threading.DispatcherPriority.Background);
+            }
+        }
         private void FormPaymentType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (formPaymentType.SelectedItem is ComboBoxItem selectedItem)

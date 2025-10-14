@@ -1,4 +1,5 @@
-﻿using Phramacy_Product.DataModel;
+﻿using Microsoft.Win32;
+using Phramacy_Product.DataModel;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -6,6 +7,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,7 +18,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Microsoft.Win32;
 
 namespace Phramacy_Product.Views.Profile
 {
@@ -55,6 +56,7 @@ namespace Phramacy_Product.Views.Profile
                 pincode = PincodeTextBox.Text,
                 city = CityTextBox.Text,
                 state = StateTextBox.Text,
+                billPath = BillPathTextBox.Text,
                 company_logo = companyLogoBytes,
                 signature = signatureBytes,
                 created_at = DateTime.Now,
@@ -89,6 +91,7 @@ namespace Phramacy_Product.Views.Profile
             pincode = @Pincode,
             city = @City,
             state = @State,
+            billPath = @BillPath,
             company_logo = @CompanyLogo,
             signature = @Signature,
             updated_at = GETDATE()
@@ -108,6 +111,7 @@ namespace Phramacy_Product.Views.Profile
                     command.Parameters.AddWithValue("@Pincode", (object)profile.pincode ?? DBNull.Value);
                     command.Parameters.AddWithValue("@City", (object)profile.city ?? DBNull.Value);
                     command.Parameters.AddWithValue("@State", (object)profile.state ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@BillPath", (object)profile.billPath ?? DBNull.Value);
                     command.Parameters.AddWithValue("@CompanyLogo", (object)profile.company_logo ?? DBNull.Value);
                     command.Parameters.AddWithValue("@Signature", (object)profile.signature ?? DBNull.Value);
                     command.Parameters.AddWithValue("@ProfileId", profile.profileId);
@@ -137,12 +141,10 @@ namespace Phramacy_Product.Views.Profile
             PincodeTextBox.Clear();
             CityTextBox.Clear();
             StateTextBox.Clear();
-
-            // Clear the byte arrays that hold the image data.
+            BillPathTextBox.Clear();
             companyLogoBytes = null;
             signatureBytes = null;
 
-            // Clear the Image controls and show the prompt TextBlocks again.
             CompanyLogoImage.Source = null;
             CompanyLogoImage.Visibility = Visibility.Collapsed;
             CompanyLogoPrompt.Visibility = Visibility.Visible;
@@ -152,7 +154,7 @@ namespace Phramacy_Product.Views.Profile
             SignaturePrompt.Visibility = Visibility.Visible;
         }
 
-        private void HandleImageFile(string filePath, System.Windows.Controls.Image imageControl, System.Windows.Controls.TextBlock promptControl, ref byte[] bytesArray)
+        private void HandleImageFile(string filePath, Image imageControl, TextBlock promptControl, ref byte[] bytesArray)
         {
             if (string.IsNullOrEmpty(filePath)) return;
 
@@ -202,6 +204,34 @@ namespace Phramacy_Product.Views.Profile
             }
         }
 
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+        private void StringValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^a-zA-Z\\s]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void TextBox_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string pastedText = (string)e.DataObject.GetData(typeof(string));
+                Regex regex = new Regex("[^a-zA-Z\\s]+");
+
+                if (regex.IsMatch(pastedText))
+                {
+                    e.CancelCommand();
+                }
+            }
+            else
+            {
+                e.CancelCommand();
+            }
+        }
         private void SignatureBorder_Drop(object sender, System.Windows.DragEventArgs e)
         {
             if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
