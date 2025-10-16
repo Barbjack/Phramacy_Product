@@ -171,7 +171,8 @@
         Style="{StaticResource ValidationErrorTextBox}"
         materialDesign:HintAssist.Hint="Patient/Customer Number"
         TextChanged="SearchTextBox_NumberChanged"
-        PreviewKeyDown="SearchNumberBox_PreviewKeyDown" InputScope="Number"
+        PreviewKeyDown="SearchNumberBox_PreviewKeyDown" 
+        InputScope="Number"
         PreviewTextInput="NumberValidationTextBox">
                                 <TextBox.Text>
                                     <Binding ElementName="SearchNumberBox"

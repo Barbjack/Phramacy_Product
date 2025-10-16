@@ -200,7 +200,11 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
                 { "ProductName", typeof(string) },
                 { "StripInfo", typeof(string) },
                 { "BatchNumber", typeof(string) },
-
+                {"ItemLocation",typeof(string) },
+                {"CompanyName",typeof(string) },
+                {"medicineType",typeof(string) },
+                {"saltComposition1",typeof(string) },
+                {"saltComposition2",typeof(string) },
                 { "Expiry", typeof(DateTime) },
                 { "QtyF", typeof(int) },
                 { "QtyL", typeof(int) },
@@ -216,6 +220,10 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
             var headerMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 { "Item Name", "ProductName" },
+                {"Manufacturer Name", "CompanyName" },
+                { "Type", "medicineType" },
+                { "Composition1", "saltComposition1" },
+                { "Composition2", "saltComposition2" },
                 { "Unit/Pack", "StripInfo" },
                 { "BATCH NUMBER", "BatchNumber" },
                 { "EXPIRY", "Expiry" },
@@ -227,7 +235,8 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
                 { "Base", "BaseAmt" },
                 { "DISC%", "Discount" },
                 { "GST%", "GST" },
-                { "Net Amount", "Total" }
+                { "Net Amount", "Total" },
+                {"Item Location","ItemLocation" }
             };
 
 
@@ -432,6 +441,7 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
                         medicineType = foundMedicine.medicineType,
                         saltComposition1 = foundMedicine.saltComposition1,
                         saltComposition2 = foundMedicine.saltComposition2
+                        
                     };
 
                     medicineObject.GST = (gst == "With GST") ? foundMedicine.GST : 0.0m;
@@ -589,33 +599,7 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
                 SuggestionList.SelectedItem = null;
             }
         }
-        private void UpdateMedicineQuantity(SqlConnection conn, SqlTransaction transaction)
-        {
-            string updateQuery = @"
-        UPDATE Pharma_Medicines
-        SET
-            Quantity = Quantity + @QtyToAddFull,
-            QtyInLoose = QtyInLoose + @QtyToAddLoose
-        WHERE name = @ItemName AND Batch = @BatchNumber";
-
-            using (SqlCommand updateCmd = new SqlCommand(updateQuery, conn, transaction))
-            {
-                updateCmd.Parameters.Add("@QtyToAddFull", System.Data.SqlDbType.Int);
-                updateCmd.Parameters.Add("@QtyToAddLoose", System.Data.SqlDbType.Int);
-                updateCmd.Parameters.Add("@ItemName", System.Data.SqlDbType.NVarChar);
-                updateCmd.Parameters.Add("@BatchNumber", System.Data.SqlDbType.NVarChar);
-
-                foreach (var med in medicineBilling)
-                {
-                    updateCmd.Parameters["@QtyToAddFull"].Value = med.QtyF;
-                    updateCmd.Parameters["@QtyToAddLoose"].Value = med.QtyL;
-                    updateCmd.Parameters["@ItemName"].Value = med.ProductName;
-                    updateCmd.Parameters["@BatchNumber"].Value = med.BatchNumber;
-
-                    updateCmd.ExecuteNonQuery();
-                }
-            }
-        }
+        
 
         [Obsolete]
         private void AddTo_SaleItemDetailPharmaCustomer(Object sender, RoutedEventArgs e)
@@ -753,8 +737,8 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
                 purchaseCmd.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
                 int purchaseID = (int)purchaseCmd.ExecuteScalar();
                 string insertItemQuery = @"
-                INSERT INTO PurchaseItems (PurchaseID, MedId, ItemName, Batch, Expiry, Pack, MRP, PTR, Quantity, Free, SchAmt, Discount, GST, Base, NetAmount, CreatedAt, Is_Loose)
-                VALUES (@PurchaseID, @MedId, @ItemName, @Batch, @Expiry, @Pack, @MRP, @PTR, @Quantity, @Free, @SchAmt, @Discount, @GST, @Base, @NetAmount, @CreatedAt, @Is_Loose)";
+                INSERT INTO PurchaseItems (PurchaseID, MedId, ItemName, Batch,ItemLocation, Expiry, Pack, MRP, PTR, Quantity, Free, SchAmt, Discount, GST, Base, NetAmount, CreatedAt, Is_Loose)
+                VALUES (@PurchaseID, @MedId, @ItemName, @Batch,@ItemLocation, @Expiry, @Pack, @MRP, @PTR, @Quantity, @Free, @SchAmt, @Discount, @GST, @Base, @NetAmount, @CreatedAt, @Is_Loose)";
 
                 SqlCommand itemCmd = new SqlCommand(insertItemQuery, conn, transaction);
                 foreach (var med in medicineBilling)
@@ -765,6 +749,7 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
                     itemCmd.Parameters.AddWithValue("@MedId", med.ItemId);      
                     itemCmd.Parameters.AddWithValue("@ItemName", med.ProductName);
                     itemCmd.Parameters.AddWithValue("@Batch", med.BatchNumber);
+                    itemCmd.Parameters.AddWithValue("@ItemLocation",med.ItemLocation);
                     //itemCmd.Parameters.AddWithValue("@Expiry", med.Expiry);
                     if (med.Expiry == DateTime.MinValue)
                     {
@@ -789,7 +774,7 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
 
                     itemCmd.ExecuteNonQuery();
                 }
-                UpdateMedicineQuantity(conn, transaction);
+                UpdateOrCreateMedicineQuantity(conn, transaction);
                 transaction.Commit();
                 conn.Close();
                 ClearForm();
@@ -798,6 +783,111 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
             {
                 transaction.Rollback();
                 MessageBox.Show($"Database Error during Purchase Save: {ex.Message}");
+            }
+        }
+        private void UpdateOrCreateMedicineQuantity(SqlConnection conn, SqlTransaction transaction)
+        {
+            // SQL Queries (Updated to include Is_discontinued)
+            string updateQuery = @"
+UPDATE Pharma_Medicines
+SET
+    Quantity = Quantity + @QtyToAddFull,
+    QtyInLoose = QtyInLoose + @QtyToAddLoose,
+    UpdatedAt = GETDATE()
+WHERE name = @ItemName AND Batch = @BatchNumber";
+
+            string insertQuery = @"
+INSERT INTO Pharma_Medicines 
+    (name, Batch, Quantity, QtyInLoose, pack_size_label, manufacturer_name, type, short_composition1, short_composition2, Expiry, price, PTR, Discount, GST, UpdatedAt, Is_discontinued)
+VALUES 
+    (@ItemName, @BatchNumber, @QtyToAddFull, @QtyToAddLoose, @UnitPack, @ManufacturerName, @Type, @Salt1, @Salt2, @ExpiryDate, @MRP, @PTR, @Discount, @GST, GETDATE(), @IsDiscontinued)";
+
+            using (SqlCommand updateCmd = new SqlCommand(updateQuery, conn, transaction))
+            using (SqlCommand insertCmd = new SqlCommand(insertQuery, conn, transaction))
+            {
+                // --- 1. Define Parameters for UPDATE Command ---
+                updateCmd.Parameters.Add("@QtyToAddFull", SqlDbType.Int);
+                updateCmd.Parameters.Add("@QtyToAddLoose", SqlDbType.Int);
+                updateCmd.Parameters.Add("@ItemName", SqlDbType.NVarChar);
+                updateCmd.Parameters.Add("@BatchNumber", SqlDbType.NVarChar);
+
+                // --- 2. Define Parameters for INSERT Command ---
+                insertCmd.Parameters.Add("@QtyToAddFull", SqlDbType.Int);
+                insertCmd.Parameters.Add("@QtyToAddLoose", SqlDbType.Int);
+                insertCmd.Parameters.Add("@ItemName", SqlDbType.NVarChar);
+                insertCmd.Parameters.Add("@BatchNumber", SqlDbType.NVarChar);
+
+                // New fields for INSERT
+                insertCmd.Parameters.Add("@UnitPack", SqlDbType.NVarChar);
+                insertCmd.Parameters.Add("@ManufacturerName", SqlDbType.NVarChar);
+                insertCmd.Parameters.Add("@Type", SqlDbType.NVarChar);
+                insertCmd.Parameters.Add("@Salt1", SqlDbType.NVarChar);
+                insertCmd.Parameters.Add("@Salt2", SqlDbType.NVarChar);
+                insertCmd.Parameters.Add("@ExpiryDate", SqlDbType.DateTime);
+                insertCmd.Parameters.Add("@MRP", SqlDbType.Decimal);
+                insertCmd.Parameters.Add("@PTR", SqlDbType.Decimal);
+                insertCmd.Parameters.Add("@Discount", SqlDbType.Decimal);
+                insertCmd.Parameters.Add("@GST", SqlDbType.Decimal);
+                // 🚨 NEW PARAMETER DEFINITION FOR FIXING THE NULL ERROR 🚨
+                insertCmd.Parameters.Add("@IsDiscontinued", SqlDbType.Bit); // Assuming BIT type
+
+                // --- 3. Process Each Medicine Item ---
+                foreach (var med in medicineBilling)
+                {
+                    // ... (Update parameters assignment remains the same) ...
+
+                    // Set UPDATE parameters
+                    updateCmd.Parameters["@QtyToAddFull"].Value = med.QtyF;
+                    updateCmd.Parameters["@QtyToAddLoose"].Value = med.QtyL;
+                    updateCmd.Parameters["@ItemName"].Value = med.ProductName;
+                    updateCmd.Parameters["@BatchNumber"].Value = med.BatchNumber;
+
+                    // Execute UPDATE
+                    int rowsAffected = updateCmd.ExecuteNonQuery();
+
+                    // Check Result: If no rows were updated (new item/batch), perform INSERT
+                    if (rowsAffected == 0)
+                    {
+                        // Set core INSERT parameters
+                        insertCmd.Parameters["@QtyToAddFull"].Value = med.QtyF;
+                        insertCmd.Parameters["@QtyToAddLoose"].Value = med.QtyL;
+                        insertCmd.Parameters["@ItemName"].Value = med.ProductName;
+                        insertCmd.Parameters["@BatchNumber"].Value = med.BatchNumber;
+
+                        // Set remaining fields, ensuring non-null strings use "N/A"
+                        insertCmd.Parameters["@UnitPack"].Value =
+                            string.IsNullOrWhiteSpace(med.StripInfo) ? "N/A" : med.StripInfo;
+
+                        insertCmd.Parameters["@ManufacturerName"].Value =
+                            string.IsNullOrWhiteSpace(med.CompanyName) ? "N/A" : med.CompanyName;
+
+                        insertCmd.Parameters["@Type"].Value =
+                            string.IsNullOrWhiteSpace(med.medicineType) ? "N/A" : med.medicineType;
+
+                        insertCmd.Parameters["@Salt1"].Value =
+                            string.IsNullOrWhiteSpace(med.saltComposition1) ? "N/A" : med.saltComposition1;
+
+                        insertCmd.Parameters["@Salt2"].Value =
+                            string.IsNullOrWhiteSpace(med.saltComposition2) ? "N/A" : med.saltComposition2;
+
+                        insertCmd.Parameters["@ExpiryDate"].Value =
+                            (med.Expiry == DateTime.MinValue || med.Expiry == default(DateTime))
+                            ? (object)DBNull.Value
+                            : med.Expiry;
+
+                        insertCmd.Parameters["@MRP"].Value = med.MRP;
+                        insertCmd.Parameters["@PTR"].Value = med.PTR;
+                        insertCmd.Parameters["@Discount"].Value = med.Discount;
+                        insertCmd.Parameters["@GST"].Value = med.GST;
+
+                        // 🚨 NEW PARAMETER ASSIGNMENT 🚨
+                        // Set Is_discontinued to FALSE (0) for a new product
+                        insertCmd.Parameters["@IsDiscontinued"].Value = 0;
+
+                        // Execute INSERT
+                        insertCmd.ExecuteNonQuery();
+                    }
+                }
             }
         }
         private void FormPaymentType_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -853,7 +943,7 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
             {   
                 string safeDistributorName = distributorName.Replace("'", "''");
                 string query = $@"
-    SELECT pi.MedId, pi.ItemName, pi.Batch, pi.Expiry, pi.Pack, pi.MRP, pi.PTR, pi.Quantity, pi.Free,pi.Base,
+    SELECT pi.MedId, pi.ItemName, pi.Batch, pi.ItemLocation,pi.Expiry, pi.Pack, pi.MRP, pi.PTR, pi.Quantity, pi.Free,pi.Base,
     pi.SchAmt,pi.Discount, pi.GST, pi.NetAmount, pi.Is_Loose,pd.BillNumber, pd.BillDate, 
     pd.DistributorName,mi.manufacturer_name, mi.type, mi.short_composition1, mi.short_composition2
 FROM PurchaseDetails pd
@@ -873,6 +963,7 @@ ORDER BY pd.BillDate DESC, pd.BillNumber DESC";
                             ItemId = reader["MedId"] != DBNull.Value ? (int)Convert.ToInt32(reader["MedId"]) : 0,
                             ProductName = reader["ItemName"]?.ToString(),
                             BatchNumber = reader["Batch"]?.ToString(),
+                            ItemLocation = reader["ItemLocation"]?.ToString(),
                             expiryMedicine = reader["Expiry"]?.ToString(),
                             StripInfo = reader["Pack"]?.ToString(),
 
@@ -1002,6 +1093,7 @@ ORDER BY pd.BillDate DESC, pd.BillNumber DESC";
                                 ItemId = selectedItem.ItemId,
                                 ProductName = selectedItem.ProductName,
                                 BatchNumber = selectedItem.BatchNumber,
+                                ItemLocation = selectedItem.ItemLocation,
                                 Expiry = DateTime.TryParseExact(selectedItem.expiryMedicine, new[] { "MM/yy", "M/yy", "MM/yyyy", "M/yyyy", "yyyy-MM-dd", "MM/dd/yyyy", "MMM dd yyyy hh:mmt", "MMM dd yyyy hh:mmtt" }, CultureInfo.InvariantCulture, DateTimeStyles.None, out var expiryDate) ? expiryDate : DateTime.MinValue,
                                 StripInfo = selectedItem.StripInfo,
                                 MRP = selectedItem.MRP, 

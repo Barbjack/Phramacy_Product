@@ -414,6 +414,14 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
+                    <DataGridTemplateColumn Header="Item Location" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ItemLocation}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
                     <DataGridTemplateColumn Header="EXPIRY" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -579,6 +587,7 @@
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="PRODUCT NAME" Binding="{Binding ProductName}" Width="*"/>
                                                 <DataGridTextColumn Header="BATCH NUMBER" Binding="{Binding BatchNumber}" Width="*"/>
+                                                <DataGridTextColumn Header="Item Location" Binding="{Binding ItemLocation}" Width="*"/>
                                                 <DataGridTextColumn Header="EXPIRY" Binding="{Binding expiryMedicine}" Width="*"/>
 
                                                 <DataGridTextColumn Header="P.T.R" Binding="{Binding PTR, StringFormat='₹{0:0.00}'}" Width="Auto"/>

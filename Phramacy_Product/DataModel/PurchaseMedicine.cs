@@ -57,6 +57,7 @@ namespace Phramacy_Product.DataModel
         }
         public string ProductName { get; set; }
             public string CompanyName { get; set; }
+            public string ItemLocation { get; set; }
             public string medicineType { get; set; }
             public string saltComposition1 { get; set; }
             public string saltComposition2 { get; set; }
