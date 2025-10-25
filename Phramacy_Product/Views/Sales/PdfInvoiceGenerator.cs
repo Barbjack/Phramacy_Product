@@ -10,6 +10,8 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Windows;
+using Style = MigraDoc.DocumentObjectModel.Style;
 
 namespace Phramacy_Product.Views.Sales
 {
@@ -150,9 +152,25 @@ namespace Phramacy_Product.Views.Sales
 
             var renderer = new PdfDocumentRenderer(true) { Document = doc };
             renderer.RenderDocument();
-            string folderPath =(string) pharmaProfile.billPath;
+            string folderPath = (string)pharmaProfile.billPath;
+            string fallbackPath = @"D:\GlobePharmaBills"; 
+            if (string.IsNullOrWhiteSpace(folderPath))
+            {
+                folderPath = fallbackPath;
+            }
             if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
+            {
+                try
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+                catch (Exception ex)
+                {
+                    
+                    MessageBox.Show($"Error creating folder at {folderPath}: {ex.Message}", "Directory Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    
+                }
+            }
             string fileName = $"Invoice_{sale.BillNo}.pdf";
             string fullPath = Path.Combine(folderPath, fileName);
             renderer.PdfDocument.Save(fullPath);

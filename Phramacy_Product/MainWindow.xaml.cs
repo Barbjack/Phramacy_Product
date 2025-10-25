@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using MaterialDesignThemes.Wpf;
+using Newtonsoft.Json;
 using Phramacy_Product.DataModel.GenerateToken;
 using Phramacy_Product.Views.Components;
 using Phramacy_Product.Views.DBMaster;
@@ -7,6 +8,7 @@ using System;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -34,6 +36,7 @@ namespace Phramacy_Product
                 if (!string.IsNullOrEmpty(decryptedPassword))
                 {
                     PasswordBox.Password = decryptedPassword;
+                    RevealedTextBox.Text = decryptedPassword;
                 }
             }
         }
@@ -55,12 +58,40 @@ namespace Phramacy_Product
             InternetError,
             TokenError
         }
+        private bool isPasswordRevealed = false;
+        private void TogglePasswordButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!isPasswordRevealed)
+            {
+                string password = PasswordBox.Password;
+                RevealedTextBox.Text = password;
+                RevealedTextBox.Visibility = Visibility.Visible;
+                PasswordBox.Visibility = Visibility.Collapsed;
+                EyeIcon.Kind = PackIconKind.EyeOff;
+            }
+            else
+            {
+                PasswordBox.Password = RevealedTextBox.Text;
+                RevealedTextBox.Visibility = Visibility.Collapsed;
+                PasswordBox.Visibility = Visibility.Visible;
+                EyeIcon.Kind = PackIconKind.Eye;
+            }
 
+            isPasswordRevealed = !isPasswordRevealed;
+        }
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             string mobile = MobileNumberTextBox.Text;
-            string password = PasswordBox.Password;
-
+            string password;
+            if (RevealedTextBox.Visibility == Visibility.Visible)
+            {
+                password = RevealedTextBox.Text;
+            }
+            else
+            {
+                password = PasswordBox.Password;
+            }
+            
             if (string.IsNullOrEmpty(mobile) || string.IsNullOrEmpty(password))
             {
                 MessageBox.Show("Please enter both mobile number and password.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -109,7 +140,7 @@ namespace Phramacy_Product
         private async Task<LoginStatus> AuthenticateUser(string mobile, string password)
         {
             //string query = "SELECT id,pharmacy_name,pharmacist_name, mobile,email FROM pharmacy_profile WHERE mobile = @mobile AND password = @password";
-            string query = $"SELECT id,pharmacy_name,pharmacist_name, mobile,email FROM pharmacy_profile " +
+            string query = $"SELECT id,pharmacy_name,pharmacist_name, mobile,email,address FROM pharmacy_profile " +
                 $"WHERE mobile = '{mobile}' AND password = '{password}'";
             try
             {
@@ -122,6 +153,7 @@ namespace Phramacy_Product
                     GlobalData.pharmacyName = reader["pharmacy_name"].ToString();
                     GlobalData.mobile = reader["mobile"].ToString();
                     GlobalData.email = reader["email"].ToString();
+                    GlobalData.address = reader["address"].ToString();
 
                     var tokenManager = new TokenManager();
                     var tokenStatus = await tokenManager.GetOrRefreshToken(mobile);
@@ -166,10 +198,19 @@ namespace Phramacy_Product
             MainFrame.Visibility = Visibility.Visible;
             MainFrame.Navigate(new Views.ForgotPassword.ForgotPasswordPage(this));
         }
+        private void RevealedTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+         
+            if (RevealedTextBox.Visibility == Visibility.Visible)
+            {
+                PasswordBox.Password = RevealedTextBox.Text;
+            }
+        }
         private void Clear_Form()
         {
             MobileNumberTextBox.Clear();
             PasswordBox.Clear();
+            RevealedTextBox.Clear();
         }
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {

@@ -1,31 +1,34 @@
-﻿using Phramacy_Product.Views.Inventory;
+﻿using Phramacy_Product.DataModel;
+using Phramacy_Product.Views.DBMaster;
+using Phramacy_Product.Views.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows;
-using Phramacy_Product.DataModel;
 namespace Phramacy_Product.Views.Inventory
 {
     public class DataService
     {
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["databaseConnection"].ConnectionString;
-        public List<PharmaMedicine> GetMedicines(int page, int pageSize)
+        public List<PharmaMedicine> GetMedicines(int page, int pageSize, string searchTerm)
         {
-
             var medicines = new List<PharmaMedicine>();
-            string query = "GetPaginatedMedicines '"+page+"','"+pageSize+"'";
+            string query = "sp_GetPaginatedMedicines_Search"; 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
                 SqlCommand command = new SqlCommand(query, connection);
+                command.CommandType = CommandType.StoredProcedure; 
                 command.CommandTimeout = 120;
+
                 command.Parameters.AddWithValue("@PageNumber", page);
                 command.Parameters.AddWithValue("@PageSize", pageSize);
+                command.Parameters.AddWithValue("@SearchTerm", (object)searchTerm ?? DBNull.Value); 
+
                 try
                 {
-                    
                     SqlDataReader reader = command.ExecuteReader();
                     while (reader.Read())
                     {
@@ -59,7 +62,33 @@ namespace Phramacy_Product.Views.Inventory
             }
             return medicines;
         }
+        public int GetTotalMedicineCount(string searchTerm)
+        {
+            string query = "sp_GetTotalCountOfMedicines_Search";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                command.CommandType = CommandType.StoredProcedure; 
+                command.CommandTimeout = 120;
+                command.Parameters.AddWithValue("@SearchTerm", (object)searchTerm ?? DBNull.Value);
 
+                try
+                {
+                    connection.Open();
+                    object result = command.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        return (int)result;
+                    }
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error getting count: {ex.Message}");
+                    return 0;
+                }
+            }
+        }
         public void AddMedicine(PharmaMedicine newMedicine)
         {
             string query = @"
@@ -105,31 +134,7 @@ namespace Phramacy_Product.Views.Inventory
             }
         }
 
-        public int GetTotalMedicineCount()
-        {
-            string query = "GetTotalCountOfMedicines";
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                SqlCommand command = new SqlCommand(query, connection);
-                command.CommandTimeout = 120;
-                try
-                {
-                    connection.Open();
-                    // Cast to long to handle large numbers (bigint)
-                    object result = command.ExecuteScalar();
-                    if (result != null && result != DBNull.Value)
-                    {
-                        return (int)(long)result;
-                    }
-                    return 0; // Return 0 
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error getting count: {ex.Message}");
-                    return 0;
-                }
-            }
-        }
+        
 
         public void UpdateMedicine(PharmaMedicine medicine)
         {
@@ -186,6 +191,7 @@ namespace Phramacy_Product.Views.Inventory
                 }
             }
         }
+        
 
         public void DeleteMedicine(int id)
         {

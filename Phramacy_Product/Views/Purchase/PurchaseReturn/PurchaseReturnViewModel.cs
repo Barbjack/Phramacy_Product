@@ -143,7 +143,7 @@ namespace Phramacy_Product.Views.Purchase.PurchaseReturn
                 ReturnTotal = PagedPurchaseItems.Where(i => i.IsSelected && i.ReturnQty > 0)
                                             .Sum(i =>
                                             {
-                                                decimal priceAfterDiscount = i.MRP - (i.MRP * i.Discount / 100);
+                                                decimal priceAfterDiscount = i.PTR - (i.PTR * i.Discount / 100);
                                                 return i.ReturnQty * (priceAfterDiscount + (priceAfterDiscount * i.GST / 100));
                                             });
             }

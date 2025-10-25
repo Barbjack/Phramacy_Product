@@ -431,6 +431,7 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
                     {
                         ProductName = foundMedicine.ProductName,
                         BatchNumber = foundMedicine.BatchNumber,
+                        ItemLocation = GlobalData.address,
                         Expiry = foundMedicine.Expiry,
                         StripInfo = foundMedicine.StripInfo,
                         Discount = foundMedicine.Discount,
@@ -618,12 +619,13 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
 
             string inputNumber = SearchNumberBox.Text;
             decimal totalAmount = medicineBilling.Sum(m => m.Total);
+            totalAmount = Math.Round(totalAmount, 2);
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 String mobile = SearchNumberBox.Text;
                 String distributorName = formDistributorName.Text;
                 //purchaseDBManager.updatePharmaCustomer(customerName, mobile, totalAmount, totalPaidAmount, customerExists);
-                string billNumber = new SalesDBManager().GenerateBillNumber();
+                string billNumber = new PurchaseDBManager().GenerateBillNumber();
                 UpdatePurchaseItemDetails(conn, billNumber, totalAmount, totalPaidAmount);
                 //MessageBox.Show("Purchase Detail Saved", MessageBoxButton.OK, MessageBoxImage.Information);
 
@@ -687,6 +689,7 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
 
             try
             {
+                UpdateOrCreateMedicineQuantity(conn, transaction);
                 string purchaseDetailsQuery = @"
         INSERT INTO PurchaseDetails 
        (DistributorName, BillNumber, BillDate, PaidAmount, PendingAmount, TotalAmount, CreatedBy, PaymentType, PaymentStatus, PayName, TsNum, CreatedAt) 
@@ -774,7 +777,7 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
 
                     itemCmd.ExecuteNonQuery();
                 }
-                UpdateOrCreateMedicineQuantity(conn, transaction);
+                
                 transaction.Commit();
                 conn.Close();
                 ClearForm();
@@ -787,7 +790,6 @@ namespace Phramacy_Product.Views.Purchase.PurchaseGenerate
         }
         private void UpdateOrCreateMedicineQuantity(SqlConnection conn, SqlTransaction transaction)
         {
-            // SQL Queries (Updated to include Is_discontinued)
             string updateQuery = @"
 UPDATE Pharma_Medicines
 SET
@@ -796,28 +798,41 @@ SET
     UpdatedAt = GETDATE()
 WHERE name = @ItemName AND Batch = @BatchNumber";
 
+            // MODIFIED INSERT QUERY: Use OUTPUT INSERTED.id to retrieve the new ID
             string insertQuery = @"
 INSERT INTO Pharma_Medicines 
     (name, Batch, Quantity, QtyInLoose, pack_size_label, manufacturer_name, type, short_composition1, short_composition2, Expiry, price, PTR, Discount, GST, UpdatedAt, Is_discontinued)
+OUTPUT INSERTED.id 
 VALUES 
     (@ItemName, @BatchNumber, @QtyToAddFull, @QtyToAddLoose, @UnitPack, @ManufacturerName, @Type, @Salt1, @Salt2, @ExpiryDate, @MRP, @PTR, @Discount, @GST, GETDATE(), @IsDiscontinued)";
 
+            // NEW Query to fetch existing ID
+            string selectIdQuery = @"
+SELECT id 
+FROM Pharma_Medicines 
+WHERE name = @ItemName AND Batch = @BatchNumber";
+
+
             using (SqlCommand updateCmd = new SqlCommand(updateQuery, conn, transaction))
             using (SqlCommand insertCmd = new SqlCommand(insertQuery, conn, transaction))
+            using (SqlCommand selectIdCmd = new SqlCommand(selectIdQuery, conn, transaction)) // New Command
             {
-                // --- 1. Define Parameters for UPDATE Command ---
+                // Define common parameters for updateCmd
                 updateCmd.Parameters.Add("@QtyToAddFull", SqlDbType.Int);
                 updateCmd.Parameters.Add("@QtyToAddLoose", SqlDbType.Int);
                 updateCmd.Parameters.Add("@ItemName", SqlDbType.NVarChar);
                 updateCmd.Parameters.Add("@BatchNumber", SqlDbType.NVarChar);
 
-                // --- 2. Define Parameters for INSERT Command ---
+                // Define common parameters for selectIdCmd (only @ItemName and @BatchNumber are needed)
+                selectIdCmd.Parameters.Add("@ItemName", SqlDbType.NVarChar);
+                selectIdCmd.Parameters.Add("@BatchNumber", SqlDbType.NVarChar);
+
+
+                // Define ALL parameters for insertCmd (needed when we get to the insert logic)
                 insertCmd.Parameters.Add("@QtyToAddFull", SqlDbType.Int);
                 insertCmd.Parameters.Add("@QtyToAddLoose", SqlDbType.Int);
                 insertCmd.Parameters.Add("@ItemName", SqlDbType.NVarChar);
                 insertCmd.Parameters.Add("@BatchNumber", SqlDbType.NVarChar);
-
-                // New fields for INSERT
                 insertCmd.Parameters.Add("@UnitPack", SqlDbType.NVarChar);
                 insertCmd.Parameters.Add("@ManufacturerName", SqlDbType.NVarChar);
                 insertCmd.Parameters.Add("@Type", SqlDbType.NVarChar);
@@ -828,33 +843,37 @@ VALUES
                 insertCmd.Parameters.Add("@PTR", SqlDbType.Decimal);
                 insertCmd.Parameters.Add("@Discount", SqlDbType.Decimal);
                 insertCmd.Parameters.Add("@GST", SqlDbType.Decimal);
-                // 🚨 NEW PARAMETER DEFINITION FOR FIXING THE NULL ERROR 🚨
-                insertCmd.Parameters.Add("@IsDiscontinued", SqlDbType.Bit); // Assuming BIT type
+                insertCmd.Parameters.Add("@IsDiscontinued", SqlDbType.Bit);
 
-                // --- 3. Process Each Medicine Item ---
                 foreach (var med in medicineBilling)
                 {
-                    // ... (Update parameters assignment remains the same) ...
+                    if (med.ItemId <= 0) 
+                    {
+                        selectIdCmd.Parameters["@ItemName"].Value = med.ProductName;
+                        selectIdCmd.Parameters["@BatchNumber"].Value = med.BatchNumber;
 
-                    // Set UPDATE parameters
+                        object existingId = selectIdCmd.ExecuteScalar();
+
+                        if (existingId != null && existingId != DBNull.Value)
+                        {
+                            med.ItemId = Convert.ToInt32(existingId);
+                        }
+                    }
+                   
                     updateCmd.Parameters["@QtyToAddFull"].Value = med.QtyF;
                     updateCmd.Parameters["@QtyToAddLoose"].Value = med.QtyL;
                     updateCmd.Parameters["@ItemName"].Value = med.ProductName;
                     updateCmd.Parameters["@BatchNumber"].Value = med.BatchNumber;
 
-                    // Execute UPDATE
                     int rowsAffected = updateCmd.ExecuteNonQuery();
 
-                    // Check Result: If no rows were updated (new item/batch), perform INSERT
                     if (rowsAffected == 0)
                     {
-                        // Set core INSERT parameters
                         insertCmd.Parameters["@QtyToAddFull"].Value = med.QtyF;
                         insertCmd.Parameters["@QtyToAddLoose"].Value = med.QtyL;
                         insertCmd.Parameters["@ItemName"].Value = med.ProductName;
                         insertCmd.Parameters["@BatchNumber"].Value = med.BatchNumber;
 
-                        // Set remaining fields, ensuring non-null strings use "N/A"
                         insertCmd.Parameters["@UnitPack"].Value =
                             string.IsNullOrWhiteSpace(med.StripInfo) ? "N/A" : med.StripInfo;
 
@@ -880,13 +899,19 @@ VALUES
                         insertCmd.Parameters["@Discount"].Value = med.Discount;
                         insertCmd.Parameters["@GST"].Value = med.GST;
 
-                        // 🚨 NEW PARAMETER ASSIGNMENT 🚨
-                        // Set Is_discontinued to FALSE (0) for a new product
                         insertCmd.Parameters["@IsDiscontinued"].Value = 0;
 
-                        // Execute INSERT
-                        insertCmd.ExecuteNonQuery();
+                        // ExecuteScalar to run the INSERT and retrieve the new ID
+                        object newMedId = insertCmd.ExecuteScalar();
+
+                        // Update the medicineBilling object with the new ID
+                        if (newMedId != null && newMedId != DBNull.Value)
+                        {
+                            med.ItemId = Convert.ToInt32(newMedId);
+                        }
                     }
+                    // If rowsAffected > 0, the item was updated. Its ID was retrieved 
+                    // in the initial SELECT block (if it wasn't already set).
                 }
             }
         }
@@ -912,6 +937,7 @@ VALUES
                 PurchaseMedicine selectedMedicine = ProductGrid.SelectedItem as PurchaseMedicine;
                 medicineBilling.Remove(selectedMedicine);
                 decimal totalAmount = medicineBilling.Sum(m => m.Total);
+                totalAmount = Math.Round(totalAmount, 2);
                 Total_Amount.Text = "Grand Amount: " + totalAmount.ToString("C", CultureInfo.GetCultureInfo("en-IN"));
                 dialogPaidAmount.Text = totalAmount.ToString("F2");
                 ProductGrid.ItemsSource = null;

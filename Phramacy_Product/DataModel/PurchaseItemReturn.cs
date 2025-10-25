@@ -23,6 +23,7 @@ namespace Phramacy_Product.DataModel
             public int FullQty { get; set; }
             public int LooseQty { get; set; }
             public decimal MRP { get; set; }
+            public decimal PTR { get; set; }
             public decimal Discount { get; set; }
             public decimal GST { get; set; }
             public decimal NetAmount { get; set; }

@@ -159,7 +159,7 @@
 
             <!-- Right-aligned user menu -->
             <Menu Background="Transparent" Height="50" VerticalAlignment="Center" HorizontalAlignment="Right">
-                <MenuItem Style="{StaticResource TopLevelMenuItemStyle}" VerticalAlignment="Center" Margin="0,7,20,0">
+                <!--MenuItem Style="{StaticResource TopLevelMenuItemStyle}" VerticalAlignment="Center" Margin="0,7,20,0">
                     <MenuItem.Header>
                         <materialDesign:PackIcon Kind="Magnify" Width="24" Height="24" Foreground="White"/>
                     </MenuItem.Header>
@@ -170,7 +170,7 @@
                         <materialDesign:PackIcon Kind="BellOutline" Width="24" Height="24" Foreground="White"/>
                     </MenuItem.Header>
                     <MenuItem Header="No new notifications" Style="{StaticResource SubMenuItemStyle}"/>
-                </MenuItem>
+                </MenuItem-->
                
                     <MenuItem Style="{StaticResource TopLevelMenuItemStyle}" VerticalAlignment="Center" Margin="0,7,20,0">
                         <MenuItem.Header>

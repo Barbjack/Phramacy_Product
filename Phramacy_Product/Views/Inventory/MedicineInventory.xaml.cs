@@ -24,6 +24,7 @@ namespace Phramacy_Product.Views.Inventory
         private readonly DataService dataService = new DataService();
         private int currentPage = 1;
         private readonly int pageSize = 11;
+        private string searchTerm = string.Empty;
         public ObservableCollection<PharmaMedicine> Medicines { get; set; } = new ObservableCollection<PharmaMedicine>();
 
         public int CurrentPage
@@ -39,27 +40,56 @@ namespace Phramacy_Product.Views.Inventory
                 }
             }
         }
-        public int TotalPages { get; set; }
+
+        private int totalPages;
+        public int TotalPages
+        {
+            get => totalPages;
+            set
+            {
+                if (totalPages != value)
+                {
+                    totalPages = value;
+                    OnPropertyChanged(); 
+                }
+            }
+        }
         public MedicineInventory()
         {
             InitializeComponent();
             this.DataContext = this;
             LoadMedicines();
         }
+        private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            searchTerm = SearchTextBox.Text.Trim();
+            CurrentPage = 1;
+            LoadMedicines();
+        }
 
         private void LoadMedicines()
         {
             Medicines.Clear();
-            var totalCount = dataService.GetTotalMedicineCount();
+            //var totalCount = dataService.GetTotalMedicineCount();
+            var totalCount = dataService.GetTotalMedicineCount(searchTerm);
             TotalPages = (int)Math.Ceiling((double)totalCount / pageSize);
-
-            var medicineList = dataService.GetMedicines(currentPage, pageSize);
+            if (currentPage > TotalPages && TotalPages > 0)
+            {
+                currentPage = TotalPages;
+                OnPropertyChanged(nameof(CurrentPage));
+            }
+            else if (TotalPages == 0)
+            {
+                currentPage = 0;
+                OnPropertyChanged(nameof(CurrentPage));
+            }
+            
+            var medicineList = dataService.GetMedicines(currentPage, pageSize, searchTerm); // Pass search term
             foreach (var medicine in medicineList)
             {
                 Medicines.Add(medicine);
             }
         }
-
         private void AddMedicineClick(object sender, RoutedEventArgs e)
         {
             var addMedicineWindow = new AddMedicineWindow();

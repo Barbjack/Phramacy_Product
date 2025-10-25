@@ -30,9 +30,9 @@ namespace Phramacy_Product.Views.Purchase.PurchaseReturn
             this.DataContext = viewModel;
         }
         private void SearchButton_Click(object sender, RoutedEventArgs e)
-            {
+        {
                 viewModel.SearchByBillNumber();
-            }
+        }
 
             [System.Obsolete]
             private void SubmitReturnButton_Click(object sender, RoutedEventArgs e)

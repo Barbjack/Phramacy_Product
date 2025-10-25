@@ -27,13 +27,39 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,15,0">
-                    <Border BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="15" Background="#F8F2F8" Width="200" Height="30">
+                    <Border 
+        BorderBrush="#CCCCCC" 
+        BorderThickness="1" 
+        CornerRadius="15" 
+        Background="White" 
+        Width="220" 
+        Height="36">
                         <Grid>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBox Grid.Column="0" Text="Search" VerticalContentAlignment="Center" BorderThickness="0" Background="Transparent" Margin="10,0,0,0"/>
+
+                            <materialDesign:PackIcon 
+                Grid.Column="0" 
+                Kind="Magnify" 
+                Margin="8,0,0,0" 
+                VerticalAlignment="Center" 
+                Foreground="#999999"/>
+
+                            <TextBox 
+                Grid.Column="1" 
+                x:Name="SearchTextBox" 
+                Text="" 
+                materialDesign:HintAssist.Hint="Search Name or Batch"
+                materialDesign:TextFieldAssist.DecorationVisibility="Hidden"  Style="{StaticResource MaterialDesignTextBox}"
+                VerticalContentAlignment="Center" 
+                BorderThickness="0"  Background="Transparent" 
+                Padding="0" 
+                Margin="5,0,0,0"
+                TextChanged="SearchTextBox_TextChanged"/>
+
                         </Grid>
                     </Border>
                 </StackPanel>

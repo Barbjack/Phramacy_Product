@@ -23,14 +23,16 @@ namespace Phramacy_Product.Views.DBMaster
     {
         private static string main_connection()
         {
-            return "Data Source=localhost; Initial Catalog=ReactDB; User ID=sa;Password='Ygkpa@457';";
+            return ConfigurationManager.ConnectionStrings["databaseConnection"].ConnectionString;
+            //return "Data Source=localhost; Initial Catalog=ReactDB; User ID=sa;Password='Ygkpa@457';";
         }
-
         public List<Medicine> GetMedicines(string input)
         {
+            
             var results = new List<Medicine>();
             string query = $"sp_getPharmaData '{input}'";
 
+            
             try
             {
                 DataTable dt = GD(query);

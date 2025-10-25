@@ -47,8 +47,8 @@ namespace Phramacy_Product.Views.Purchase.PurchaseReturn
             {
                 var items = new List<PurchaseItemReturn>();
                 string query = "SELECT pi.ItemID, pi.PurchaseID, pi.MedId, pi.ItemName, pi.Batch,pi.Pack, pi.Expiry,pi.Quantity, pi.Is_Loose," +
-                               " pi.MRP, pi.Discount, pi.GST, pi.NetAmount, pi.Is_Returned " +
-                               "FROM PurchaseItems pi WHERE pi.PurchaseID = @PurchaseId and pi.Is_Returned=0 and pi.Is_Loose=0;";
+                               " pi.MRP,pi.PTR, pi.Discount, pi.GST, pi.NetAmount, pi.Is_Returned " +
+                               "FROM PurchaseItems pi WHERE pi.PurchaseID = @PurchaseId and pi.Is_Returned=0;";
                 using (var connection = new SqlConnection(connectionString))
                 {
                     var command = new SqlCommand(query, connection);
@@ -71,10 +71,11 @@ namespace Phramacy_Product.Views.Purchase.PurchaseReturn
                                 FullQty = reader.IsDBNull(7) ? 0 : reader.GetInt32(7),
                                 Is_Loose = reader.IsDBNull(8) ? false : reader.GetBoolean(8),
                                 MRP = reader.IsDBNull(9) ? 0m : reader.GetDecimal(9),
-                                Discount = reader.IsDBNull(10) ? 0m : reader.GetDecimal(10),
-                                GST = reader.IsDBNull(11) ? 0m : reader.GetDecimal(11),
-                                NetAmount = reader.IsDBNull(12) ? 0m : reader.GetDecimal(12),
-                                Is_Returned = reader.IsDBNull(13) ? false : reader.GetBoolean(13),
+                                PTR = reader.IsDBNull(10)?0m : reader.GetDecimal(10),
+                                Discount = reader.IsDBNull(11) ? 0m : reader.GetDecimal(11),
+                                GST = reader.IsDBNull(12) ? 0m : reader.GetDecimal(12),
+                                NetAmount = reader.IsDBNull(13) ? 0m : reader.GetDecimal(13),
+                                Is_Returned = reader.IsDBNull(14) ? false : reader.GetBoolean(14),
                                 ReturnQty = 0,
                                 IsSelected = false
                             });
@@ -100,7 +101,7 @@ namespace Phramacy_Product.Views.Purchase.PurchaseReturn
                 {
                     foreach (var item in returnedItems)
                     {
-                        decimal priceAfterDiscount = item.MRP - (item.MRP * item.Discount / 100);
+                        decimal priceAfterDiscount = item.PTR - (item.PTR * item.Discount / 100);
                         decimal returnAmount = item.ReturnQty * (priceAfterDiscount + (priceAfterDiscount * item.GST / 100));
                         decimal currentTotalAmount = currentPurchase.TotalAmount;
                         decimal currentPaidAmount = currentPurchase.PaidAmount;
@@ -120,8 +121,8 @@ namespace Phramacy_Product.Views.Purchase.PurchaseReturn
                         }
                         else if (item.ReturnQty < item.FullQty)
                         {
-                            decimal netAmountPerUnit = (item.MRP - (item.MRP * item.Discount / 100)) +
-                               ((item.MRP - (item.MRP * item.Discount / 100)) * item.GST / 100);
+                            decimal netAmountPerUnit = (item.PTR - (item.PTR * item.Discount / 100)) +
+                               ((item.PTR - (item.PTR * item.Discount / 100)) * item.GST / 100);
 
                             decimal newNetAmount = (item.FullQty - item.ReturnQty) * netAmountPerUnit;
 
@@ -144,49 +145,32 @@ namespace Phramacy_Product.Views.Purchase.PurchaseReturn
                         returnCommand.Parameters.AddWithValue("@returnQuantity", item.ReturnQty);
                         returnCommand.ExecuteNonQuery();
 
-                        // 4. Update SaleDetails: Adjust total and paid amounts
+                        string updatePurchaseDetailsQuery = @"
+UPDATE PurchaseDetails 
+SET 
+    TotalAmount = TotalAmount - @returnAmount, 
+    PaidAmount = PaidAmount - @actualReturnAmount,
+    PendingAmount = (TotalAmount - @returnAmount) - (PaidAmount - @actualReturnAmount),
+    ReturnAmount = ReturnAmount + @returnAmount,
+    PaymentStatus = CASE 
+                        WHEN (TotalAmount - @returnAmount) = (PaidAmount - @actualReturnAmount) THEN 'Completed'
+                        WHEN (PaidAmount - @actualReturnAmount) > 0 AND (TotalAmount - @returnAmount) > (PaidAmount - @actualReturnAmount) THEN 'Pending'
+                        WHEN (PaidAmount - @actualReturnAmount) = 0 THEN 'Pending'
+                        ELSE 'Completed'
+                    END,
+    UpdatedAt = GETDATE()
+WHERE PurchaseID = @PurchaseId;";
 
-
-                        string updatePurchaseDetailsQuery = "UPDATE PurchaseDetails SET TotalAmount = TotalAmount - @returnAmount, PaidAmount = PaidAmount - @actualReturnAmount,PendingAmount=PendingAmount+PaidAmount-@actualReturnAmount,ReturnAmount=ReturnAmount+@actualReturnAmount WHERE PurchaseID = @PurchaseId;";
                         var purchaseDetailsCommand = new SqlCommand(updatePurchaseDetailsQuery, connection, transaction);
+                        // @returnAmount is the full value of the returned item (TotalAmount reduction)
                         purchaseDetailsCommand.Parameters.AddWithValue("@returnAmount", returnAmount);
+                        // @actualReturnAmount is the amount adjusted/refunded from PaidAmount (PaidAmount reduction)
                         purchaseDetailsCommand.Parameters.AddWithValue("@actualReturnAmount", actualReturnAmount);
                         purchaseDetailsCommand.Parameters.AddWithValue("@PurchaseId", currentPurchase.PurchaseID);
                         purchaseDetailsCommand.ExecuteNonQuery();
 
-                        // 5. Update PharmaCustomers: Recalculate and update pending amount
-                        //if (!string.IsNullOrEmpty(currentPurchase.DistributorName))
-                        //{
-                        //    // Fetch the updated TotalAmount and PaidAmount from SaleDetails
-                        //    string fetchUpdatedAmountsQuery = "SELECT TotalAmount, PaidAmount  FROM PurchaseDetails WHERE SaleID = @saleId;";
-                        //    var fetchCommand = new SqlCommand(fetchUpdatedAmountsQuery, connection, transaction);
-                        //    fetchCommand.Parameters.AddWithValue("@PurchaseId", currentPurchase.PurchaseID);
-
-                        //    decimal newTotalAmount = 0;
-                        //    decimal newPaidAmount = 0;
-
-                        //    using (var reader = fetchCommand.ExecuteReader())
-                        //    {
-                        //        if (reader.Read())
-                        //        {
-                        //            newTotalAmount = reader.IsDBNull(0) ? 0m : reader.GetDecimal(0);
-                        //            newPaidAmount = reader.IsDBNull(1) ? 0m : reader.GetDecimal(1);
-                        //        }
-                        //    }
-
-                        //    // Calculate the new pending amount
-                        //    decimal newPendingAmount = newTotalAmount - newPaidAmount;
-
-                        //    string updateCustomerQuery = "UPDATE PharmaCustomers SET PendingAmount = PendingAmount-@newPendingAmount, UpdatedAt = GETDATE() WHERE CustomerName = @customerName;";
-                        //    var customerCommand = new SqlCommand(updateCustomerQuery, connection, transaction);
-                        //    customerCommand.Parameters.AddWithValue("@newPendingAmount", newPendingAmount);
-                        //    customerCommand.Parameters.AddWithValue("@customerName", currentPurchase.CustomerName);
-                        //    customerCommand.ExecuteNonQuery();
-                        //}
-
-                        // Commit the transaction if all operations were successful
-                        transaction.Commit();
                     }
+                    transaction.Commit();
                 }
                 catch (Exception ex)
                 {
